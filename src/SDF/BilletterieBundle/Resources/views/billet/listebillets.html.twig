@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>Billetterie</title>
+
+    {% stylesheets '@SDFBilletterieBundle/Resources/css/*' filter='cssrewrite' %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Billetterie</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container">
+      <h1>Billetterie de la Soirée des Finaux</h1>
+        <p>Liste des billets achetés et des billets disponibles à l'achat pour l'utilisateur {{ nomUtilisateur }}.</p>
+      </div>
+    </div>
+
+    <div class="container" id="billets">
+      {% if billetInvalide %}
+      <div class="alert alert-danger" role="alert"><strong>Un de vos billets n'a pas encore été traité par PayUTC.</strong> Cliquez <a href="{{ path('sdf_billetterie_relancerTransaction', {'id' : billetNonValide}) }}">ici pour reprendre la transaction</a>, ou <a href="{{ path('sdf_billetterie_annulerBilletInvalide', {'id' : billetNonValide}) }}">ici pour l'annuler</a>.</div>
+      {% endif %}
+      {% if message == "accessBillet" %}
+      <div class="alert alert-danger" role="alert"><strong>Impossible d'accéder au billet.</strong> Veuillez réessayer. En cas de problème, contactez-nous.</div>
+      {% endif %}
+      {% if message == "achatBilletError" %}
+      <div class="alert alert-danger" role="alert"><strong>L'achat de votre billet a échoué.</strong> Veuillez réessayer l'achat. En cas de problème, contactez-nous.</div>
+      {% endif %}
+      {% if message == "savingOptionsError" %}
+      <div class="alert alert-danger" role="alert"><strong>L'enregistrement des options a échoué.</strong> Veuillez réessayer. En cas de problème, contactez-nous.</div>
+      {% endif %}
+      {% if message == "billetSuccess" %}
+      <div class="alert alert-success" role="alert"><strong>Votre billet est maintenant accessible !</strong> Vous pouvez dès à présent modifier les options de votre billet. Pour accéder à la Soirée des Finaux, munissez-vous de votre carte étudiant ou de votre billet imprimé.</div>
+      {% endif %}
+      {% if message == "savingOptionsSuccess" %}
+      <div class="alert alert-success" role="alert"><strong>Les options ont bien été enregistrées.</strong></div>
+      {% endif %}
+
+  {% if billetsAchetes == false %}
+      <h2>Aucun billet acheté.</h2>
+  {% else %}
+
+    <!-- Liste des billets achetés -->
+                <div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading"><h3>Billets achetés</h3></div>
+
+  <!-- Table -->
+  <table class="table">
+  <tr>
+    <td><strong>Nom</strong></td>
+    <td><strong>Type de billet</strong></td> 
+    <td><strong>Navette</strong></td> 
+    <td><strong></strong></td>
+  </tr>
+  {% for billetAchete in billetsAchetes %}
+  <tr>
+    <td>{{ billetAchete['nom'] }}</td>
+    <td>{{ billetAchete['type'] }}</td>
+
+    <td>{% if billetAchete['navette'] %}Navette de {{ billetAchete['departNavette'] }} - {{ billetAchete['horaireNavette'] }}{% endif %}</td>
+    <td><div align="right"><a class="btn btn-info btn-xs" href="{{ path('sdf_billetterie_paramBillet', { 'id' : billetAchete['id'] }) }}" role="button">Options</a> <a class="btn btn-primary btn-xs" href="{{ path('sdf_billetterie_accessBillet', { 'id' : billetAchete['id'] }) }}" role="button">Imprimer &raquo;</a></div></td>
+    </tr>
+  {% endfor %}
+  </table>
+</div>
+  {% endif %}
+
+  {% if billetsDispos == false %}
+  <h2>Aucun billet disponible à l'achat.</h2>
+  {% else %}
+
+          <!-- Liste des billets disponibles -->
+                <div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading"><h3>Billets disponibles</h3></div>
+  <!-- Table -->
+  <table class="table">
+    <tr>
+    <td><strong>Type de billet</strong></td>
+    <td><strong>Prix</strong></td> 
+    <td><strong>Quantités disponibles</strong></td>
+  </tr>
+  {% for billetDispo in billetsDispos %}
+  <tr>
+    <td>{{ billetDispo['nom']}}</td>
+    <td>{{ billetDispo['prix'] }}€</td>
+    <td>{{ billetDispo['quantiteRestante'] }}</td>
+    <td><div align="right"><a class="btn btn-primary btn-xs" href="{{ path('sdf_billetterie_achatBillet', { 'typeBillet' : billetDispo['id'] }) }}" role="button">Acheter &raquo;</a></div></td>
+  </tr>
+  {% endfor %}
+  </table>
+</div>
+  {% endif %}
+
+      <hr>
+
+      <footer>
+        <p><a href="{{ path('sdf_billetterie_deconnexion') }}">Déconnexion</a></p>
+        <p><a href="{{ path('index_page') }}">Retourner sur le site de la Soirée des Finaux</a></p>
+      </footer>
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+    {% javascripts '@SDFBilletterieBundle/Resources/js/*' %}
+          <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+  </body>
+</html>

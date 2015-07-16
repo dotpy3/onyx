@@ -1,0 +1,10 @@
+/* Move down content because we have a fixed navbar that is 50px tall */
+body {
+  padding-top: 20px;
+  padding-bottom: 0px;
+}
+
+.class-heading h3 {
+	margin:0px;
+	padding:0px;
+}

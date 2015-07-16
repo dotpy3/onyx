@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>Billetterie</title>
+
+    {% stylesheets '@SDFBilletterieBundle/Resources/css/*' filter='cssrewrite' %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+      @media screen and (min-width:1024px){
+        .form_mdp {
+          width:30%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Billetterie</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container">
+        <h1>Contraintes</h1>
+        <p>Consulter ou ajouter des contraintes.</p>
+      </div>
+    </div>
+
+    <div class="container">
+      
+      {% if addContraintesError == true %}
+    <div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign"></span> <strong>Oups !</strong> L'ajout a échoué, veuillez réessayer.</div>
+{% endif %}
+
+      {% if addContrainteOK == true %}
+    <div class="alert alert-primary" role="alert"><span class="glyphicon glyphicon-exclamation-sign"></span> <strong>OK !</strong> Contrainte ajoutée.</div>
+{% endif %}
+    
+      <div class="form_mdp">
+      <h2>Créer un tarif</h2>
+      <form action="{{ path('sdf_billetterie_addContrainteTarif') }}" method="post">
+
+            <p><div class="input-group">
+  <span class="input-group-addon">Début mise en vente</span>
+  <input type="text" id="debutMEV" name="debutMEV" placeholder = "YYYY-MM-DD HH:MI:SS" class="form-control" aria-describedby="basic-addon1">
+
+</div><br /><div class="input-group">
+  <span class="input-group-addon">Nom de la contrainte</span>
+  <input type="text" id="nom" name="nom" class="form-control" aria-describedby="basic-addon1">
+</div><br />
+
+        <div class="input-group">
+  <span class="input-group-addon">Fin mise en vente</span>
+  <input type="text" id="finMEV" name="finMEV" placeholder = "YYYY-MM-DD HH:MI:SS" class="form-control" aria-describedby="basic-addon1">
+</div> <br />
+
+        <div class="input-group">
+  <span class="input-group-addon">Doit être cotisant</span>
+  <INPUT type="checkbox" name="cotisant" value="1">
+</div> <br />
+
+        <div class="input-group">
+  <span class="input-group-addon">Doit ne pas être cotisant</span>
+  <INPUT type="checkbox" name="pasCotisant" value="1">
+</div> <br />
+
+        <div class="input-group">
+  <span class="input-group-addon">Accessible aux extérieurs</span>
+  <INPUT type="checkbox" name="accesExterieur" value="1">
+</div> <br />
+<input type="submit" value="Connexion" />
+
+</p>
+        </form></div>
+
+        <p><a href="{{ path('sdf_billetterie_creationCompte') }}">Inscription</a></p>
+
+    <hr>
+
+      <footer>
+        <p><a href="{{ path('index_page') }}">Retourner sur le site de la Soirée des Finaux</a></p>
+      </footer>
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+    {% javascripts '@SDFBilletterieBundle/Resources/js/*' %}
+          <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+  </body>
+</html>

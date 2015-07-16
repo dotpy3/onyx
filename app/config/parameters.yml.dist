@@ -1,0 +1,23 @@
+# This file is a "template" of what your parameters.yml file should look like
+# Si vous utilisez les serveurs du SIMDE : Les paramètres sont pré-remplis,
+# il vous suffit de remplacer "soireedesfinaux" par votre login asso
+# et d'entrer votre mot de passe
+parameters:
+    database_driver:   pdo_mysql
+    database_host: sql.mde.utc
+    database_port:     ~
+    database_name: soireedesfinaux
+    database_user: soireedesfinaux
+    database_password: ~
+    # You should uncomment this if you want use pdo_sqlite
+    # database_path: "%kernel.root_dir%/data.db3"
+
+    mailer_transport:  smtp
+    mailer_host:       127.0.0.1
+    mailer_user:       ~
+    mailer_password:   ~
+
+    locale:            en
+
+    # A secret key that's used to generate certain security-related tokens
+    secret:            ThisTokenIsNotSoSecretChangeIt

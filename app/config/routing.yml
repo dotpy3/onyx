@@ -1,0 +1,7 @@
+sdf_billetterie:
+    resource: "@SDFBilletterieBundle/Resources/config/routing.yml"
+    prefix:   /
+
+sdf_site:
+    resource: "@SDFSiteBundle/Resources/config/routing.yml"
+    prefix:   /
