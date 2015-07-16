@@ -26,9 +26,6 @@ To install Onyx, you need :
 * A Ginger key with access to login, name, adulthood, BDE contribution, student card RFID chip information. Ginger is a service conceived by the [SIMDE](http://assos.utc.fr/simde) that can give you access to student information. If you don't have a key, you should ask them (and specify what informations you need)
 * A PayUTC foundation key (usually, corresponding to your student club) and WEBSALE app key. You can ask directly Nemopay (or through the BDE) for those.
 
-How to install Onyx
-----------
-
 Foremost, if you don't have knowledge in Symfony2, I recommend checking out the official Symfony2 documentation or the OpenClassrooms guide to understand how things run.
 
 1. First, you need to get all the vendors, by using Composer to install all the components, from the composer.json.
@@ -45,8 +42,23 @@ If you want the system to be available for external users (creating a login/pass
 How to use Onyx
 ----------
 
-1. Connect for the first time.
-2. 
+How to add admins: Once a user has connected, go to the phpMyAdmin administration, and set his "admin" attribute to 1.
+
+How to add tariffs and set constraints:
+To understand better how constraints are set for a tariff you can check out this part of this UML: (don't pay attention to the class attributes, they are deprecated)
+![(Whoopsie, not available!)](http://www.pixenli.com/images/1437/1437080138086693600.png)
+
+A tariff is defined by :
+* A constraint. A constraint object defines the beginning and end of the sales, if the user must be a BDE contributor, if he must not be a BDE contributor (not in the picture!!! but it's the doitNePasEtreCotisant attribute) and if external users can access this tariff. I've thought about merging the tariff with its constraint object, but I figured out there might be cases where you'd want to use the same constraints for various tariffs.
+* An event. An event is defined by a name, and by a maximum quantity of tickets that can be purchased within this event. Example: I create an event called "UTCéenne 2015", that has a quantiteMax of 3500 ; and I associate to this event two tariffs, "Cotisant BDE" of quantity 2500 and "Non cotisant" of quantity 2000. If I sell 1500 "Cotisant BDE" and 2000 "Non cotisant", the sale of "Cotisant BDE" will stop too, because the event capacity has been capped.
+* A common jar, called "Pot commun". When a user purchases a ticket within this jar, he can't buy any other ticket in this jar. e.g. if you create three tariffs "Cotisant 1" "Cotisant 2" and "Cotisant 3" and put them in the same jar, if a user buys "Cotisant 1", he can't buy "Cotisant 2" or "Cotisant 3" anymore.
+
+To create these and to create your tariff, you can access web/billetterie/admin, which gives you access to the links to the generation forms.
+
+Once the tariff is accessible, people can buy tickets corresponding to this tariff until it runs out. Each tickets is defined by :
+* Its user.
+* Its tariff.
+* Its shuttle (can be null). Shuttles are defined by their trajectory.
 
 To-do list
 ----------
@@ -56,6 +68,7 @@ Right now, the code proved itself to be efficient, and worked successfully for t
 * Documenting the code.
 * Conception of a user-friendly administration, that would allow both easy creation of tickets and a real-time check system. For example, during the Soirée des Finaux, when there was a problem at the entrance (someone that forgot their ticket, a ticket that is validated twice, etc) it was a pain to check directly into the SQL database.
 * Protect access to JSON calls by using keys - this is already implemented for the ticket validation part, but can be extended to other parts.
+* BUG TO BE FIXED: when using checkValidNumBilletAction in billetController.php to check if a ticket is valid by its number, the function automatically uses Ginger to check if the user is legal, or else assumes he is legal. This function must be corrected to take into account the birthday date of the user if he has an external account.
 
 Thanks
 ----------

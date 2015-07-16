@@ -22,6 +22,7 @@ use SDF\BilletterieBundle\Form\TarifType;
 use SDF\BilletterieBundle\Form\TrajetType;
 use SDF\BilletterieBundle\Form\NavetteType;
 use SDF\BilletterieBundle\Form\BilletType;
+use SDF\BilletterieBundle\Form\PotCommunTarifsType;
 
 use \Payutc\Client\AutoJsonClient;
 use \Payutc\Client\JsonException;
@@ -664,6 +665,32 @@ class billetController extends Controller
 
         return $this->render('SDFBilletterieBundle:billet:add.html.twig', array(
           'form' => $form->createView(),'name' => "navette", 'addError' => false, 'addOK' => false
+        ));
+    }
+
+
+    public function checkPotCommunAction(Request $request){
+
+        // ON VERIFIE QUE L'UTILISATEUR EXISTE & EST ADMIN
+        if (!checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
+
+        $pot = new PotCommunTarifs();
+
+        $form = $this->get('form.factory')->create(new PotCommunTarifs, $tarif);
+
+        if($form->handleRequest($request)->isValid()){
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($tarif);
+            $em->flush();
+
+            return $this->render('SDFBilletterieBundle:billet:add.html.twig', array(
+          'form' => $form->createView(),'name' => "pot commun", 'addError' => false, 'addOK' => true
+        ));
+        
+        }
+
+        return $this->render('SDFBilletterieBundle:billet:add.html.twig', array(
+          'form' => $form->createView(),'name' => "pot commun", 'addError' => false, 'addOK' => false
         ));
     }
 

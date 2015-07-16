@@ -78,6 +78,10 @@ sdf_billetterie_contrainteTarif:
     path:     /billetterie/tarifs/contraintes
     defaults: { _controller:SDFBilletterieBundle:billet:checkContraintes }
 
+sdf_billetterie_checkPotCommun:
+    path:     /billetterie/potscommuns
+    defaults: { _controller:SDFBilletterieBundle:billet:checkPotCommun }
+
 sdf_billetterie_trajetNavette:
     path:     /billetterie/navettes/trajets
     defaults: { _controller:SDFBilletterieBundle:billet:checkTrajetsNavette }
