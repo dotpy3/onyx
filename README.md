@@ -36,9 +36,7 @@ Get in the terminal (assuming you use an Unix machine), go to the root folder an
 2. Change the database parameters by changing the parameters in app/config/parameters.yml.dist. Note: if you want to use a local and a distant configuration, you can create a parameters.yml file with the same syntax ; parameters.yml.dist is only used if there is no parameters.yml.
 3. Add in src/SDF/BilletterieBundle/Controller/billetController.php and connexionController.php the Ginger key, and in the billetController.php the PayUTC access keys. The according variables are in the controller classes.
 4. Add your database parameters in connexionController.php - in the controller, that's the .
-5. For the database, two choices :
-* Either your server allows you directly to use php software, then go to your root folder, and run this command: "php app/console doctrine:schema:update --force"
-* Either your server doesn't allow this (like the SIMDE servers), and in that case you should use the init.sql file at the root of the folder. Copy these and execute them in your phpMyAdmin interface.
+5. For the database, two choices : Either your server allows you directly to use php software, then go to your root folder, and run this command: "php app/console doctrine:schema:update --force". Either your server doesn't allow this (like the SIMDE servers), and in that case you should use the init.sql file at the root of the folder. Copy these and execute them in your phpMyAdmin interface.
 
 Voilà ! The system is accessible at web/billetterie. If an error occurs, you can check out the details by adding "app_dev.php/" just after "web/" (for example, web/app_dev.php/billetterie).
 
