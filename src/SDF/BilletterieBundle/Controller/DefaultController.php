@@ -12,7 +12,7 @@ use SDF\BilletterieBundle\Entity\Tarif;
 class DefaultController extends Controller
 {
 
-    private $exterieurAccess = true;
+    public $exterieurAccess = true;
 
     public function indexAction()
     {
