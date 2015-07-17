@@ -944,7 +944,7 @@ class billetController extends Controller
                 ->findOneBy(array('login' => $login));
           $userRefActif = $userActif->getUser();
           /* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
-          if (!checkBilletAvailable($typeBillet)) return return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',array('message'=>'achatBilletError')));
+          if (!checkBilletAvailable($typeBillet)) return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',array('message'=>'achatBilletError')));
         } catch (NotFoundUserException $e) {
           return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
         } 
