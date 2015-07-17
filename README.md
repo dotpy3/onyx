@@ -55,6 +55,8 @@ A tariff is defined by :
 
 To create these and to create your tariff, you can access web/billetterie/admin, which gives you access to the links to the generation forms.
 
+When creating a tariff, the "Payutc ID" attribute must be the ID of the article on the Payutc administration : http://payutc-admin.nemopay.net
+
 Once the tariff is accessible, people can buy tickets corresponding to this tariff until it runs out. Each tickets is defined by :
 * Its user.
 * Its tariff.
