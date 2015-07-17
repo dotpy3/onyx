@@ -2,6 +2,12 @@ sdf_billetterie_homepage:
     path:     /billetterie
     defaults: { _controller: SDFBilletterieBundle:Default:index }
 
+index_page:
+    path:     /
+    defaults: { _controller: SDFBilletterieBundle:Default:index }
+
+# INDEX_PAGE : THIS IS THE PATH THAT'S SUPPOSED TO LEAD BACK TO THE WEBSITE HOMEPAGE
+
 sdf_billetterie_homepage_connexionError:
     path:     /billetterie/connexionError
     defaults: { _controller: SDFBilletterieBundle:Default:errorIndex }
