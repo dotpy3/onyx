@@ -141,12 +141,6 @@ class PDF extends \fpdf\FPDF {
 }
 
 class NotFoundUserException extends \Exception {
-  private $login;
-  private $userType; // TAKES AS VALUE STRING 'CAS' OR 'EXT'
-
-  public function getLogin(){return $login;}
-
-  public function getUserType(){return $userType;}
 
 }
 
@@ -180,8 +174,6 @@ class billetController extends Controller
     private $email = ""; // l'email de l'asso
 
   // END OF PARAMETER INSERTION
-
-    private $dsn = 'mysql:dbname='.$PDOdatabase.';host='.$PDOhost;
 
     private function automatedJsonResponse($content){
 
@@ -1230,7 +1222,7 @@ class billetController extends Controller
 
     public function relancerTransactionAction($id){
 
-        $dsn = 'mysql:dbname='.$PDOdatabase.';host='.$PDOhost;
+        $dsn = 'mysql:dbname='.$this->PDOdatabase.';host='.$this->PDOhost;
         $tempUser = $user;
         $password = $password;
 
