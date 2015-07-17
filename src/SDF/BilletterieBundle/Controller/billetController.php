@@ -148,17 +148,6 @@ class NotFoundUserException extends \Exception {
 
   public function getUserType(){return $userType;}
 
-  function __construct($givenLogin,$givenUType) {
-    $login = $givenLogin;
-    $userType = $givenUType;
-
-    parent::__construct();
-  }
-
-  function __construct(){
-    parent::__construct();
-  }
-
 }
 
 class DeniedAccessException extends \Exception {
@@ -224,14 +213,14 @@ class billetController extends Controller
             ->getManager()
             ->getRepository('SDFBilletterieBundle:UtilisateurCAS');
             $userActif = $repositoryUserCAS->findOneBy(array('loginCAS' => $login));
-            if(gettype($userActif) == "NULL") throw NotFoundUserException($login,'CAS');
+            if(gettype($userActif) == "NULL") throw NotFoundUserException();
             $repositoryUserExt = $this
         ->getDoctrine()
         ->getManager()
         ->getRepository('SDFBilletterieBundle:UtilisateurCAS')
         ;
       $userActif = $repositoryUserExt->findOneBy(array('LoginCAS' => $login));
-      if(gettype($userActif) == "NULL") throw NotFoundUserException($login,'EXT');
+      if(gettype($userActif) == "NULL") throw NotFoundUserException();
     }
 
     private function checkExtUserExists($login){
@@ -241,7 +230,7 @@ class billetController extends Controller
         ->getRepository('SDFBilletterieBundle:UtilisateurExterieur')
         ;
       $userActif = $repositoryUserExt->findOneBy(array('login' => $login));
-      if(gettype($userActif) == "NULL") throw NotFoundUserException($login,'EXT');
+      if(gettype($userActif) == "NULL") throw NotFoundUserException();
 
     }
 
