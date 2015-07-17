@@ -1420,7 +1420,7 @@ class billetController extends Controller
       if (!isset($_GET['key']) || gettype($repoKeys->findOneBy(array('relationKey' => $_GET['key']))) == 'NULL')
         return automatedJsonResponse(array('isValide' => 'invalidKey'));
 
-      $bdd = new \PDO('mysql:host='.$PDOhost.';dbname='.$PDOdatabase.';charset=utf8',$user,$password);
+      $bdd = new \PDO('mysql:host='.$this->PDOhost.';dbname='.$this->PDOdatabase.';charset=utf8',$this->user,$this->password);
       $requete = "SELECT id, nom, prenom, valide, consomme FROM Billet WHERE prenom LIKE %$name% OR nom LIKE %$name%";
 
       $resultat = $bdd->query($requete);
