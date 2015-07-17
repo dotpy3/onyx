@@ -7,10 +7,10 @@ use Symfony\Component\HttpFoundation\Response;
 use SDF\BilletterieBundle\Entity\Billet;
 use SDF\BilletterieBundle\Entity\Tarif;
 
+$exterieurAccess = true;
+
 class DefaultController extends Controller
 {
-
-    private $exterieurAccess = true;
 
     public function indexAction()
     {
