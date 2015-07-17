@@ -7,19 +7,21 @@ use Symfony\Component\HttpFoundation\Response;
 use SDF\BilletterieBundle\Entity\Billet;
 use SDF\BilletterieBundle\Entity\Tarif;
 
-$exterieurAccess = true;
+
 
 class DefaultController extends Controller
 {
 
+    $exterieurAccess = true;
+
     public function indexAction()
     {
-    	return $this->render('SDFBilletterieBundle:Default:index.html.twig', array('connexionError' => false, 'inscriptionReussie' => false, 'accesExterieur' => $exterieurAccess));
+    	return $this->render('SDFBilletterieBundle:Default:index.html.twig', array('connexionError' => false, 'inscriptionReussie' => false, 'accesExterieur' => $this->exterieurAccess));
     }
 
     public function errorIndexAction()
     {
-    	return $this->render('SDFBilletterieBundle:Default:index.html.twig', array('connexionError' => true, 'inscriptionReussie' => false, 'accesExterieur' => $exterieurAccess));
+    	return $this->render('SDFBilletterieBundle:Default:index.html.twig', array('connexionError' => true, 'inscriptionReussie' => false, 'accesExterieur' => $this->exterieurAccess));
     }
 
     public function getCGVAction(){
