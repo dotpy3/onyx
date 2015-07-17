@@ -1223,8 +1223,8 @@ class billetController extends Controller
     public function relancerTransactionAction($id){
 
         $dsn = 'mysql:dbname='.$this->PDOdatabase.';host='.$this->PDOhost;
-        $tempUser = $user;
-        $password = $password;
+        $tempUser = $this->user;
+        $password = $this->password;
 
         try {
             $bdd = new \PDO($dsn, $tempUser, $password);
