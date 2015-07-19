@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f04d3417a348e0a62950ab3d77322176",
+    "hash": "55b30046f42b8481947478be514e3c00",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -701,6 +701,50 @@
                 "orm"
             ],
             "time": "2014-12-16 13:45:01"
+        },
+        {
+            "name": "ginger/client",
+            "version": "v2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/simde-utc/ginger-client.git",
+                "reference": "d3a5fb49e86c96b7a7c504a94b0abf9fde191dc8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/simde-utc/ginger-client/zipball/d3a5fb49e86c96b7a7c504a94b0abf9fde191dc8",
+                "reference": "d3a5fb49e86c96b7a7c504a94b0abf9fde191dc8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Ginger": "."
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPLv3"
+            ],
+            "authors": [
+                {
+                    "name": "SiMDE UTC",
+                    "email": "simde@assos.utc.fr",
+                    "homepage": "http://assos.utc.fr/simde",
+                    "role": "Owner"
+                }
+            ],
+            "description": "Client for the Ginger server",
+            "homepage": "https://github.com/simde-utc/ginger",
+            "keywords": [
+                "ginger",
+                "simde",
+                "utc"
+            ],
+            "time": "2013-08-10 17:29:03"
         },
         {
             "name": "incenteev/composer-parameter-handler",
