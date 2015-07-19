@@ -12,18 +12,64 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 class Configuration implements ConfigurationInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getConfigTreeBuilder()
-    {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('sdf_billetterie');
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getConfigTreeBuilder()
+	{
+		$treeBuilder = new TreeBuilder();
+		$rootNode = $treeBuilder->root('sdf_billetterie');
 
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+		$rootNode
+			->children()
+				->arrayNode('ginger')
+					->children()
+						->scalarNode('url')
+							->defaultValue('https://assos.utc.fr/ginger/v1/')
+							->info('The Ginger client API url')
+						->end()
+						->scalarNode('key')
+							->isRequired()
+							->cannotBeEmpty()
+							->info('The Ginger client key')
+						->end()
+					->end()
+				->end()
+				->arrayNode('payutc')
+					->children()
+						->scalarNode('key')
+							->isRequired()
+							->cannotBeEmpty()
+							->info('The PayUtc client key')
+						->end()
+						->integerNode('fundation_id')
+							->isRequired()
+							->cannotBeEmpty()
+							->info('The PayUtc fundation ID')
+						->end()
+					->end()
+				->end()
+				->arrayNode('utc_cas')
+					->children()
+						->scalarNode('url')
+							->defaultValue('https://cas.utc.fr/cas/')
+							->isRequired()
+							->cannotBeEmpty()
+							->info('The UTC CAS connection URL')
+						->end()
+					->end()
+				->end()
+				->arrayNode('settings')
+					->children()
+						->booleanNode('enable_exterior_access')
+							->defaultFalse()
+							->info('Should the billetterie be open to non-UTC?')
+						->end()
+					->end()
+				->end()
+			->end()
+		;
 
-        return $treeBuilder;
-    }
+		return $treeBuilder;
+	}
 }

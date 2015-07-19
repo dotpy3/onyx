@@ -63,3 +63,14 @@ doctrine:
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
         auto_mapping: true
+
+sdf_billetterie:
+    ginger:
+        key: %ginger_key%
+    payutc:
+        key: %payutc_key%
+        fundation_id: %payutc_fundation_id%
+    utc_cas:
+        url: %utc_cas_url%
+    settings:
+        enable_exterior_access: true

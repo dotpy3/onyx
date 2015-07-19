@@ -11,17 +11,26 @@ use SDF\BilletterieBundle\Entity\Tarif;
 
 class DefaultController extends Controller
 {
-
-    public $exterieurAccess = true;
-
     public function indexAction()
     {
-    	return $this->render('SDFBilletterieBundle:Default:index.html.twig', array('connexionError' => false, 'inscriptionReussie' => false, 'accesExterieur' => $this->exterieurAccess));
+        $config = $this->container->getParameter('sdf_billetterie');
+
+        return $this->render('SDFBilletterieBundle:Default:index.html.twig', array(
+            'connexionError' => false,
+            'inscriptionReussie' => false,
+            'accesExterieur' => $config['settings']['enable_exterior_access']
+        ));
     }
 
     public function errorIndexAction()
     {
-    	return $this->render('SDFBilletterieBundle:Default:index.html.twig', array('connexionError' => true, 'inscriptionReussie' => false, 'accesExterieur' => $this->exterieurAccess));
+        $config = $this->container->getParameter('sdf_billetterie');
+
+        return $this->render('SDFBilletterieBundle:Default:index.html.twig', array(
+            'connexionError' => true,
+            'inscriptionReussie' => false,
+            'accesExterieur' => $config['settings']['enable_exterior_access']
+        ));
     }
 
     public function getCGVAction(){

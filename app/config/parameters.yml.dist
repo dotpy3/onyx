@@ -21,3 +21,15 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
+
+    # Ginger Client key
+    ginger_key:
+
+    # PayUTC Client key
+    payutc_key:
+
+    # PayUTC Fundation ID
+    payutc_fundation_id:
+
+    # UTC CAS URL
+    utc_cas_url: https://cas.utc.fr/cas/

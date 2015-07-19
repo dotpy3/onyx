@@ -28,136 +28,15 @@ use SDF\BilletterieBundle\Form\NavetteType;
 use SDF\BilletterieBundle\Form\BilletType;
 use SDF\BilletterieBundle\Form\PotCommunTarifsType;
 use SDF\BilletterieBundle\Exception\UserNotFoundException;
+use SDF\BilletterieBundle\Utils\Pdf\Pdf;
 
 use \Payutc\Client\AutoJsonClient;
 use \Payutc\Client\JsonException;
-
-
-class PDF extends \fpdf\FPDF {
-    function EAN13($x, $y, $barcode, $h=16, $w=.35)
-    {
-       $this->Barcode($x, $y, $barcode, $h, $w, 13);
-    }
-
-    function UPC_A($x, $y, $barcode, $h=16, $w=.35)
-    {
-       $this->Barcode($x, $y, $barcode, $h, $w, 12);
-    }
-
-    function GetCheckDigit($barcode)
-    {
-       //Compute the check digit
-       $sum=0;
-       for($i=1;$i<=11;$i+=2)
-           $sum+=3*$barcode{$i};
-       for($i=0;$i<=10;$i+=2)
-           $sum+=$barcode{$i};
-       $r=$sum%10;
-       if($r>0)
-           $r=10-$r;
-       return $r;
-    }
-
-    function TestCheckDigit($barcode)
-    {
-       //Test validity of check digit
-       $sum=0;
-       for($i=1;$i<=11;$i+=2)
-           $sum+=3*$barcode{$i};
-       for($i=0;$i<=10;$i+=2)
-           $sum+=$barcode{$i};
-       return ($sum+$barcode{12})%10==0;
-    }
-
-    function Barcode($x, $y, $barcode, $h, $w, $len)
-    {
-       //Padding
-       $barcode=str_pad($barcode, $len-1, '0', STR_PAD_LEFT);
-       if($len==12)
-           $barcode='0'.$barcode;
-       //Add or control the check digit
-       if(strlen($barcode)==12)
-           $barcode.=$this->GetCheckDigit($barcode);
-       elseif(!$this->TestCheckDigit($barcode))
-           $this->Error('Incorrect check digit');
-       //Convert digits to bars
-       $codes=array(
-           'A'=>array(
-               '0'=>'0001101', '1'=>'0011001', '2'=>'0010011', '3'=>'0111101', '4'=>'0100011',
-               '5'=>'0110001', '6'=>'0101111', '7'=>'0111011', '8'=>'0110111', '9'=>'0001011'),
-           'B'=>array(
-               '0'=>'0100111', '1'=>'0110011', '2'=>'0011011', '3'=>'0100001', '4'=>'0011101',
-               '5'=>'0111001', '6'=>'0000101', '7'=>'0010001', '8'=>'0001001', '9'=>'0010111'),
-           'C'=>array(
-               '0'=>'1110010', '1'=>'1100110', '2'=>'1101100', '3'=>'1000010', '4'=>'1011100',
-               '5'=>'1001110', '6'=>'1010000', '7'=>'1000100', '8'=>'1001000', '9'=>'1110100')
-           );
-       $parities=array(
-           '0'=>array('A', 'A', 'A', 'A', 'A', 'A'),
-           '1'=>array('A', 'A', 'B', 'A', 'B', 'B'),
-           '2'=>array('A', 'A', 'B', 'B', 'A', 'B'),
-           '3'=>array('A', 'A', 'B', 'B', 'B', 'A'),
-           '4'=>array('A', 'B', 'A', 'A', 'B', 'B'),
-           '5'=>array('A', 'B', 'B', 'A', 'A', 'B'),
-           '6'=>array('A', 'B', 'B', 'B', 'A', 'A'),
-           '7'=>array('A', 'B', 'A', 'B', 'A', 'B'),
-           '8'=>array('A', 'B', 'A', 'B', 'B', 'A'),
-           '9'=>array('A', 'B', 'B', 'A', 'B', 'A')
-           );
-       $code='101';
-       $p=$parities[$barcode{0}];
-       for($i=1;$i<=6;$i++)
-           $code.=$codes[$p[$i-1]][$barcode{$i}];
-       $code.='01010';
-       for($i=7;$i<=12;$i++)
-           $code.=$codes['C'][$barcode{$i}];
-       $code.='101';
-       //Draw bars
-       for($i=0;$i<strlen($code);$i++)
-       {
-           if($code{$i}=='1')
-               $this->Rect($x+$i*$w, $y, $w, $h, 'F');
-       }
-       //Print text uder barcode
-       $this->SetFont('arial', '', 12);
-       $this->Text($x, $y+$h+11/$this->k, substr($barcode, -$len));
-    }
-
-    function Rotate($angle,$x=-1,$y=-1) {
-
-        if($x==-1)
-            $x=$this->x;
-        if($y==-1)
-            $y=$this->y;
-        if($this->angle!=0)
-            $this->_out('Q');
-        $this->angle=$angle;
-        if($angle!=0)
-
-        {
-            $angle*=M_PI/180;
-            $c=cos($angle);
-            $s=sin($angle);
-            $cx=$x*$this->k;
-            $cy=($this->h-$y)*$this->k;
-
-            $this->_out(sprintf('q %.5f %.5f %.5f %.5f %.2f %.2f cm 1 0 0 1 %.2f %.2f cm',$c,$s,-$s,$c,$cx,$cy,-$cx,-$cy));
-        }
-    }
-}
 
 class billetController extends Controller
 {
 
   // INSERT YOUR PARAMETERS HERE :
-
-    private $gingerKey = "";
-
-    private $payutcAppKey = "";
-
-    private $payutcFunID;
-
-
     private $PDOdatabase = "";
 
     private $PDOhost = "";
@@ -199,14 +78,14 @@ class billetController extends Controller
             ->getManager()
             ->getRepository('SDFBilletterieBundle:UtilisateurCAS');
             $userActif = $repositoryUserCAS->findOneBy(array('loginCAS' => $login));
-            if(gettype($userActif) == "NULL") throw UserNotFoundException();
+            if(gettype($userActif) == "NULL") throw new UserNotFoundException();
             $repositoryUserExt = $this
         ->getDoctrine()
         ->getManager()
         ->getRepository('SDFBilletterieBundle:UtilisateurCAS')
         ;
       $userActif = $repositoryUserExt->findOneBy(array('LoginCAS' => $login));
-      if(gettype($userActif) == "NULL") throw UserNotFoundException();
+      if(gettype($userActif) == "NULL") throw new UserNotFoundException();
     }
 
     private function checkExtUserExists($login){
@@ -216,7 +95,7 @@ class billetController extends Controller
         ->getRepository('SDFBilletterieBundle:UtilisateurExterieur')
         ;
       $userActif = $repositoryUserExt->findOneBy(array('login' => $login));
-      if(gettype($userActif) == "NULL") throw UserNotFoundException();
+      if(gettype($userActif) == "NULL") throw new UserNotFoundException();
 
     }
 
@@ -228,20 +107,20 @@ class billetController extends Controller
         //if ($_SESSION['typeUser'] == 'exterieur') return new Response("Connexion réussie pour l'utilisateur " . $_SESSION['user']->getLogin());
       // verifier que l'utilisateur est bien connecté
       //if (!checkConnexion($_SESSION)) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-        if(session_id() == '') throw UserNotFoundException();
-        if(!isset($_SESSION['user'])) throw UserNotFoundException();
+        if(session_id() == '') throw new UserNotFoundException();
+        if(!isset($_SESSION['user'])) throw new UserNotFoundException();
         if($_SESSION['typeUser'] == 'exterieur'){
-            checkExtUserExists($_SESSION['user']);
+            $this->checkExtUserExists($_SESSION['user']);
             // UTILISATEUR EXTERIEUR
 
 
         } elseif ($_SESSION['typeUser'] == 'cas') {
-            checkCASUserExists($_SESSION['user']);
+            $this->checkCASUserExists($_SESSION['user']);
             // UTILISATEUR CAS
 
 
         } else {
-          throw UserNotFoundException();
+          throw new UserNotFoundException();
         }
 
     }
@@ -446,7 +325,7 @@ class billetController extends Controller
     public function listeBilletsAction($message = false)
     {
         try {
-          checkUserExists();
+          $this->checkUserExists();
         } catch (UserNotFoundException $e) {
           return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
         }
@@ -487,7 +366,7 @@ class billetController extends Controller
       // RETOURNE TRUE SI L'USER EST ADMIN
       // RETOURNE FALSE S'IL N'Y A PAS D'USER CONNECTÉ OU S'IL N'EST PAS ADMIN
         try {
-          checkUserExists();
+          $this->checkUserExists();
         } catch (UserNotFoundException $e) {
           return false;
         }
@@ -699,14 +578,14 @@ class billetController extends Controller
         /*        ON COMMENCE PAR VÉRIFIER LA CONNEXION        */
 
         try {
-          checkUserExists();
+          $this->checkUserExists();
           if ($_SESSION['typeUser'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurCAS')
                 ->findOneBy(array('loginCAS' => $login));
           else $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurExterieur')
                 ->findOneBy(array('login' => $login));
           $userRefActif = $userActif->getUser();
           /* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
-          checkConsultationRights($userRefActif->getId(),$id);
+          $this->checkConsultationRights($userRefActif->getId(),$id);
         } catch (UserNotFoundException $e) {
           return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
         } catch (AccessDeniedHttpException $e) {
@@ -781,14 +660,14 @@ class billetController extends Controller
         */
 
         try {
-          checkUserExists();
+          $this->checkUserExists();
           if ($_SESSION['typeUser'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurCAS')
                 ->findOneBy(array('loginCAS' => $login));
           else $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurExterieur')
                 ->findOneBy(array('login' => $login));
           $userRefActif = $userActif->getUser();
           /* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
-          checkConsultationRights($userRefActif->getId(),$id);
+          $this->checkConsultationRights($userRefActif->getId(),$id);
         } catch (UserNotFoundException $e) {
           return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
         } catch (AccessDeniedHttpException $e) {
@@ -845,7 +724,7 @@ class billetController extends Controller
     private function pdfGeneration($userPrenom,$userNom,$nomTarif,$billetID,
       $tarifPrix,$billetNom,$billetPrenom,$billetBarcode){
 
-        $pdf = new PDF();
+        $pdf = new Pdf();
 
         $pdf->Open();
         $pdf->AddPage('L');
@@ -890,14 +769,14 @@ class billetController extends Controller
         */
 
         try {
-          checkUserExists();
+          $this->checkUserExists();
           if ($_SESSION['typeUser'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurCAS')
                 ->findOneBy(array('loginCAS' => $login));
           else $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurExterieur')
                 ->findOneBy(array('login' => $login));
           $userRefActif = $userActif->getUser();
           /* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
-          checkConsultationRights($userRefActif->getId(),$id);
+          $this->checkConsultationRights($userRefActif->getId(),$id);
         } catch (UserNotFoundException $e) {
           return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
         } catch (AccessDeniedHttpException $e) {
@@ -931,7 +810,7 @@ class billetController extends Controller
         /*        ON COMMENCE PAR VÉRIFIER LA CONNEXION        */
 
         try {
-          checkUserExists();
+          $this->checkUserExists();
           if ($_SESSION['typeUser'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurCAS')
                 ->findOneBy(array('loginCAS' => $login));
           else $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurExterieur')
@@ -978,7 +857,9 @@ class billetController extends Controller
         ));
     }
 
-    public function payUTCcallbackAction($token){
+    public function payUTCcallbackAction($token)
+    {
+        $config = $this->container->getParameter('sdf_billetterie');
         /*
 
         ON COMMENCE PAR VÉRIFIER LA CONNEXION
@@ -988,7 +869,7 @@ class billetController extends Controller
         /*        ON COMMENCE PAR VÉRIFIER LA CONNEXION        */
 
         try {
-          checkUserExists();
+          $this->checkUserExists();
           if ($_SESSION['typeUser'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurCAS')
                 ->findOneBy(array('loginCAS' => $login));
           else $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurExterieur')
@@ -1072,7 +953,7 @@ class billetController extends Controller
 
             try {
                 // CONNEXION A PAYUTC
-                $payutcClient = new AutoJsonClient("https://api.nemopay.net/services/", "WEBSALE", array(CURLOPT_PROXY => 'proxyweb.utc.fr:3128', CURLOPT_TIMEOUT => 5), "Payutc Json PHP Client", array(), "payutc", $payutcAppKey);
+                $payutcClient = new AutoJsonClient("https://api.nemopay.net/services/", "WEBSALE", array(CURLOPT_PROXY => 'proxyweb.utc.fr:3128', CURLOPT_TIMEOUT => 5), "Payutc Json PHP Client", array(), "payutc", $config['payutc']['key']);
 
                 $arrayItems = array(array($billetDispo->getIdPayutc()));
                 $item = json_encode($arrayItems);
@@ -1082,13 +963,13 @@ class billetController extends Controller
                 $returnURL = 'http://' . $_SERVER["HTTP_HOST"].$this->get('router')->generate('sdf_billetterie_routingPostPaiement',array('id'=>$billetCree->getId()));
                 $callback_url = 'http://' . $_SERVER["HTTP_HOST"].$this->get('router')->generate('sdf_billetterie_callbackDePAYUTC',array('id'=>$billetCree->getId()));
                 //return new Response($item);
-                $c = $payutcClient->apiCall('createTransaction',
-                    array("fun_id" => $payutcFunID,
-                        "items" => $item,
-                        "return_url" => $returnURL,
-                        "callback_url" => $callback_url,
-                        "mail" => $userRefActif->getEmail()
-                        ));
+                $c = $payutcClient->apiCall('createTransaction', array(
+                  "fun_id" => $config['payutc']['fundation_id'],
+                  "items" => $item,
+                  "return_url" => $returnURL,
+                  "callback_url" => $callback_url,
+                  "mail" => $userRefActif->getEmail()
+                ));
 
                 $billetCree->setIdPayutc($c->tra_id);
 
@@ -1118,7 +999,9 @@ class billetController extends Controller
             }
     }
 
-    public function callbackFromPayutcAction($id){
+    public function callbackFromPayutcAction($id)
+    {
+        $config = $this->container->getParameter('sdf_billetterie');
         $em = $this->getDoctrine()->getManager();
         $repoBillets = $em->getRepository('SDFBilletterieBundle:Billet');
         $billet = $repoBillets->find($id);
@@ -1126,12 +1009,11 @@ class billetController extends Controller
         //if ($billet->getValide() == true) return new Response("déjà validé");
 
         // CONNEXION A PAYUTC
-        $payutcClient = new AutoJsonClient("https://api.nemopay.net/services/", "WEBSALE", array(CURLOPT_PROXY => 'proxyweb.utc.fr:3128', CURLOPT_TIMEOUT => 5), "Payutc Json PHP Client", array(), "payutc", $payutcAppKey);
-        $data = $payutcClient->apiCall('getTransactionInfo',
-            array('fun_id' => $payutcFunID,
-                'tra_id' => $billet->getIdPayutc()
-                )
-            );
+        $payutcClient = new AutoJsonClient("https://api.nemopay.net/services/", "WEBSALE", array(CURLOPT_PROXY => 'proxyweb.utc.fr:3128', CURLOPT_TIMEOUT => 5), "Payutc Json PHP Client", array(), "payutc", $config['payutc']['key']);
+        $data = $payutcClient->apiCall('getTransactionInfo', array(
+          'fun_id' => $config['payutc']['fundation_id'],
+          'tra_id' => $billet->getIdPayutc()
+        ));
 
         if ($data->status == "V"){
             $billet->setValide(true);
@@ -1187,13 +1069,14 @@ class billetController extends Controller
         return new Response('ok');
     }
 
-    public function callbackFromPayutcByIdAction($id){
-        $payutcClient = new AutoJsonClient("https://api.nemopay.net/services/", "WEBSALE", array(CURLOPT_PROXY => 'proxyweb.utc.fr:3128', CURLOPT_TIMEOUT => 5), "Payutc Json PHP Client", array(), "payutc", $payutcAppKey);
-        $data = $payutcClient->apiCall('getTransactionInfo',
-            array('fun_id' => $payutcFunID,
-                'tra_id' => $id
-                )
-            );
+    public function callbackFromPayutcByIdAction($id)
+    {
+        $config = $this->container->getParameter('sdf_billetterie');
+        $payutcClient = new AutoJsonClient("https://api.nemopay.net/services/", "WEBSALE", array(CURLOPT_PROXY => 'proxyweb.utc.fr:3128', CURLOPT_TIMEOUT => 5), "Payutc Json PHP Client", array(), "payutc", $config['payutc']['key']);
+        $data = $payutcClient->apiCall('getTransactionInfo', array(
+          'fun_id' => $config['payutc']['fundation_id'],
+          'tra_id' => $id
+        ));
 
         var_dump($data);
 
@@ -1238,14 +1121,14 @@ class billetController extends Controller
     public function annulerBilletInvalideAction($id){
 
         try {
-          checkUserExists();
+          $this->checkUserExists();
           if ($_SESSION['typeUser'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurCAS')
                 ->findOneBy(array('loginCAS' => $login));
           else $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurExterieur')
                 ->findOneBy(array('login' => $login));
           $userRefActif = $userActif->getUser();
           /* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
-          checkConsultationRights($userRefActif->getId(),$id);
+          $this->checkConsultationRights($userRefActif->getId(),$id);
         } catch (UserNotFoundException $e) {
           return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
         } catch (AccessDeniedHttpException $e) {
@@ -1267,8 +1150,9 @@ class billetController extends Controller
 
     public function testbugAction(){
         // FONCTION CREEE POUR TESTER L'URL DE REDIRECTION VERS LA TRANSACTION
+        $config = $this->container->getParameter('sdf_billetterie');
 
-        $payutcClient = new AutoJsonClient("https://api.nemopay.net/services/", "WEBSALE", array(CURLOPT_PROXY => 'proxyweb.utc.fr:3128', CURLOPT_TIMEOUT => 5), "Payutc Json PHP Client", array(), "payutcdev", $payutcAppKey);
+        $payutcClient = new AutoJsonClient("https://api.nemopay.net/services/", "WEBSALE", array(CURLOPT_PROXY => 'proxyweb.utc.fr:3128', CURLOPT_TIMEOUT => 5), "Payutc Json PHP Client", array(), "payutcdev", $config['payutc']['key']);
 
                 $arrayItems = array(array(3201));
                 $item = json_encode($arrayItems);
@@ -1276,13 +1160,13 @@ class billetController extends Controller
                 $returnURL = 'http://google.fr/test';
                 $callback_url = 'http://google.fr/test';
                 //return new Response($item);
-                $c = $payutcClient->apiCall('createTransaction',
-                    array("fun_id" => $payutcFunID,
-                        "items" => $item,
-                        "return_url" => $returnURL,
-                        "callback_url" => $callback_url,
-                        "mail" => 'ericgourlaouen@airpost.net'
-                        ));
+                $c = $payutcClient->apiCall('createTransaction', array(
+                  "fun_id" => $config['payutc']['fundation_id'],
+                  "items" => $item,
+                  "return_url" => $returnURL,
+                  "callback_url" => $callback_url,
+                  "mail" => 'ericgourlaouen@airpost.net'
+                ));
 
                 return new Response($c->url);
     }
@@ -1312,8 +1196,9 @@ class billetController extends Controller
       return new Response(var_dump($billet->getValide()));
     }
 
-    public function checkValidNumBilletAction($id){
-
+    public function checkValidNumBilletAction($id)
+    {
+      $config = $this->container->getParameter('sdf_billetterie');
       $em = $this->getDoctrine()->getManager();
 
       // ON VERIFIE QU'IL Y A BIEN UN NUM DE BILLET ASSOCIE
@@ -1337,7 +1222,7 @@ class billetController extends Controller
       $userCAS = $repoCAS->findOneBy(array('user' => $utilisateurConcerne));
 
       if(gettype($userCAS) != 'NULL'){
-        $ginger = json_decode(file_get_contents('https://assos.utc.fr/ginger/v1/'.$userCAS->getLoginCAS().'?key='.$gingerKey));
+        $ginger = json_decode(file_get_contents($config['ginger']['url'].$userCAS->getLoginCAS().'?key='.$config['ginger']['key']));
         try {
           $adulte = $ginger->is_adulte;
         } catch (Exception $e) {
@@ -1359,12 +1244,13 @@ class billetController extends Controller
       return automatedJsonResponse($tabReponse);
     }
 
-    public function getNFCAssociatedBilletsAction($id){
-
+    public function getNFCAssociatedBilletsAction($id)
+    {
+      $config = $this->container->getParameter('sdf_billetterie');
       $em = $this->getDoctrine()->getManager();
+
       try {
-        $gingerResult = json_decode(@file_get_contents('https://assos.utc.fr/ginger/v1/badge/'.
-          $id.'?key='.$gingerKey));
+        $gingerResult = json_decode(@file_get_contents($config['ginger']['url'] . 'badge/'. $id . '?key=' . $config['ginger']['key']));
         if(gettype($gingerResult) != 'NULL'){
           $loginAssocie = $gingerResult->login;
           $adulte = $gingerResult->is_adulte;
