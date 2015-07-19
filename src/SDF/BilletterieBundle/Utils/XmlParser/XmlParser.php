@@ -3,7 +3,7 @@
 namespace SDF\BilletterieBundle\Utils\XmlParser;
 
 // xmlToArrayParser & CAS thx to github.com/robhub
-class xmlToArrayParser
+class XmlParser
 {
   /** The array created by the parser can be assigned to any variable: $anyVarArr = $domObj->array.*/
   public  $array = array();
