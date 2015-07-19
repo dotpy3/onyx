@@ -2,6 +2,12 @@
 
 namespace SDF\BilletterieBundle\Controller;
 
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Validator\Constraints\Date;
+
 use SDF\BilletterieBundle\Entity\Evenement;
 use SDF\BilletterieBundle\Entity\Tarif;
 use SDF\BilletterieBundle\Entity\Navette;
@@ -14,18 +20,16 @@ use SDF\BilletterieBundle\Entity\Appkey;
 use SDF\BilletterieBundle\Entity\UtilisateurExterieur;
 use SDF\BilletterieBundle\Entity\UtilisateurCAS;
 use SDF\BilletterieBundle\Entity\PotCommunTarifs;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Constraints\Date;
-use Symfony\Component\HttpFoundation\Request;
 use SDF\BilletterieBundle\Form\TarifType;
 use SDF\BilletterieBundle\Form\TrajetType;
 use SDF\BilletterieBundle\Form\NavetteType;
 use SDF\BilletterieBundle\Form\BilletType;
 use SDF\BilletterieBundle\Form\PotCommunTarifsType;
+use SDF\BilletterieBundle\Exception\UserNotFoundException;
 
 use \Payutc\Client\AutoJsonClient;
 use \Payutc\Client\JsonException;
+
 
 class PDF extends \fpdf\FPDF {
     function EAN13($x, $y, $barcode, $h=16, $w=.35)
@@ -116,40 +120,28 @@ class PDF extends \fpdf\FPDF {
        $this->SetFont('arial', '', 12);
        $this->Text($x, $y+$h+11/$this->k, substr($barcode, -$len));
     }
-    
-    function Rotate($angle,$x=-1,$y=-1) { 
 
-        if($x==-1) 
-            $x=$this->x; 
-        if($y==-1) 
-            $y=$this->y; 
-        if($this->angle!=0) 
-            $this->_out('Q'); 
-        $this->angle=$angle; 
-        if($angle!=0) 
+    function Rotate($angle,$x=-1,$y=-1) {
 
-        { 
-            $angle*=M_PI/180; 
-            $c=cos($angle); 
-            $s=sin($angle); 
-            $cx=$x*$this->k; 
-            $cy=($this->h-$y)*$this->k; 
-             
-            $this->_out(sprintf('q %.5f %.5f %.5f %.5f %.2f %.2f cm 1 0 0 1 %.2f %.2f cm',$c,$s,-$s,$c,$cx,$cy,-$cx,-$cy)); 
-        } 
-    } 
-}
+        if($x==-1)
+            $x=$this->x;
+        if($y==-1)
+            $y=$this->y;
+        if($this->angle!=0)
+            $this->_out('Q');
+        $this->angle=$angle;
+        if($angle!=0)
 
-class NotFoundUserException extends \Exception {
+        {
+            $angle*=M_PI/180;
+            $c=cos($angle);
+            $s=sin($angle);
+            $cx=$x*$this->k;
+            $cy=($this->h-$y)*$this->k;
 
-}
-
-class DeniedAccessException extends \Exception {
-
-}
-
-class EmptyStreamException extends \Exception {
-
+            $this->_out(sprintf('q %.5f %.5f %.5f %.5f %.2f %.2f cm 1 0 0 1 %.2f %.2f cm',$c,$s,-$s,$c,$cx,$cy,-$cx,-$cy));
+        }
+    }
 }
 
 class billetController extends Controller
@@ -205,14 +197,14 @@ class billetController extends Controller
             ->getManager()
             ->getRepository('SDFBilletterieBundle:UtilisateurCAS');
             $userActif = $repositoryUserCAS->findOneBy(array('loginCAS' => $login));
-            if(gettype($userActif) == "NULL") throw NotFoundUserException();
+            if(gettype($userActif) == "NULL") throw UserNotFoundException();
             $repositoryUserExt = $this
         ->getDoctrine()
         ->getManager()
         ->getRepository('SDFBilletterieBundle:UtilisateurCAS')
         ;
       $userActif = $repositoryUserExt->findOneBy(array('LoginCAS' => $login));
-      if(gettype($userActif) == "NULL") throw NotFoundUserException();
+      if(gettype($userActif) == "NULL") throw UserNotFoundException();
     }
 
     private function checkExtUserExists($login){
@@ -222,7 +214,7 @@ class billetController extends Controller
         ->getRepository('SDFBilletterieBundle:UtilisateurExterieur')
         ;
       $userActif = $repositoryUserExt->findOneBy(array('login' => $login));
-      if(gettype($userActif) == "NULL") throw NotFoundUserException();
+      if(gettype($userActif) == "NULL") throw UserNotFoundException();
 
     }
 
@@ -234,8 +226,8 @@ class billetController extends Controller
         //if ($_SESSION['typeUser'] == 'exterieur') return new Response("Connexion réussie pour l'utilisateur " . $_SESSION['user']->getLogin());
       // verifier que l'utilisateur est bien connecté
       //if (!checkConnexion($_SESSION)) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-        if(session_id() == '') throw NotFoundUserException();
-        if(!isset($_SESSION['user'])) throw NotFoundUserException();
+        if(session_id() == '') throw UserNotFoundException();
+        if(!isset($_SESSION['user'])) throw UserNotFoundException();
         if($_SESSION['typeUser'] == 'exterieur'){
             checkExtUserExists($_SESSION['user']);
             // UTILISATEUR EXTERIEUR
@@ -247,9 +239,9 @@ class billetController extends Controller
 
 
         } else {
-          throw NotFoundUserException();
+          throw UserNotFoundException();
         }
-        
+
     }
 
     private function checkConsultationRights($userID, $billetID){
@@ -264,7 +256,7 @@ class billetController extends Controller
         // on vérifie les accès
         if (gettype($billet) == 'NULL' || $billet->getUtilisateur()->getId() != $userRefActif->getId()){
             $utilisateur = $repoUser->find($userID);
-            if (!$utilisateur->getAdmin()) throw DeniedAccessException();
+            if (!$utilisateur->getAdmin()) throw AccessDeniedHttpException();
         }
     }
 
@@ -352,7 +344,7 @@ class billetController extends Controller
       if ($qteRestante > 0
         && $qteRestanteGlobale > 0
         && $qteRestanteEvent > 0
-        && $potCommunNonConsomme) 
+        && $potCommunNonConsomme)
         return true;
       else return false;
     }
@@ -453,7 +445,7 @@ class billetController extends Controller
     {
         try {
           checkUserExists();
-        } catch (NotFoundUserException $e) {
+        } catch (UserNotFoundException $e) {
           return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
         }
         if ($_SESSION['typeUser'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurCAS')
@@ -494,7 +486,7 @@ class billetController extends Controller
       // RETOURNE FALSE S'IL N'Y A PAS D'USER CONNECTÉ OU S'IL N'EST PAS ADMIN
         try {
           checkUserExists();
-        } catch (NotFoundUserException $e) {
+        } catch (UserNotFoundException $e) {
           return false;
         }
         if ($_SESSION['typeUser'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurCAS')
@@ -510,7 +502,7 @@ class billetController extends Controller
 
         // ON VERIFIE QUE L'UTILISATEUR EXISTE & EST ADMIN
         if (!checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-        
+
 
         $event = new Contraintes();
         $formBuilder = $this->get('form.factory')->createBuilder('form', $event);
@@ -590,7 +582,7 @@ class billetController extends Controller
             return $this->render('SDFBilletterieBundle:billet:add.html.twig', array(
           'form' => $form->createView(),'name' => "tarif", 'addError' => false, 'addOK' => true
         ));
-        
+
         }
 
         return $this->render('SDFBilletterieBundle:billet:add.html.twig', array(
@@ -616,7 +608,7 @@ class billetController extends Controller
             return $this->render('SDFBilletterieBundle:billet:add.html.twig', array(
           'form' => $form->createView(),'name' => "trajet", 'addError' => false, 'addOK' => true
         ));
-        
+
         }
 
         return $this->render('SDFBilletterieBundle:billet:add.html.twig', array(
@@ -641,7 +633,7 @@ class billetController extends Controller
             return $this->render('SDFBilletterieBundle:billet:add.html.twig', array(
           'form' => $form->createView(),'name' => "navette", 'addError' => false, 'addOK' => true
         ));
-        
+
         }
 
         return $this->render('SDFBilletterieBundle:billet:add.html.twig', array(
@@ -667,7 +659,7 @@ class billetController extends Controller
             return $this->render('SDFBilletterieBundle:billet:add.html.twig', array(
           'form' => $form->createView(),'name' => "pot commun", 'addError' => false, 'addOK' => true
         ));
-        
+
         }
 
         return $this->render('SDFBilletterieBundle:billet:add.html.twig', array(
@@ -692,7 +684,7 @@ class billetController extends Controller
             return $this->render('SDFBilletterieBundle:billet:add.html.twig', array(
           'form' => $form->createView(),'name' => "billet", 'addError' => false, 'addOK' => true
         ));
-        
+
         }
 
         return $this->render('SDFBilletterieBundle:billet:add.html.twig', array(
@@ -713,9 +705,9 @@ class billetController extends Controller
           $userRefActif = $userActif->getUser();
           /* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
           checkConsultationRights($userRefActif->getId(),$id);
-        } catch (NotFoundUserException $e) {
+        } catch (UserNotFoundException $e) {
           return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-        } catch (DeniedAccessException $e) {
+        } catch (AccessDeniedHttpException $e) {
           return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',
             array('message'=>'accessBillet')));
         }
@@ -795,9 +787,9 @@ class billetController extends Controller
           $userRefActif = $userActif->getUser();
           /* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
           checkConsultationRights($userRefActif->getId(),$id);
-        } catch (NotFoundUserException $e) {
+        } catch (UserNotFoundException $e) {
           return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-        } catch (DeniedAccessException $e) {
+        } catch (AccessDeniedHttpException $e) {
           return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',
             array('message'=>'accessBillet')));
         }
@@ -904,15 +896,15 @@ class billetController extends Controller
           $userRefActif = $userActif->getUser();
           /* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
           checkConsultationRights($userRefActif->getId(),$id);
-        } catch (NotFoundUserException $e) {
+        } catch (UserNotFoundException $e) {
           return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-        } catch (DeniedAccessException $e) {
+        } catch (AccessDeniedHttpException $e) {
           return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',
             array('message'=>'accessBillet')));
         }
 
         /* ACCÈS AU BILLET VÉRIFIÉ
-    
+
         ON FAIT MAINTENANT L'ACTION VOULUE */
 
         $pdf = pdfGeneration($billet->getUtilisateur()->getPrenom(),
@@ -933,7 +925,7 @@ class billetController extends Controller
     }
 
     public function buyBilletAction($typeBillet){
-        
+
         /*        ON COMMENCE PAR VÉRIFIER LA CONNEXION        */
 
         try {
@@ -945,9 +937,9 @@ class billetController extends Controller
           $userRefActif = $userActif->getUser();
           /* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
           if (!checkBilletAvailable($typeBillet)) return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',array('message'=>'achatBilletError')));
-        } catch (NotFoundUserException $e) {
+        } catch (UserNotFoundException $e) {
           return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-        } 
+        }
 
         /*
 
@@ -974,7 +966,7 @@ class billetController extends Controller
             }
             $enregNavette['placesRestantes'] = - ($requete[0]['c'] - $navetteEtudiee->getCapaciteMax());
             $tabNavettes[] = $enregNavette;
-        } 
+        }
 
         return $this->render('SDFBilletterieBundle:billet:achatbillet.html.twig', array(
           'billetID' => $billetDispo->getId(),
@@ -1002,9 +994,9 @@ class billetController extends Controller
           $userRefActif = $userActif->getUser();
           /* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
           if (!checkBilletAvailable($token)) return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',array('message'=>'achatBilletError')));
-        } catch (NotFoundUserException $e) {
+        } catch (UserNotFoundException $e) {
           return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-        } 
+        }
 
         /*
 
@@ -1079,7 +1071,7 @@ class billetController extends Controller
             try {
                 // CONNEXION A PAYUTC
                 $payutcClient = new AutoJsonClient("https://api.nemopay.net/services/", "WEBSALE", array(CURLOPT_PROXY => 'proxyweb.utc.fr:3128', CURLOPT_TIMEOUT => 5), "Payutc Json PHP Client", array(), "payutc", $payutcAppKey);
-                
+
                 $arrayItems = array(array($billetDispo->getIdPayutc()));
                 $item = json_encode($arrayItems);
                 //return new Response($item);
@@ -1187,7 +1179,7 @@ class billetController extends Controller
 
 
 
-        
+
         $em->flush();
 
         return new Response('ok');
@@ -1202,7 +1194,7 @@ class billetController extends Controller
             );
 
         var_dump($data);
-        
+
 
         return new Response('ok');
     }
@@ -1252,15 +1244,15 @@ class billetController extends Controller
           $userRefActif = $userActif->getUser();
           /* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
           checkConsultationRights($userRefActif->getId(),$id);
-        } catch (NotFoundUserException $e) {
+        } catch (UserNotFoundException $e) {
           return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-        } catch (DeniedAccessException $e) {
+        } catch (AccessDeniedHttpException $e) {
           return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',
             array('message'=>'accessBillet')));
         }
 
         /* ACCÈS AU BILLET VÉRIFIÉ
-    
+
         ON FAIT MAINTENANT L'ACTION VOULUE */
 
         if($billet->getValide() == true) return new Response('Le billet a été validé !');
@@ -1275,7 +1267,7 @@ class billetController extends Controller
         // FONCTION CREEE POUR TESTER L'URL DE REDIRECTION VERS LA TRANSACTION
 
         $payutcClient = new AutoJsonClient("https://api.nemopay.net/services/", "WEBSALE", array(CURLOPT_PROXY => 'proxyweb.utc.fr:3128', CURLOPT_TIMEOUT => 5), "Payutc Json PHP Client", array(), "payutcdev", $payutcAppKey);
-                
+
                 $arrayItems = array(array(3201));
                 $item = json_encode($arrayItems);
                 //return new Response($item);
@@ -1299,7 +1291,7 @@ class billetController extends Controller
         $repoBillets = $em->getRepository('SDFBilletterieBundle:Billet');
 
         $requete = $em->createQuery('SELECT u FROM SDFBilletterieBundle:Billet b JOIN b.utilisateur u WHERE b.valide = FALSE')
-                ->getResult();    
+                ->getResult();
 
         $reponse = "";
         foreach($requete as $user){
