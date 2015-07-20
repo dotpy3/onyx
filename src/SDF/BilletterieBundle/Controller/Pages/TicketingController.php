@@ -1,6 +1,6 @@
 <?php
 
-namespace SDF\BilletterieBundle\Controller;
+namespace SDF\BilletterieBundle\Controller\Pages;
 
 use Exception;
 
@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Validator\Constraints\Date;
 
+use SDF\BilletterieBundle\Controller\FrontController;
 use SDF\BilletterieBundle\Entity\User;
 use SDF\BilletterieBundle\Entity\CasUser;
 use SDF\BilletterieBundle\Entity\Evenement;

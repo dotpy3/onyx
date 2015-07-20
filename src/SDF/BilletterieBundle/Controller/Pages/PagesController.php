@@ -1,13 +1,9 @@
 <?php
 
-namespace SDF\BilletterieBundle\Controller;
+namespace SDF\BilletterieBundle\Controller\Pages;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Response;
-
+use SDF\BilletterieBundle\Controller\FrontController;
 use SDF\BilletterieBundle\Authentication\Cas\Client\CasClient;
-use SDF\BilletterieBundle\Entity\Billet;
-use SDF\BilletterieBundle\Entity\Tarif;
 
 class PagesController extends FrontController
 {

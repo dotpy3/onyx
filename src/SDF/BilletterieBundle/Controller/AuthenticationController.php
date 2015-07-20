@@ -9,7 +9,8 @@ use SDF\BilletterieBundle\Form\UserType;
 
 class AuthenticationController extends FrontController
 {
-	// EXTERIOR USERS LOGIN IS CURRENTLY MANAGED BY THE HOME PAGE --> See PagesController::homeAction().
+	// IMPORTANT
+	// Exterior users login is currently handled by the home page --> See PagesController::homeAction().
 	public function casCallbackAction()
 	{
 		$this->addFlash('success', 'Vous êtes bien connecté !');
@@ -22,7 +23,7 @@ class AuthenticationController extends FrontController
 		$user = new User();
 		$form = $this->createForm(new UserType(), $user);
 
-		return $this->render('SDFBilletterieBundle:Pages:inscription.html.twig', array(
+		return $this->render('SDFBilletterieBundle:Pages/Authentication:subscription.html.twig', array(
 			'form' => $form->createView()
 		));
 	}
@@ -42,10 +43,10 @@ class AuthenticationController extends FrontController
 
 			$this->addFlash('success', 'Vous êtes bien enregistré !');
 
-			return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
+			return $this->redirectToRoute('sdf_billetterie_homepage');
 		}
 
-		return $this->render('SDFBilletterieBundle:Pages:inscription.html.twig', array(
+		return $this->render('SDFBilletterieBundle:Pages/Authentication:subscription.html.twig', array(
 			'form' => $form->createView()
 		));
 	}

@@ -2,7 +2,7 @@
 sdf_billetterie_homepage:
     path:     /
     defaults:
-        _controller: SDFBilletterieBundle:Pages:home
+        _controller: SDFBilletterieBundle:Pages/Pages:home
     methods: GET
 
 
@@ -31,7 +31,7 @@ sdf_billetterie_subscribe_check:
 sdf_cgv:
     path:     /cgv
     defaults:
-        _controller: SDFBilletterieBundle:Pages:legals
+        _controller: SDFBilletterieBundle:Pages/Pages:legals
     methods: GET
 
 ### Tickets specific pages
@@ -41,92 +41,91 @@ sdf_billetterie_tickets:
 
 sdf_billetterie_achatBillet:
     path:     /buy/{typeBillet}
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:buyBillet }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:buyBillet }
 
 sdf_billetterie_callbackPayUTC:
     path:     /buy/redirection/{token}
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:payUTCcallback }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:payUTCcallback }
 
 sdf_billetterie_callbackDePAYUTC:
     path:     /buy/callback/{id}
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:callbackFromPayutc }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:callbackFromPayutc }
 
 sdf_billetterie_callbackDePAYUTCByID:
     path:     /buy/callbackById/{id}
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:callbackFromPayutcById }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:callbackFromPayutcById }
 
 sdf_billetterie_routingPostPaiement:
     path:     /routing/{id}
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:routingPostPay }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:routingPostPay }
 
 sdf_billetterie_checkTarifs:
     path:     /tarifs
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:tarifs }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:tarifs }
 
 sdf_billetterie_checkNavettes:
     path:     /navettes
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:checkNavettes }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:checkNavettes }
 
 sdf_billetterie_contrainteTarif:
     path:     /tarifs/contraintes
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:checkContraintes }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:checkContraintes }
 
 sdf_billetterie_checkPotCommun:
     path:     /potscommuns
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:checkPotCommun }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:checkPotCommun }
 
 sdf_billetterie_trajetNavette:
     path:     /navettes/trajets
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:checkTrajetsNavette }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:checkTrajetsNavette }
 
 sdf_billetterie_evenements:
     path:     /tarifs/event
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:checkEvent }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:checkEvent }
 
 sdf_billetterie_billetsAdmin:
     path:     /billetsAdmin
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:billetAdmin }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:billetAdmin }
 
 sdf_billetterie_relancerTransaction:
     path:     /relanceTransaction/{id}
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:relancerTransaction }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:relancerTransaction }
 
 sdf_billetterie_annulerBilletInvalide:
     path:     /annulerBilletNonValide/{id}
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:annulerBilletInvalide }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:annulerBilletInvalide }
 
 sdf_validationTest:
     path:     /payutcbugtest
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:testbug }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:testbug }
 
 sdf_getEmailsNonValides:
     path:     /getEmailsNonValides
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:getEmailsNonValide }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:getEmailsNonValide }
 
 sdf_checkIfBilletValide:
     path:     /billetcheck/barcode/{id}
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:checkValidBarcode }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:checkValidBarcode }
 
 sdf_billetterie_checkBilletNumValide:
     path:     /billetcheck/numbillet/{id}
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:checkValidNumBillet }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:checkValidNumBillet }
 
 sdf_billetterie_checkByNamePortion:
     path:     /billetcheck/namesearch/{name}
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:checkByNamePortion }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:checkByNamePortion }
 
 sdf_billetterie_checkNFC:
     path:     /billetcheck/nfc/{id}
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:getNFCAssociatedBillets }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:getNFCAssociatedBillets }
 
 sdf_billetterie_sendEmailInfos:
     path:     /sendAllInfos
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:sendMailInfos }
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:sendMailInfos }
 
 sdf_billetterie_validateBillet:
     path:     /billetcheck/validate/{id}
-    defaults: { _controller:SDFBilletterieBundle:Ticketing:validateBillet }
-
+    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:validateBillet }
 
 ### Administration
 sdf_billetterie:
