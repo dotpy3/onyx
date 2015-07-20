@@ -2,24 +2,11 @@
 
 namespace SDF\BilletterieBundle\Controller;
 
-use Exception;
-use DateTime;
-
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Validator\Constraints\Date;
 
-use Ginger\Client\GingerClient;
-use Ginger\Client\ApiException;
-
-use SDF\BilletterieBundle\Form\UserType;
 use SDF\BilletterieBundle\Entity\User;
-use SDF\BilletterieBundle\Entity\CasUser;
-use SDF\BilletterieBundle\Entity\Log;
-use SDF\BilletterieBundle\Utils\XmlParser\XmlParser;
-
-use SDF\BilletterieBundle\Exception\CasErrorException;
+use SDF\BilletterieBundle\Form\UserType;
 
 class AuthenticationController extends Controller
 {
@@ -36,7 +23,7 @@ class AuthenticationController extends Controller
 		$user = new User();
 		$form = $this->createForm(new UserType(), $user);
 
-		return $this->render('SDFBilletterieBundle:Default:inscription.html.twig', array(
+		return $this->render('SDFBilletterieBundle:Pages:inscription.html.twig', array(
 			'form' => $form->createView()
 		));
 	}
@@ -56,16 +43,11 @@ class AuthenticationController extends Controller
 
 			$this->addFlash('success', 'Vous êtes bien enregistré !');
 
-			return $this->redirect($this->generateUrl('index_page'));
+			return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
 		}
 
-		return $this->render('SDFBilletterieBundle:Default:inscription.html.twig', array(
+		return $this->render('SDFBilletterieBundle:Pages:inscription.html.twig', array(
 			'form' => $form->createView()
 		));
-	}
-
-	public function adminAction()
-	{
-		return $this->render('SDFBilletterieBundle:Default:admin.html.twig');
 	}
 }

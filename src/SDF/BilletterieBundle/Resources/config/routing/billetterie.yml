@@ -1,15 +1,12 @@
+# Home Page
 sdf_billetterie_homepage:
     path:     /
-    defaults: { _controller: SDFBilletterieBundle:Pages:home }
+    defaults:
+        _controller: SDFBilletterieBundle:Pages:home
+    methods: GET
 
-sdf_cgv:
-    path:     /cgv
-    defaults: { _controller:SDFBilletterieBundle:Pages:getCGV }
 
-sdf_billetterie_sendAdminStats:
-    path:     /adminStats
-    defaults: { _controller:SDFBilletterieBundle:Pages:adminStats }
-
+### Authentication
 sdf_billetterie_login_check:
     path:     /login_check
     defaults: { _controller: SDFBilletterieBundle:Authentication:loginCheck }
@@ -21,6 +18,7 @@ sdf_billetterie_cas_callback:
 sdf_billetterie_logout:
     path:     /logout
 
+### Subscription
 sdf_billetterie_subscribe:
     path:     /subscribe
     defaults: { _controller: SDFBilletterieBundle:Authentication:subscribe }
@@ -28,6 +26,13 @@ sdf_billetterie_subscribe:
 sdf_billetterie_subscribe_check:
     path:     /subscribe/check
     defaults: { _controller: SDFBilletterieBundle:Authentication:subscribeCheck }
+
+### Regular pages
+sdf_cgv:
+    path:     /cgv
+    defaults:
+        _controller: SDFBilletterieBundle:Pages:legals
+    methods: GET
 
 sdf_billetterie_indexBilletterie:
     path:     /index/{message}
@@ -133,6 +138,8 @@ sdf_billetterie_validateBillet:
     path:     /billetcheck/validate/{id}
     defaults: { _controller:SDFBilletterieBundle:billet:validateBillet }
 
-sdf_billetterie_administration:
-    path:     /admin
-    defaults: { _controller: SDFBilletterieBundle:Authentication:admin }
+
+### Administration
+sdf_billetterie:
+    resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/admin.yml
+    prefix: /admin

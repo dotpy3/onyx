@@ -60,4 +60,5 @@ security:
 
     access_control:
         - { path: ^/billetterie/$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/billetterie/admin, roles: ROLE_ADMIN }
         - { path: ^/billetterie, roles: ROLE_USER }

@@ -1,0 +1,11 @@
+sdf_billetterie_administration:
+    path:     /
+    defaults:
+        _controller: SDFBilletterieBundle:Admin/Pages:home
+    methods: GET
+
+sdf_billetterie_administration_stats:
+    path:     /stats
+    defaults:
+        _controller: SDFBilletterieBundle:Admin/Pages:stats
+    methods: GET
