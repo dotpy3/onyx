@@ -5,6 +5,7 @@ namespace SDF\BilletterieBundle\Controller;
 use Exception;
 
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -32,7 +33,7 @@ use SDF\BilletterieBundle\Utils\Pdf\Pdf;
 use \Payutc\Client\AutoJsonClient;
 use \Payutc\Client\JsonException;
 
-class billetController extends Controller
+class TicketingController extends Controller
 {
 
   // INSERT YOUR PARAMETERS HERE :
@@ -47,17 +48,10 @@ class billetController extends Controller
 
   // END OF PARAMETER INSERTION
 
-    private function automatedJsonResponse($content){
-
+    private function automatedJsonResponse(array $data)
+    {
       // TAKES AN ARRAY AS A PARAMETER
-
-      $reponse = new Response();
-      $reponse->headers->set('Content-Type','application/json');
-
-
-      $reponse->setContent(json_encode($content));
-
-      return $reponse;
+      return new JsonResponse($data);
     }
 
     private function instantLog($user,$content){
