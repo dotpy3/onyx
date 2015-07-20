@@ -29,10 +29,6 @@ sdf_billetterie_subscribe_check:
     path:     /subscribe/check
     defaults: { _controller: SDFBilletterieBundle:Authentication:subscribeCheck }
 
-sdf_billetterie_logged_in:
-    path:     /logged
-    defaults: { _controller: SDFBilletterieBundle:Pages:loggedIn }
-
 sdf_billetterie_indexBilletterie:
     path:     /index/{message}
     defaults: { _controller: SDFBilletterieBundle:billet:listeBillets }

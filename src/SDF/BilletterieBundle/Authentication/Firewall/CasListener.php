@@ -11,6 +11,15 @@ use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterfac
 
 use SDF\BilletterieBundle\Authentication\Cas\Token\CasToken;
 
+/**
+ * CasListener
+ * Listen for a CAS ticket, and authenticate a CasToken.
+ *
+ * This class is registred to intercepts a CAS callback before the normal authentication process.
+ *
+ * @author Matthieu Guffroy <mattgu74@gmail.com>
+ * @author Florent Schildknecht <florent.schildknecht@gmail.com>
+ */
 class CasListener implements ListenerInterface
 {
     protected $securityContext;
@@ -26,7 +35,6 @@ class CasListener implements ListenerInterface
     {
         $request = $event->getRequest();
 
-        // Check ticket CAS, if OK analyze it, if not, return;
         $ticket = $request->get('ticket');
 
         if(!$ticket) {

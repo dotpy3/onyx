@@ -10,8 +10,10 @@ use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\SecurityF
 
 /**
  * CasFactory
+ * Define a pre authentication process to use the CAS authentication
  *
  * @author Matthieu Guffroy <mattgu74@gmail.com>
+ * @author Florent Schildknecht <florent.schildknecht@gmail.com>
  */
 class CasFactory implements SecurityFactoryInterface
 {
@@ -36,7 +38,7 @@ class CasFactory implements SecurityFactoryInterface
 
     public function getKey()
     {
-        return 'authentication_cas';
+        return 'cas_authentication';
     }
 
     public function addConfiguration(NodeDefinition $node)

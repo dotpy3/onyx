@@ -4,6 +4,13 @@ namespace SDF\BilletterieBundle\Authentication\Cas\Token;
 
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 
+/**
+ * CasToken
+ * Authentication Token model for CAS users
+ *
+ * @author Matthieu Guffroy <mattgu74@gmail.com>
+ * @author Florent Schildknecht <florent.schildknecht@gmail.com>
+ */
 class CasToken extends AbstractToken
 {
     protected $ticket = '';

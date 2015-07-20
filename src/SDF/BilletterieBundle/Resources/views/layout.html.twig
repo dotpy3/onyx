@@ -47,6 +47,14 @@
                 {% block app_content %}{% endblock %}
             {% endblock %}
             {% block app_post_container %}{% endblock %}
+            {% block footer %}
+                <div class='container'>
+                    <hr />
+                    <footer>
+                        <p><a href="{{ path('index_page') }}">Retourner sur le site de la Soirée des Finaux</a></p>
+                    </footer>
+                </div>
+            {% endblock  %}
         {% endblock %}
         {% block javascripts %}
             <!-- Bootstrap core JavaScript

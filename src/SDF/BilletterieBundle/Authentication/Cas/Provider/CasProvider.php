@@ -9,7 +9,6 @@ use DateInterval;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\Exception\NonceExpiredException;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 
@@ -21,6 +20,13 @@ use SDF\BilletterieBundle\Authentication\Cas\Client\CasClient;
 use SDF\BilletterieBundle\Entity\CasUser;
 use SDF\BilletterieBundle\Entity\Log;
 
+/**
+ * CasProvider
+ * Provides a User to authenticate through a token.
+ *
+ * @author Matthieu Guffroy <mattgu74@gmail.com>
+ * @author Florent Schildknecht <florent.schildknecht@gmail.com>
+ */
 class CasProvider implements AuthenticationProviderInterface
 {
     private $userProvider;
@@ -46,10 +52,12 @@ class CasProvider implements AuthenticationProviderInterface
 
     public function authenticate(TokenInterface $token)
     {
+        // If the token is already authenticated, no need to do it again.
         if ($token->getUser() instanceof User) {
             return $token;
         }
 
+        // Otherwise, use the CasClient to retrieve login information.
         $cas = new CasClient($this->casUrl);
 
         try {
@@ -58,31 +66,41 @@ class CasProvider implements AuthenticationProviderInterface
             throw new AuthenticationException(sprintf('The CAS authentication failed (ticket validation): %s, %s', $token->getTicket(), $token->getService()));
         }
 
-        $gingerClient = new GingerClient($this->gingerKey, $this->gingerUrl);
-        $userInfo = $gingerClient->getUser($userLogin);
-
         try {
-            $user = $this->userProvider->loadUserByUsername($userInfo->mail);
+            // Database query in case the user is already registred
+            $user = $this->userProvider->loadUserByUsername($userLogin);
         } catch (UsernameNotFoundException $e) {
             // User doesn't already exist, we need to create him an account
-            $birthdate = new DateTime();
+            // We will use the GingerClient to retrieve user informations
+            $gingerClient = new GingerClient($this->gingerKey, $this->gingerUrl);
+            $userInfos = $gingerClient->getUser($userLogin);
 
-            if ($userInfo->is_adulte) {
-                $birthdate->sub(new DateInterval('P18Y'));
-            }
-
+            // Create the CasUser instance
             $user = new CasUser();
             $user->setUsername($userLogin);
-            $user->setBirthdate($birthdate);
-            $user->setEmail($userInfo->mail);
-            $user->setFirstname($userInfo->prenom);
-            $user->setName($userInfo->nom);
-            $user->setBadge($userInfo->badge_uid);
-            $user->setIsBdeContributor($userInfo->is_cotisant);
 
+            // Set informations from Ginger
+
+            // Birthdate : Ginger currently do not return a birthdate, but just a boolean if the user is adult
+            // NB: according to french laws, a member is considered as adult if he's more than 18 years old.
+            // So we force the birthdate to be 18 years ago.
+            $birthdate = new DateTime();
+            if ($userInfos->is_adulte) {
+                $birthdate->sub(new DateInterval('P18Y'));
+            }
+            $user->setBirthdate($birthdate);
+
+            $user->setEmail($userInfos->mail);
+            $user->setFirstname($userInfos->prenom);
+            $user->setName($userInfos->nom);
+            $user->setBadge($userInfos->badge_uid);
+            $user->setIsBdeContributor($userInfos->is_cotisant);
+
+            // Generate a random password --- It should never be used anyway [CasUser]
             $password = $this->generatePassword(8);
             $user->setPassword($this->passwordEncoder->encodePassword($user, $password));
 
+            // Create Log information
             $log = new Log();
             $log->setUser($user);
             $log->setDate(new DateTime());
@@ -94,13 +112,17 @@ class CasProvider implements AuthenticationProviderInterface
             $this->entityManager->flush();
         }
 
+        // At this step, we should have one user object now.
+        // (Already existing or freshly created)
         if ($user) {
+            // Then authenticate it
             $authenticatedToken = new CasToken($user->getRoles());
             $authenticatedToken->setUser($user);
 
             return $authenticatedToken;
         }
 
+        // If anything fails, throw an exception.
         throw new AuthenticationException('The CAS authentication failed.');
     }
 

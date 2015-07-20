@@ -26,11 +26,6 @@ class PagesController extends Controller
         ));
     }
 
-    public function loggedInAction()
-    {
-        return $this->render('SDFBilletterieBundle:Default:logged.html.twig');
-    }
-
     public function getCGVAction()
     {
         return $this->render('SDFBilletterieBundle:Default:cgv.html.twig');

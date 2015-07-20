@@ -43,7 +43,7 @@ security:
             pattern: ^/billetterie
             anonymous: ~
             provider: users
-            authentication_cas: true
+            cas_authentication: true
             form_login:
                 login_path: sdf_billetterie_homepage
                 check_path: sdf_billetterie_login_check
