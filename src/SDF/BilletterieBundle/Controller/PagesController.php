@@ -4,40 +4,40 @@ namespace SDF\BilletterieBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+
+use SDF\BilletterieBundle\Authentication\Cas\Client\CasClient;
 use SDF\BilletterieBundle\Entity\Billet;
 use SDF\BilletterieBundle\Entity\Tarif;
 
-
-
-class DefaultController extends Controller
+class PagesController extends Controller
 {
-    public function indexAction()
+    public function homeAction()
     {
         $config = $this->container->getParameter('sdf_billetterie');
+        $authenticationUtils = $this->get('security.authentication_utils');
+
+        $casClient = new CasClient($config['utc_cas']['url']);
 
         return $this->render('SDFBilletterieBundle:Default:index.html.twig', array(
-            'connexionError' => false,
-            'inscriptionReussie' => false,
-            'accesExterieur' => $config['settings']['enable_exterior_access']
+            'last_username'  => $authenticationUtils->getLastUsername(),
+            'connexionError' => $authenticationUtils->getLastAuthenticationError(),
+            'accesExterieur' => $config['settings']['enable_exterior_access'],
+            'utc_cas_url'    => $casClient->getLoginUrl($this->generateUrl('sdf_billetterie_cas_callback', array(), true))
         ));
     }
 
-    public function errorIndexAction()
+    public function loggedInAction()
     {
-        $config = $this->container->getParameter('sdf_billetterie');
-
-        return $this->render('SDFBilletterieBundle:Default:index.html.twig', array(
-            'connexionError' => true,
-            'inscriptionReussie' => false,
-            'accesExterieur' => $config['settings']['enable_exterior_access']
-        ));
+        return $this->render('SDFBilletterieBundle:Default:logged.html.twig');
     }
 
-    public function getCGVAction(){
-    	return $this->render('SDFBilletterieBundle:Default:cgv.html.twig');
+    public function getCGVAction()
+    {
+        return $this->render('SDFBilletterieBundle:Default:cgv.html.twig');
     }
 
-    public function adminStatsAction(){
+    public function adminStatsAction()
+    {
         $em= $this->getDoctrine()->getManager();
         $repoBillets = $em->getRepository('SDFBilletterieBundle:Billet');
 

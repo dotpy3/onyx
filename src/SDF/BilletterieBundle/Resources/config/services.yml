@@ -1,6 +1,17 @@
 parameters:
+    payutc.client.class: SDF\BilletterieBundle\Authentication\Payutc\Client\PayutcClient
+    cas.authentication.listener.class: SDF\BilletterieBundle\Authentication\Firewall\CasListener
+    cas.authentication.provider.class: SDF\BilletterieBundle\Authentication\Cas\Provider\CasProvider
     sdf_billetterie.utils.pdf.class: SDF\BilletterieBundle\Utils\Pdf\Pdf
 
 services:
     sdf_billetterie.utils.pdf:
         class: %sdf_billetterie.utils.pdf.class%
+
+    cas.authentication.listener:
+        class:  %cas.authentication.listener.class%
+        arguments: [@security.context, @security.authentication.manager]
+
+    cas.authentication.provider:
+        class:  %cas.authentication.provider.class%
+        arguments: ['', %kernel.cache_dir%/var/cas, @doctrine.orm.entity_manager, @security.password_encoder, %utc_cas_url%, %ginger_api_url%, %ginger_key%]

@@ -10,17 +10,16 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Validator\Constraints\Date;
 
+use SDF\BilletterieBundle\Entity\User;
+use SDF\BilletterieBundle\Entity\CasUser;
 use SDF\BilletterieBundle\Entity\Evenement;
 use SDF\BilletterieBundle\Entity\Tarif;
 use SDF\BilletterieBundle\Entity\Navette;
 use SDF\BilletterieBundle\Entity\Billet;
 use SDF\BilletterieBundle\Entity\Trajet;
-use SDF\BilletterieBundle\Entity\Utilisateur;
 use SDF\BilletterieBundle\Entity\Contraintes;
 use SDF\BilletterieBundle\Entity\Log;
 use SDF\BilletterieBundle\Entity\Appkey;
-use SDF\BilletterieBundle\Entity\UtilisateurExterieur;
-use SDF\BilletterieBundle\Entity\UtilisateurCAS;
 use SDF\BilletterieBundle\Entity\PotCommunTarifs;
 use SDF\BilletterieBundle\Form\TarifType;
 use SDF\BilletterieBundle\Form\TrajetType;
@@ -76,13 +75,13 @@ class billetController extends Controller
             $repositoryUserCAS = $this
             ->getDoctrine()
             ->getManager()
-            ->getRepository('SDFBilletterieBundle:UtilisateurCAS');
+            ->getRepository('SDFBilletterieBundle:CasUser');
             $userActif = $repositoryUserCAS->findOneBy(array('loginCAS' => $login));
             if(gettype($userActif) == "NULL") throw new UserNotFoundException();
             $repositoryUserExt = $this
         ->getDoctrine()
         ->getManager()
-        ->getRepository('SDFBilletterieBundle:UtilisateurCAS')
+        ->getRepository('SDFBilletterieBundle:CasUser')
         ;
       $userActif = $repositoryUserExt->findOneBy(array('LoginCAS' => $login));
       if(gettype($userActif) == "NULL") throw new UserNotFoundException();
@@ -92,14 +91,15 @@ class billetController extends Controller
       $repositoryUserExt = $this
         ->getDoctrine()
         ->getManager()
-        ->getRepository('SDFBilletterieBundle:UtilisateurExterieur')
+        ->getRepository('SDFBilletterieBundle:User')
         ;
       $userActif = $repositoryUserExt->findOneBy(array('login' => $login));
       if(gettype($userActif) == "NULL") throw new UserNotFoundException();
 
     }
 
-    private function checkUserExists(){
+    private function checkUserExists()
+    {
       // VERIFIE QU'IL Y A BIEN UN UTILISATEUR DE CONNECTE
       // SINON, JETTE UNE ERREUR NOTFOUNDUSEREXCEPTION
 
@@ -329,9 +329,9 @@ class billetController extends Controller
         } catch (UserNotFoundException $e) {
           return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
         }
-        if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurCAS')
+        if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:CasUser')
               ->findOneBy(array('loginCAS' => $login));
-        else $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurExterieur')
+        else $userActif = $em->getRepository('SDFBilletterieBundle:User')
               ->findOneBy(array('login' => $login));
         $userRefActif = $userActif->getUser();
         $nomUserActif = $userRefActif->getPrenom() . ' ' . $userRefActif->getNom();
@@ -370,9 +370,9 @@ class billetController extends Controller
         } catch (UserNotFoundException $e) {
           return false;
         }
-        if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurCAS')
+        if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:CasUser')
               ->findOneBy(array('loginCAS' => $login));
-        else $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurExterieur')
+        else $userActif = $em->getRepository('SDFBilletterieBundle:User')
               ->findOneBy(array('login' => $login));
         $userRefActif = $userActif->getUser();
         if (!($userRefActif->getAdmin())) return false;
@@ -579,9 +579,9 @@ class billetController extends Controller
 
         try {
           $this->checkUserExists();
-          if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurCAS')
+          if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:CasUser')
                 ->findOneBy(array('loginCAS' => $login));
-          else $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurExterieur')
+          else $userActif = $em->getRepository('SDFBilletterieBundle:User')
                 ->findOneBy(array('login' => $login));
           $userRefActif = $userActif->getUser();
           /* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
@@ -661,9 +661,9 @@ class billetController extends Controller
 
         try {
           $this->checkUserExists();
-          if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurCAS')
+          if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:CasUser')
                 ->findOneBy(array('loginCAS' => $login));
-          else $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurExterieur')
+          else $userActif = $em->getRepository('SDFBilletterieBundle:User')
                 ->findOneBy(array('login' => $login));
           $userRefActif = $userActif->getUser();
           /* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
@@ -770,9 +770,9 @@ class billetController extends Controller
 
         try {
           $this->checkUserExists();
-          if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurCAS')
+          if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:CasUser')
                 ->findOneBy(array('loginCAS' => $login));
-          else $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurExterieur')
+          else $userActif = $em->getRepository('SDFBilletterieBundle:User')
                 ->findOneBy(array('login' => $login));
           $userRefActif = $userActif->getUser();
           /* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
@@ -811,9 +811,9 @@ class billetController extends Controller
 
         try {
           $this->checkUserExists();
-          if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurCAS')
+          if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:CasUser')
                 ->findOneBy(array('loginCAS' => $login));
-          else $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurExterieur')
+          else $userActif = $em->getRepository('SDFBilletterieBundle:User')
                 ->findOneBy(array('login' => $login));
           $userRefActif = $userActif->getUser();
           /* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
@@ -870,9 +870,9 @@ class billetController extends Controller
 
         try {
           $this->checkUserExists();
-          if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurCAS')
+          if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:CasUser')
                 ->findOneBy(array('loginCAS' => $login));
-          else $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurExterieur')
+          else $userActif = $em->getRepository('SDFBilletterieBundle:User')
                 ->findOneBy(array('login' => $login));
           $userRefActif = $userActif->getUser();
           /* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
@@ -1122,9 +1122,9 @@ class billetController extends Controller
 
         try {
           $this->checkUserExists();
-          if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurCAS')
+          if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:CasUser')
                 ->findOneBy(array('loginCAS' => $login));
-          else $userActif = $em->getRepository('SDFBilletterieBundle:UtilisateurExterieur')
+          else $userActif = $em->getRepository('SDFBilletterieBundle:User')
                 ->findOneBy(array('login' => $login));
           $userRefActif = $userActif->getUser();
           /* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
@@ -1205,7 +1205,7 @@ class billetController extends Controller
 
       $repoBillets = $em->getRepository('SDFBilletterieBundle:Billet');
       $repoKeys = $em->getRepository('SDFBilletterieBundle:Appkey');
-      $repoCAS = $em->getRepository('SDFBilletterieBundle:UtilisateurCAS');
+      $repoCAS = $em->getRepository('SDFBilletterieBundle:CasUser');
 
       if (gettype($id) == 'NULL') return automatedJsonResponse(array("isValid" => 'noId'));
 
@@ -1266,7 +1266,7 @@ class billetController extends Controller
       if (!isset($_GET['key']) || gettype($repoKeys->findOneBy(array('relationKey' => $_GET['key']))) == 'NULL')
         return automatedJsonResponse(array('isValide' => 'invalidKey'));
 
-      $repoUserCas = $em->getRepository('SDFBilletterieBundle:UtilisateurCAS');
+      $repoUserCas = $em->getRepository('SDFBilletterieBundle:CasUser');
       $userCASConcerne = $repoUserCas->findOneBy(array('loginCAS' => $loginAssocie));
 
       if(gettype($userCASConcerne) == 'NULL') return automatedJsonResponse(array('isValide' => 'loginNotInDatabase'));

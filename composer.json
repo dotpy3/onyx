@@ -21,6 +21,7 @@
         "sensio/distribution-bundle": "~3.0,>=3.0.12",
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
+        "nategood/httpful": "*",
         "payutc/php-client": "*@dev",
         "itbz/fpdf": "*",
         "ginger/client": "^2.3"

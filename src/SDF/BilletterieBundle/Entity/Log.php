@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Log
  *
- * @ORM\Table()
+ * @ORM\Table(name="logs")
  * @ORM\Entity(repositoryClass="SDF\BilletterieBundle\Entity\LogRepository")
  */
 class Log
@@ -36,7 +36,7 @@ class Log
     private $content;
 
     /**
-   * @ORM\ManyToOne(targetEntity="SDF\BilletterieBundle\Entity\Utilisateur")
+   * @ORM\ManyToOne(targetEntity="User")
    * @ORM\JoinColumn(nullable=true)
    */
     private $user;
@@ -45,7 +45,7 @@ class Log
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -68,7 +68,7 @@ class Log
     /**
      * Get date
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDate()
     {
@@ -91,7 +91,7 @@ class Log
     /**
      * Get content
      *
-     * @return string 
+     * @return string
      */
     public function getContent()
     {
@@ -101,10 +101,10 @@ class Log
     /**
      * Set user
      *
-     * @param \SDF\BilletterieBundle\Entity\Utilisateur $user
+     * @param User $user
      * @return Log
      */
-    public function setUser(\SDF\BilletterieBundle\Entity\Utilisateur $user = null)
+    public function setUser(User $user = null)
     {
         $this->user = $user;
 
@@ -114,7 +114,7 @@ class Log
     /**
      * Get user
      *
-     * @return \SDF\BilletterieBundle\Entity\Utilisateur 
+     * @return User
      */
     public function getUser()
     {

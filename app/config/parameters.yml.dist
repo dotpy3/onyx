@@ -22,11 +22,17 @@ parameters:
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
 
+    # Ginger API URL
+    ginger_api_url: https://assos.utc.fr/ginger/v1/
+
     # Ginger Client key
     ginger_key:
 
     # PayUTC Client key
     payutc_key:
+
+    # PayUTC Client key
+    payutc_api_url: http://payutc.localhost/server
 
     # PayUTC Fundation ID
     payutc_fundation_id:

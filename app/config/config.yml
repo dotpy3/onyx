@@ -66,6 +66,7 @@ doctrine:
 
 sdf_billetterie:
     ginger:
+        url: %ginger_api_url%
         key: %ginger_key%
     payutc:
         key: %payutc_key%

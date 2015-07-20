@@ -1,0 +1,142 @@
+sdf_billetterie_homepage:
+    path:     /
+    defaults: { _controller: SDFBilletterieBundle:Pages:home }
+
+sdf_cgv:
+    path:     /cgv
+    defaults: { _controller:SDFBilletterieBundle:Pages:getCGV }
+
+sdf_billetterie_sendAdminStats:
+    path:     /adminStats
+    defaults: { _controller:SDFBilletterieBundle:Pages:adminStats }
+
+sdf_billetterie_login_check:
+    path:     /login_check
+    defaults: { _controller: SDFBilletterieBundle:Authentication:loginCheck }
+
+sdf_billetterie_cas_callback:
+    path:     /cas/callback
+    defaults: { _controller: SDFBilletterieBundle:Authentication:casCallback }
+
+sdf_billetterie_logout:
+    path:     /logout
+
+sdf_billetterie_subscribe:
+    path:     /subscribe
+    defaults: { _controller: SDFBilletterieBundle:Authentication:subscribe }
+
+sdf_billetterie_subscribe_check:
+    path:     /subscribe/check
+    defaults: { _controller: SDFBilletterieBundle:Authentication:subscribeCheck }
+
+sdf_billetterie_logged_in:
+    path:     /logged
+    defaults: { _controller: SDFBilletterieBundle:Pages:loggedIn }
+
+sdf_billetterie_indexBilletterie:
+    path:     /index/{message}
+    defaults: { _controller: SDFBilletterieBundle:billet:listeBillets }
+
+sdf_billetterie_accessBillet:
+    path:     /billetid/{id}
+    defaults: { _controller: SDFBilletterieBundle:billet:accessBillet }
+
+sdf_billetterie_paramBillet:
+    path:     /billetid/param/{id}
+    defaults: { _controller: SDFBilletterieBundle:billet:paramBillet }
+
+sdf_billetterie_changeParamBillet:
+    path:     /billetid/change/{id}
+    defaults: { _controller: SDFBilletterieBundle:billet:changedParamBillet }
+
+sdf_billetterie_achatBillet:
+    path:     /buy/{typeBillet}
+    defaults: { _controller:SDFBilletterieBundle:billet:buyBillet }
+
+sdf_billetterie_callbackPayUTC:
+    path:     /buy/redirection/{token}
+    defaults: { _controller:SDFBilletterieBundle:billet:payUTCcallback }
+
+sdf_billetterie_callbackDePAYUTC:
+    path:     /buy/callback/{id}
+    defaults: { _controller:SDFBilletterieBundle:billet:callbackFromPayutc }
+
+sdf_billetterie_callbackDePAYUTCByID:
+    path:     /buy/callbackById/{id}
+    defaults: { _controller:SDFBilletterieBundle:billet:callbackFromPayutcById }
+
+sdf_billetterie_routingPostPaiement:
+    path:     /routing/{id}
+    defaults: { _controller:SDFBilletterieBundle:billet:routingPostPay }
+
+sdf_billetterie_checkTarifs:
+    path:     /tarifs
+    defaults: { _controller:SDFBilletterieBundle:billet:tarifs }
+
+sdf_billetterie_checkNavettes:
+    path:     /navettes
+    defaults: { _controller:SDFBilletterieBundle:billet:checkNavettes }
+
+sdf_billetterie_contrainteTarif:
+    path:     /tarifs/contraintes
+    defaults: { _controller:SDFBilletterieBundle:billet:checkContraintes }
+
+sdf_billetterie_checkPotCommun:
+    path:     /potscommuns
+    defaults: { _controller:SDFBilletterieBundle:billet:checkPotCommun }
+
+sdf_billetterie_trajetNavette:
+    path:     /navettes/trajets
+    defaults: { _controller:SDFBilletterieBundle:billet:checkTrajetsNavette }
+
+sdf_billetterie_evenements:
+    path:     /tarifs/event
+    defaults: { _controller:SDFBilletterieBundle:billet:checkEvent }
+
+sdf_billetterie_billetsAdmin:
+    path:     /billetsAdmin
+    defaults: { _controller:SDFBilletterieBundle:billet:billetAdmin }
+
+sdf_billetterie_relancerTransaction:
+    path:     /relanceTransaction/{id}
+    defaults: { _controller:SDFBilletterieBundle:billet:relancerTransaction }
+
+sdf_billetterie_annulerBilletInvalide:
+    path:     /annulerBilletNonValide/{id}
+    defaults: { _controller:SDFBilletterieBundle:billet:annulerBilletInvalide }
+
+sdf_validationTest:
+    path:     /payutcbugtest
+    defaults: { _controller:SDFBilletterieBundle:billet:testbug }
+
+sdf_getEmailsNonValides:
+    path:     /getEmailsNonValides
+    defaults: { _controller:SDFBilletterieBundle:billet:getEmailsNonValide }
+
+sdf_checkIfBilletValide:
+    path:     /billetcheck/barcode/{id}
+    defaults: { _controller:SDFBilletterieBundle:billet:checkValidBarcode }
+
+sdf_billetterie_checkBilletNumValide:
+    path:     /billetcheck/numbillet/{id}
+    defaults: { _controller:SDFBilletterieBundle:billet:checkValidNumBillet }
+
+sdf_billetterie_checkByNamePortion:
+    path:     /billetcheck/namesearch/{name}
+    defaults: { _controller:SDFBilletterieBundle:billet:checkByNamePortion }
+
+sdf_billetterie_checkNFC:
+    path:     /billetcheck/nfc/{id}
+    defaults: { _controller:SDFBilletterieBundle:billet:getNFCAssociatedBillets }
+
+sdf_billetterie_sendEmailInfos:
+    path:     /sendAllInfos
+    defaults: { _controller:SDFBilletterieBundle:billet:sendMailInfos }
+
+sdf_billetterie_validateBillet:
+    path:     /billetcheck/validate/{id}
+    defaults: { _controller:SDFBilletterieBundle:billet:validateBillet }
+
+sdf_billetterie_administration:
+    path:     /admin
+    defaults: { _controller: SDFBilletterieBundle:Authentication:admin }

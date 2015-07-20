@@ -1,0 +1,8 @@
+{% for type, messages in app.session.flashbag.all %}
+    {% for message in messages %}
+        <div class='alert alert-{{ type }} alert-dismissable'>
+            <a href='#' data-dismiss='alert' class='close' aria-hidden='true'>&times;</a>
+            <div>{{ message }}</div>
+        </div>
+    {% endfor %}
+{% endfor %}
