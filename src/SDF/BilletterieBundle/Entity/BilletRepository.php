@@ -48,6 +48,27 @@ class BilletRepository extends EntityRepository
 		return $billet;
 	}
 
+	public function findOneForUser($id, $user)
+	{
+		$billet = null;
+
+		$queryBuilder = $this->createQueryBuilder('b');
+
+		$queryBuilder
+			->where($queryBuilder->expr()->eq('b.id', ':id'))
+			->andWhere($queryBuilder->expr()->eq('b.user', ':user'))
+			->setParameter('id', $id)
+			->setParameter('user', $user)
+		;
+
+		try {
+			$billet = $queryBuilder->getQuery()->getSingleResult();
+		}
+		catch (NoResultException $e) {}
+
+		return $billet;
+	}
+
 	public function countAllSoldForEvent($event)
 	{
 		$queryBuilder = $this->createQueryBuilder('b');

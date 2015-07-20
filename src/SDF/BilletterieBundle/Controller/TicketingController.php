@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Validator\Constraints\Date;
 
 use SDF\BilletterieBundle\Entity\User;
@@ -26,6 +25,7 @@ use SDF\BilletterieBundle\Form\TarifType;
 use SDF\BilletterieBundle\Form\TrajetType;
 use SDF\BilletterieBundle\Form\NavetteType;
 use SDF\BilletterieBundle\Form\BilletType;
+use SDF\BilletterieBundle\Form\BilletOptionsType;
 use SDF\BilletterieBundle\Form\PotCommunTarifsType;
 use SDF\BilletterieBundle\Exception\UserNotFoundException;
 use SDF\BilletterieBundle\Utils\Pdf\Pdf;
@@ -33,7 +33,7 @@ use SDF\BilletterieBundle\Utils\Pdf\Pdf;
 use \Payutc\Client\AutoJsonClient;
 use \Payutc\Client\JsonException;
 
-class TicketingController extends Controller
+class TicketingController extends FrontController
 {
 
 	// INSERT YOUR PARAMETERS HERE :
@@ -54,89 +54,126 @@ class TicketingController extends Controller
 		return new JsonResponse($data);
 	}
 
-	private function instantLog($user,$content)
-	{
-		$em = $this->getDoctrine()->getManager();
-
-		$log = new Log();
-		$log->setInstantLogAs($user,$content);
-
-		$em->persist($log);
-		$em->flush();
-	}
-
-	public function listeBilletsAction($message = false)
+	public function editTicketAction($id)
 	{
 		$user = $this->getUser();
 		$em = $this->getDoctrine()->getManager();
-		$remainingPlacesByPrice = array();
 
-		// Find all the tickets bought by the user (and validated by PayUtc)
-		$boughtTickets = $em->getRepository('SDFBilletterieBundle:Billet')->findAllValidTicketsForUser($user);
+		$ticket = $em->getRepository('SDFBilletterieBundle:Billet')->findOneForUser($id, $user);
 
-		// Find all the available prices for the user [Without stock availability management]
-		$availablePrices = $em->getRepository('SDFBilletterieBundle:Tarif')->findAllAvailablePricesForUser($user);
+		if (!$ticket) {
+			// Force a 404 instead of 403 error.
+			// User does not have to know if the given ID exists as long as it's not his or her ticket.
+			throw $this->createNotFoundException('Impossible de trouver ce ticket...');
+		}
 
-		// Then handle stocks availability
-		$availablePrices = array_filter($availablePrices, function ($price) use ($user, $em, &$remainingPlacesByPrice) {
-			// Assume that the price is available by default
-			$isPriceAvailable = false;
+		$form = $this->createForm(new BilletOptionsType(), $ticket);
 
-			$remainingPlaces = $this->countRemainingPlacesForPrice($price);
-
-			if ($remainingPlaces > 0) {
-				$isPriceAvailable = true;
-				$remainingPlacesByPrice[$price->getId()] = $remainingPlaces;
-			}
-
-			return $isPriceAvailable;
-		});
-
-		/* ON RECUPERE LES BILLETS NON VALIDÉS */
-		$unvalidTicket = $em->getRepository('SDFBilletterieBundle:Billet')->findOneUnvalidTicketsForUser($user);
-
-		return $this->render('SDFBilletterieBundle:Pages/Ticketing:list.html.twig', array(
-			'message' => $message,
-			'boughtTickets' => $boughtTickets,
-			'unvalidTicket' => $unvalidTicket,
-			'availablePrices' => $availablePrices,
-			'remainingPlacesByPrice' => $remainingPlacesByPrice,
+		return $this->render('SDFBilletterieBundle:Pages/Ticketing/Ticket:edit.html.twig', array(
+			'ticket' => $ticket,
+			'form' => $form->createView()
 		));
 	}
 
-	protected function countRemainingPlacesForPrice($price)
+	public function updateTicketAction($id, Request $request)
 	{
-		$remainingPlaces = 0;
 		$user = $this->getUser();
 		$em = $this->getDoctrine()->getManager();
 
-		// Check the event global capacity
-		$numberOfPlacesSold = $em->getRepository('SDFBilletterieBundle:Billet')->countAllSoldForEvent($price->getEvenement());
-		$eventTotalCapacity = $price->getEvenement()->getQuantiteMax();
+		$ticket = $em->getRepository('SDFBilletterieBundle:Billet')->findOneForUser($id, $user);
 
-		$remainingPlacesForEvent = $eventTotalCapacity - $numberOfPlacesSold;
-
-		if ($remainingPlacesForEvent > 0) {
-			// Check the price capacity
-			$numberOfPlacesSoldForPrice = $em->getRepository('SDFBilletterieBundle:Billet')->countAllSoldForPrice($price);
-			$priceTotalCapacity = $price->getQuantite();
-
-			$remainingPlacesForPrice = $priceTotalCapacity - $numberOfPlacesSoldForPrice;
-
-			if ($remainingPlacesForPrice > 0) {
-				// Check the places allowed by price for the user
-				$numberOfPlacesBoughtByUser = $em->getRepository('SDFBilletterieBundle:Billet')->countAllSoldForPriceAndUser($price, $user);
-				$maxPlacesAllowedForUser = $price->getQuantiteParPersonne();
-
-				$remainingPlacesForUser = $maxPlacesAllowedForUser - $numberOfPlacesBoughtByUser;
-
-				if ($remainingPlacesForUser > 0) {
-					$remainingPlaces = min($remainingPlacesForEvent, $remainingPlacesForPrice, $remainingPlacesForUser);
-				}
-			}
+		if (!$ticket) {
+			// Force a 404 instead of 403 error.
+			// User does not have to know if the given ID exists as long as it's not his or her ticket.
+			throw $this->createNotFoundException('Impossible de trouver ce ticket...');
 		}
 
-		return $remainingPlaces;
+		$form = $this->createForm(new BilletOptionsType(), $ticket);
+		$form->handleRequest($request);
+
+		if ($form->isValid()) {
+			$em->persist($ticket);
+			$em->flush();
+
+			$this->addFlash('success', 'Le billet à bien été modifié!');
+
+			return $this->redirectToRoute('sdf_billetterie_ticket_edit', array('id' => $ticket->getId()));
+		}
+
+		return $this->render('SDFBilletterieBundle:Pages/Ticketing/Ticket:edit.html.twig', array(
+			'ticket' => $ticket,
+			'form' => $form->createView()
+		));
+	}
+
+	public function changedParamBilletAction($id){
+
+			/*
+
+			ON COMMENCE PAR VÉRIFIER LA CONNEXION
+
+			*/
+
+			try {
+				$this->checkUserExists();
+				if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:CasUser')
+							->findOneBy(array('loginCAS' => $login));
+				else $userActif = $em->getRepository('SDFBilletterieBundle:User')
+							->findOneBy(array('login' => $login));
+				$userRefActif = $userActif->getUser();
+				/* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
+				$this->checkConsultationRights($userRefActif->getId(),$id);
+			} catch (UserNotFoundException $e) {
+				return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
+			} catch (AccessDeniedHttpException $e) {
+				return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',
+					array('message'=>'accessBillet')));
+			}
+
+			/* ACCÈS AU BILLET VÉRIFIÉ
+
+			ON FAIT MAINTENANT L'ACTION VOULUE */
+
+			if ($_POST['nom'] != '') $billet->setNom($_POST['nom']);
+			if ($_POST['prenom'] != '') $billet->setPrenom($_POST['prenom']);
+
+			if ($_POST['sel1'] == 'noNavette') {
+					//il faut mettre la navette à null pour le billet étudié
+
+					$qb = $em->createQueryBuilder();
+					$qb->update('SDFBilletterieBundle:Billet','billet');
+
+					$qb->set('billet.navette',':navettenull');
+					$qb->setParameter('navettenull',null);
+
+					$qb->where('billet.id = :id');
+					$qb->setParameter('id',$id);
+
+					$qb->getQuery()->execute();
+			}
+			else {
+					if (gettype($repoNavettes->find($_POST['sel1'])) != 'NULL'){
+							// navette valide, on vérifie qu'il y a assez de place
+							$requete = $em->createQuery('SELECT COUNT(b) AS c FROM SDFBilletterieBundle:Billet b JOIN b.navette n WHERE n.id = :idNavette')
+							->setParameter('idNavette',$_POST['sel1'])
+							->getResult();
+							if ($requete[0]['c'] < $repoNavettes->find($_POST['sel1']) || $billet->getNavette()->getId() == $_POST['sel1']){
+									// PLACE VALIDE
+									// ON ATTRIBUE LA PLACE DANS LA NAVETTE
+									$billet->setNavette($repoNavettes->find($_POST['sel1']));
+							} else {
+									return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',array('message'=>'savingOptionsError')));
+							}
+					} else {
+							return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',array('message'=>'savingOptionsError')));
+					}
+			}
+
+			$em->persist($billet);
+			$em->flush();
+
+			return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',array('message'=>'savingOptionsSuccess')));
+
 	}
 
 	private function checkBilletAvailable($tarifID){
@@ -244,7 +281,7 @@ class TicketingController extends Controller
 				->add('accessibleExterieur', 'checkbox')
 				->add('debutMiseEnVente', 'datetime')
 				->add('finMiseEnVente', 'datetime')
-		->add('save',      'submit')
+			->add('save',      'submit')
 			;
 			$form = $formBuilder->getForm();
 
@@ -275,7 +312,7 @@ class TicketingController extends Controller
 			$formBuilder
 				->add('nom',      'text')
 				->add('quantiteMax',     'text')
-		->add('save',      'submit')
+			->add('save',      'submit')
 			;
 			$form = $formBuilder->getForm();
 
@@ -311,8 +348,8 @@ class TicketingController extends Controller
 					$em->flush();
 
 					return $this->render('SDFBilletterieBundle:Pages/Ticketing:add.html.twig', array(
-				'form' => $form->createView(),'name' => "tarif", 'addError' => false, 'addOK' => true
-			));
+					'form' => $form->createView(),'name' => "tarif", 'addError' => false, 'addOK' => true
+				));
 
 			}
 
@@ -421,154 +458,6 @@ class TicketingController extends Controller
 			return $this->render('SDFBilletterieBundle:Pages/Ticketing:add.html.twig', array(
 				'form' => $form->createView(),'name' => "billet", 'addError' => false, 'addOK' => false
 			));
-	}
-
-	public function paramBilletAction($id){
-
-			/*        ON COMMENCE PAR VÉRIFIER LA CONNEXION        */
-
-			try {
-				$this->checkUserExists();
-				if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:CasUser')
-							->findOneBy(array('loginCAS' => $login));
-				else $userActif = $em->getRepository('SDFBilletterieBundle:User')
-							->findOneBy(array('login' => $login));
-				$userRefActif = $userActif->getUser();
-				/* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
-				$this->checkConsultationRights($userRefActif->getId(),$id);
-			} catch (UserNotFoundException $e) {
-				return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-			} catch (AccessDeniedHttpException $e) {
-				return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',
-					array('message'=>'accessBillet')));
-			}
-
-			/* LISTE DES VARIABLES TWIG :
-
-			- billetID
-			- typeBillet
-			- nomBillet
-			- prenomSurLeBillet
-			- noNavetteSelected
-			- navettes, composées d'arrays avec :
-					- idNavette
-					- desactivee
-					- navetteSelectionnee
-					- lieuDepart
-					- horaireNavette
-					- placesRestantes
-
-			*/
-
-			$typeBillet = $billet->getTarif()->getNomTarif();
-			$nomBillet = $billet->getNom();
-			if (gettype($billet->getNavette()) == 'NULL') $noNavetteSelected = true;
-			else $noNavetteSelected = false;
-			$prenomSurLeBillet = $billet->getPrenom();
-
-			$arrayToutesNavettes = $repoNavettes->findAll();
-			$tabNavettes = Array();
-			foreach($arrayToutesNavettes as $navetteEtudiee){
-					$enregNavette = Array();
-					$enregNavette['idNavette'] = $navetteEtudiee->getId();
-					$enregNavette['lieuDepart'] = $navetteEtudiee->getTrajet()->getLieuDepart();
-					$enregNavette['horaireNavette'] = $navetteEtudiee->getHoraireDepartFormat();
-					if(!$noNavetteSelected && ($billet->getNavette()->getId() == $navetteEtudiee->getId())){
-							$enregNavette['navetteSelectionnee'] = true;
-					} else {
-							$enregNavette['navetteSelectionnee'] = false;
-					}
-					$requete = $em->createQuery('SELECT COUNT(b) AS c FROM SDFBilletterieBundle:Billet b JOIN b.navette n WHERE n.id = :idNavette')
-							->setParameter('idNavette',$navetteEtudiee->getId())
-							->getResult();
-					if ($requete[0]['c'] < $navetteEtudiee->getCapaciteMax()){
-							$enregNavette['desactivee'] = false;
-					} else {
-							$enregNavette['desactivee'] = true;
-					}
-					if (gettype($billet->getNavette()) != 'NULL' &&$navetteEtudiee->getId() == $billet->getNavette()->getId()) $enregNavette['desactivee'] = false;
-					$enregNavette['placesRestantes'] = - ($requete[0]['c'] - $navetteEtudiee->getCapaciteMax());
-					$tabNavettes[] = $enregNavette;
-			}
-
-			return $this->render('SDFBilletterieBundle:Pages/Ticketing:paramBillet.html.twig', array(
-				'billetID' => $billet->getId(),
-				'typeBillet' => $typeBillet,
-				'nomBillet' => $nomBillet,
-				'prenomBillet' => $prenomSurLeBillet,
-				'noNavetteSelected' => $noNavetteSelected,
-				'navettes' => $tabNavettes
-			));
-	}
-
-	public function changedParamBilletAction($id){
-
-			/*
-
-			ON COMMENCE PAR VÉRIFIER LA CONNEXION
-
-			*/
-
-			try {
-				$this->checkUserExists();
-				if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:CasUser')
-							->findOneBy(array('loginCAS' => $login));
-				else $userActif = $em->getRepository('SDFBilletterieBundle:User')
-							->findOneBy(array('login' => $login));
-				$userRefActif = $userActif->getUser();
-				/* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
-				$this->checkConsultationRights($userRefActif->getId(),$id);
-			} catch (UserNotFoundException $e) {
-				return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-			} catch (AccessDeniedHttpException $e) {
-				return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',
-					array('message'=>'accessBillet')));
-			}
-
-			/* ACCÈS AU BILLET VÉRIFIÉ
-
-			ON FAIT MAINTENANT L'ACTION VOULUE */
-
-			if ($_POST['nom'] != '') $billet->setNom($_POST['nom']);
-			if ($_POST['prenom'] != '') $billet->setPrenom($_POST['prenom']);
-
-			if ($_POST['sel1'] == 'noNavette') {
-					//il faut mettre la navette à null pour le billet étudié
-
-					$qb = $em->createQueryBuilder();
-					$qb->update('SDFBilletterieBundle:Billet','billet');
-
-					$qb->set('billet.navette',':navettenull');
-					$qb->setParameter('navettenull',null);
-
-					$qb->where('billet.id = :id');
-					$qb->setParameter('id',$id);
-
-					$qb->getQuery()->execute();
-			}
-			else {
-					if (gettype($repoNavettes->find($_POST['sel1'])) != 'NULL'){
-							// navette valide, on vérifie qu'il y a assez de place
-							$requete = $em->createQuery('SELECT COUNT(b) AS c FROM SDFBilletterieBundle:Billet b JOIN b.navette n WHERE n.id = :idNavette')
-							->setParameter('idNavette',$_POST['sel1'])
-							->getResult();
-							if ($requete[0]['c'] < $repoNavettes->find($_POST['sel1']) || $billet->getNavette()->getId() == $_POST['sel1']){
-									// PLACE VALIDE
-									// ON ATTRIBUE LA PLACE DANS LA NAVETTE
-									$billet->setNavette($repoNavettes->find($_POST['sel1']));
-							} else {
-									return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',array('message'=>'savingOptionsError')));
-							}
-					} else {
-							return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',array('message'=>'savingOptionsError')));
-					}
-			}
-
-			$em->persist($billet);
-			$em->flush();
-
-			return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',array('message'=>'savingOptionsSuccess')));
-
 	}
 
 	private function pdfGeneration($userPrenom,$userNom,$nomTarif,$billetID,
@@ -1251,26 +1140,6 @@ class TicketingController extends Controller
 		// VERIFIE QU'IL Y A BIEN UN UTILISATEUR DE CONNECTE
 		// SINON, JETTE UNE ERREUR NOTFOUNDUSEREXCEPTION
 		return !is_null($this->getUser());
-
-		$em = $this->getDoctrine()->getManager();
-			//if ($_SESSION['usertype'] == 'exterieur') return new Response("Connexion réussie pour l'utilisateur " . $_SESSION['username']->getLogin());
-		// verifier que l'utilisateur est bien connecté
-		//if (!checkConnexion($_SESSION)) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-			if(session_id() == '') throw new UserNotFoundException();
-			if(!isset($_SESSION['username'])) throw new UserNotFoundException();
-			if($_SESSION['usertype'] == 'exterieur'){
-					$this->checkExtUserExists($_SESSION['username']);
-					// UTILISATEUR EXTERIEUR
-
-
-			} elseif ($_SESSION['usertype'] == 'cas') {
-					$this->checkCASUserExists($_SESSION['username']);
-					// UTILISATEUR CAS
-
-
-			} else {
-				throw new UserNotFoundException();
-			}
 
 	}
 

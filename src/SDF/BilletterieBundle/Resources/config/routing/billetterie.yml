@@ -34,21 +34,10 @@ sdf_cgv:
         _controller: SDFBilletterieBundle:Pages:legals
     methods: GET
 
-sdf_billetterie_indexBilletterie:
-    path:     /index/{message}
-    defaults: { _controller: SDFBilletterieBundle:Ticketing:listeBillets }
-
-sdf_billetterie_accessBillet:
-    path:     /billetid/{id}
-    defaults: { _controller: SDFBilletterieBundle:Ticketing:accessBillet }
-
-sdf_billetterie_paramBillet:
-    path:     /billetid/param/{id}
-    defaults: { _controller: SDFBilletterieBundle:Ticketing:paramBillet }
-
-sdf_billetterie_changeParamBillet:
-    path:     /billetid/change/{id}
-    defaults: { _controller: SDFBilletterieBundle:Ticketing:changedParamBillet }
+### Tickets specific pages
+sdf_billetterie_tickets:
+    resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/tickets.yml
+    prefix: /tickets
 
 sdf_billetterie_achatBillet:
     path:     /buy/{typeBillet}

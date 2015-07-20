@@ -3,12 +3,11 @@
 namespace SDF\BilletterieBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use SDF\BilletterieBundle\Entity\User;
 use SDF\BilletterieBundle\Form\UserType;
 
-class AuthenticationController extends Controller
+class AuthenticationController extends FrontController
 {
 	// EXTERIOR USERS LOGIN IS CURRENTLY MANAGED BY THE HOME PAGE --> See PagesController::homeAction().
 	public function casCallbackAction()

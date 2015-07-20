@@ -1,0 +1,23 @@
+sdf_billetterie_accessBillet:
+    path:     /{id}
+    defaults: { _controller: SDFBilletterieBundle:Ticketing:accessBillet }
+
+sdf_billetterie_paramBillet:
+    path:     /{id}/param
+    defaults: { _controller: SDFBilletterieBundle:Ticketing:paramBillet }
+
+sdf_billetterie_changeParamBillet:
+    path:     /{id}/change
+    defaults: { _controller: SDFBilletterieBundle:Ticketing:changedParamBillet }
+
+sdf_billetterie_ticket_edit:
+    path:     /{id}/edit
+    defaults:
+        _controller: SDFBilletterieBundle:Ticketing:editTicket
+    methods: GET
+
+sdf_billetterie_ticket_update:
+    path:     /{id}/edit
+    defaults:
+        _controller: SDFBilletterieBundle:Ticketing:updateTicket
+    methods: POST

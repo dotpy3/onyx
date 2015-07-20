@@ -27,30 +27,30 @@ class BilletType extends AbstractType
 
 
         $builder->add('navette', 'entity', array(
-                'class' => 'SDFBilletterieBundle:Navette',
-                'property' => 'horaireDepartFormat',
-                'multiple' => false,
-                'expanded' => true,
-                'empty_value' => 'Sans navette',
-                'empty_data' => null
-            ));
+            'class' => 'SDFBilletterieBundle:Navette',
+            'property' => 'horaireDepartFormat',
+            'multiple' => false,
+            'expanded' => true,
+            'empty_value' => 'Sans navette',
+            'empty_data' => null
+        ));
 
 
-        $builder->add('utilisateur', 'entity', array(
-                'class' => 'SDFBilletterieBundle:Utilisateur',
-                'property' => 'email',
-                'multiple' => false
-            ));
+        $builder->add('user', 'entity', array(
+            'class' => 'SDFBilletterieBundle:User',
+            'property' => 'email',
+            'multiple' => false
+        ));
 
 
         $builder->add('tarif', 'entity', array(
-                'class' => 'SDFBilletterieBundle:Tarif',
-                'property' => 'nomTarif',
-                'multiple' => false
-            ))
-            ->add('save','submit');
+            'class' => 'SDFBilletterieBundle:Tarif',
+            'property' => 'nomTarif',
+            'multiple' => false
+        ))
+        ->add('save','submit');
     }
-    
+
     /**
      * @param OptionsResolverInterface $resolver
      */
