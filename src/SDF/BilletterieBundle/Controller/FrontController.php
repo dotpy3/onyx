@@ -88,7 +88,7 @@ class FrontController extends Controller
 	 * @throws NotFoundException A 404 Not Found exception if the ticket does not exists
 	 * @return Billet $ticket The Billet instance
 	 */
-	protected function findTicket(int $id)
+	protected function findTicket($id)
 	{
 		$ticket = null;
 		$user = $this->getUser();
@@ -114,7 +114,7 @@ class FrontController extends Controller
 	 * @param integer $statusCode The HTTP Status-Code
 	 * @param array $headers The HTTP headers to join to the response
 	 */
-	protected function renderDataAsFile($data, $filename = 'File', $dispositionType = ResponseHeaderBag::DISPOSITION_INLINE, $statusCode = 200, array $headers = array())
+	protected function renderDataAsFile($data, $filename = 'File', $dispositionType = ResponseHeaderBag::DISPOSITION_INLINE, $statusCode = Response::HTTP_OK, array $headers = array())
 	{
 		$response = new Response($data, $statusCode, $headers);
 
@@ -131,7 +131,7 @@ class FrontController extends Controller
 	 * @param integer $statusCode The HTTP Status-Code
 	 * @param array $headers The HTTP headers to join to the response
 	 */
-	protected function renderJsonResponse(array $data, $statusCode = 200, array $headers = array())
+	protected function renderJsonResponse(array $data, $statusCode = JsonResponse::HTTP_OK, array $headers = array())
 	{
 		return new JsonResponse($data, $statusCode, $headers);
 	}
