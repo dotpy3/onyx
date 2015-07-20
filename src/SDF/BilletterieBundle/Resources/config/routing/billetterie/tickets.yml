@@ -1,14 +1,8 @@
-sdf_billetterie_accessBillet:
-    path:     /{id}
-    defaults: { _controller: SDFBilletterieBundle:Pages/Ticketing:accessBillet }
-
-sdf_billetterie_paramBillet:
-    path:     /{id}/param
-    defaults: { _controller: SDFBilletterieBundle:Pages/Ticketing:paramBillet }
-
-sdf_billetterie_changeParamBillet:
-    path:     /{id}/change
-    defaults: { _controller: SDFBilletterieBundle:Pages/Ticketing:changedParamBillet }
+sdf_billetterie_ticket_print:
+    path:     /{id}/print
+    defaults:
+        _controller: SDFBilletterieBundle:Pages/Ticketing:printTicket
+    methods: GET
 
 sdf_billetterie_ticket_edit:
     path:     /{id}/edit

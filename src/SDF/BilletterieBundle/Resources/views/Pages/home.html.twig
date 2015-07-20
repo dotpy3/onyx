@@ -46,7 +46,7 @@
 											<td>{% if ticket.navette %}Navette de {{ ticket.navette.trajet.lieuDepart }} - {{ ticket.navette.horaireDepart|date('d/m/Y H:i') }}{% endif %}</td>
 											<td class='text-right'>
 												<a class='btn btn-info btn-xs' href='{{ path('sdf_billetterie_ticket_edit', { 'id' : ticket.id }) }}' role='button'>Options</a>
-												<a class='btn btn-primary btn-xs' href='{{ path('sdf_billetterie_accessBillet', { 'id' : ticket.id }) }}' role='button'>Imprimer &raquo;</a>
+												<a class='btn btn-primary btn-xs' href='{{ path('sdf_billetterie_ticket_print', { 'id' : ticket.id }) }}' role='button'>Imprimer &raquo;</a>
 											</td>
 										</tr>
 									{% endfor %}

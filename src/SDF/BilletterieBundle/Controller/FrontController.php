@@ -3,7 +3,9 @@
 namespace SDF\BilletterieBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use SDF\BilletterieBundle\Entity\User;
@@ -77,6 +79,25 @@ class FrontController extends Controller
 		}
 
 		return $remainingPlaces;
+	}
+
+	/**
+	 * Send an HTTP Response with Json encoded content
+	 *
+	 * @param mixed $data The data to render
+	 * @param string $filename The filename to provide
+	 * @param integer $dispositionType The HTTP disposition {inline, or attachment}
+	 * @param integer $statusCode The HTTP Status-Code
+	 * @param array $headers The HTTP headers to join to the response
+	 */
+	private function renderDataAsFile($data, $filename = 'File', $dispositionType = ResponseHeaderBag::DISPOSITION_INLINE, $statusCode = 200, array $headers = array())
+	{
+		$response = new Response($data, $statusCode, $headers);
+
+		$disposition = $response->headers->makeDisposition($dispositionType, $filename);
+		$response->headers->set('Content-Disposition', $disposition);
+
+		return $response;
 	}
 
 	/**

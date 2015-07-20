@@ -2,11 +2,12 @@ parameters:
     payutc.client.class: SDF\BilletterieBundle\Authentication\Payutc\Client\PayutcClient
     cas.authentication.listener.class: SDF\BilletterieBundle\Authentication\Firewall\CasListener
     cas.authentication.provider.class: SDF\BilletterieBundle\Authentication\Cas\Provider\CasProvider
-    sdf_billetterie.utils.pdf.class: SDF\BilletterieBundle\Utils\Pdf\Pdf
+    sdf_billetterie.utils.pdf.generator.class: SDF\BilletterieBundle\Utils\Pdf\Generator\PdfGenerator
 
 services:
-    sdf_billetterie.utils.pdf:
-        class: %sdf_billetterie.utils.pdf.class%
+    sdf_billetterie.utils.pdf.generator:
+        class: %sdf_billetterie.utils.pdf.generator.class%
+        arguments: [%pdf_image_path%]
 
     cas.authentication.listener:
         class:  %cas.authentication.listener.class%

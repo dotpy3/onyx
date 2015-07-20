@@ -15,9 +15,9 @@ class BilletOptionsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('nom', 'text')
-            ->add('prenom', 'text')
-            ->add('accepteDroitImage', 'checkbox')
+            ->add('nom', 'text', array('label' => 'Nom', 'required' => true))
+            ->add('prenom', 'text', array('label' => 'Prénom', 'required' => true))
+            ->add('accepteDroitImage', 'checkbox', array('label' => 'Je donne le droit à l\'image pour l\'évènement', 'required' => false))
             ->add('navette', 'entity', array(
                 'required' => false,
                 'class' => 'SDFBilletterieBundle:Navette',

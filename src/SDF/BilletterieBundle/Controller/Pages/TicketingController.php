@@ -107,74 +107,22 @@ class TicketingController extends FrontController
 		));
 	}
 
-	public function changedParamBilletAction($id){
+	public function printTicketAction($id)
+	{
+		$user = $this->getUser();
+		$em = $this->getDoctrine()->getManager();
 
-			/*
+		$pdfGenerator = $this->get('sdf_billetterie.utils.pdf.generator');
+		$ticket = $em->getRepository('SDFBilletterieBundle:Billet')->findOneForUser($id, $user);
 
-			ON COMMENCE PAR VÉRIFIER LA CONNEXION
+		try {
+			$pdf = $pdfGenerator->generateTicket($ticket);
+		}
+		catch (NullTicketException $e) {
+			throw $this->createNotFoundException('Impossible de trouver ce ticket...');
+		}
 
-			*/
-
-			try {
-				$this->checkUserExists();
-				if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:CasUser')
-							->findOneBy(array('loginCAS' => $login));
-				else $userActif = $em->getRepository('SDFBilletterieBundle:User')
-							->findOneBy(array('login' => $login));
-				$userRefActif = $userActif->getUser();
-				/* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
-				$this->checkConsultationRights($userRefActif->getId(),$id);
-			} catch (UserNotFoundException $e) {
-				return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-			} catch (AccessDeniedHttpException $e) {
-				return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',
-					array('message'=>'accessBillet')));
-			}
-
-			/* ACCÈS AU BILLET VÉRIFIÉ
-
-			ON FAIT MAINTENANT L'ACTION VOULUE */
-
-			if ($_POST['nom'] != '') $billet->setNom($_POST['nom']);
-			if ($_POST['prenom'] != '') $billet->setPrenom($_POST['prenom']);
-
-			if ($_POST['sel1'] == 'noNavette') {
-					//il faut mettre la navette à null pour le billet étudié
-
-					$qb = $em->createQueryBuilder();
-					$qb->update('SDFBilletterieBundle:Billet','billet');
-
-					$qb->set('billet.navette',':navettenull');
-					$qb->setParameter('navettenull',null);
-
-					$qb->where('billet.id = :id');
-					$qb->setParameter('id',$id);
-
-					$qb->getQuery()->execute();
-			}
-			else {
-					if (gettype($repoNavettes->find($_POST['sel1'])) != 'NULL'){
-							// navette valide, on vérifie qu'il y a assez de place
-							$requete = $em->createQuery('SELECT COUNT(b) AS c FROM SDFBilletterieBundle:Billet b JOIN b.navette n WHERE n.id = :idNavette')
-							->setParameter('idNavette',$_POST['sel1'])
-							->getResult();
-							if ($requete[0]['c'] < $repoNavettes->find($_POST['sel1']) || $billet->getNavette()->getId() == $_POST['sel1']){
-									// PLACE VALIDE
-									// ON ATTRIBUE LA PLACE DANS LA NAVETTE
-									$billet->setNavette($repoNavettes->find($_POST['sel1']));
-							} else {
-									return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',array('message'=>'savingOptionsError')));
-							}
-					} else {
-							return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',array('message'=>'savingOptionsError')));
-					}
-			}
-
-			$em->persist($billet);
-			$em->flush();
-
-			return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',array('message'=>'savingOptionsSuccess')));
-
+		return $this->renderDataAsFile($pdf, 'ticket.pdf');
 	}
 
 	private function checkBilletAvailable($tarifID){
@@ -248,23 +196,6 @@ class TicketingController extends FrontController
 				return $billet->getId();
 			}
 		} else return false;
-	}
-
-	private function checkUserIsAdmin(){
-		// RETOURNE TRUE SI L'USER EST ADMIN
-		// RETOURNE FALSE S'IL N'Y A PAS D'USER CONNECTÉ OU S'IL N'EST PAS ADMIN
-			try {
-				$this->checkUserExists();
-			} catch (UserNotFoundException $e) {
-				return false;
-			}
-			if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:CasUser')
-						->findOneBy(array('loginCAS' => $login));
-			else $userActif = $em->getRepository('SDFBilletterieBundle:User')
-						->findOneBy(array('login' => $login));
-			$userRefActif = $userActif->getUser();
-			if (!($userRefActif->getAdmin())) return false;
-			else return true;
 	}
 
 	public function checkContraintesAction(Request $request){
@@ -459,90 +390,6 @@ class TicketingController extends FrontController
 			return $this->render('SDFBilletterieBundle:Pages/Ticketing:add.html.twig', array(
 				'form' => $form->createView(),'name' => "billet", 'addError' => false, 'addOK' => false
 			));
-	}
-
-	private function pdfGeneration($userPrenom,$userNom,$nomTarif,$billetID,
-		$tarifPrix,$billetNom,$billetPrenom,$billetBarcode){
-
-			$pdf = new Pdf();
-
-			$pdf->Open();
-			$pdf->AddPage('L');
-			$pdf->SetAutoPageBreak(true,'5');
-			$adresseRawBillet = __DIR__ . '/../Resources/images/rawBillet.jpg';
-			$pdf->Image($adresseRawBillet,0,0,297,210);
-			$pdf->SetFont('arial','B','20');
-			$pdf->SetTextColor(0,0,0);
-			$pdf->SetXY(174,13+11);
-			$pdf->Write(10,iconv("UTF-8", "ISO-8859-1",ucfirst(strtolower($billetPrenom))));
-			$pdf->SetXY(174,21+11);
-			$pdf->Write(10,iconv("UTF-8", "ISO-8859-1",strtoupper($billetNom)));
-			$pdf->SetFont('arial','','20');
-			$pdf->SetXY(174,42+11);
-			$pdf->Write(10,iconv("UTF-8", "ISO-8859-1",strtoupper($nomTarif)));
-
-			$pdf->SetTextColor(0,0,0);
-			$pdf->SetFont('arial','','11');
-			$pdf->SetXY(174,6+11);
-			$pdf->Write(10,"Num".chr(233)."ro de billet : ".$billetID);
-
-			$pdf->SetXY(174,32+11);
-			//$pdf->SetFont('times','','30');
-			$pdf->SetTextColor(0,0,0);
-			$pdf->Write(10, "Prix TTC : " . $tarifPrix . ' '.chr(128));
-
-			$pdf->SetXY(174,58+11);
-			$pdf->Write(10,"Billet achet".chr(233)." par : ".iconv("UTF-8", "ISO-8859-1", strtoupper($userNom)." ".ucfirst($userPrenom)));
-			$pdf->SetTextColor(0,0,0);
-			$pdf->EAN13(174, 72+11, $billetBarcode, 12, 1);
-
-			return $pdf->Output('','I');
-
-	}
-
-	public function accessBilletAction($id){
-
-			/*
-
-			ON COMMENCE PAR VÉRIFIER LA CONNEXION
-
-			*/
-
-			try {
-				$this->checkUserExists();
-				if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:CasUser')
-							->findOneBy(array('loginCAS' => $login));
-				else $userActif = $em->getRepository('SDFBilletterieBundle:User')
-							->findOneBy(array('login' => $login));
-				$userRefActif = $userActif->getUser();
-				/* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
-				$this->checkConsultationRights($userRefActif->getId(),$id);
-			} catch (UserNotFoundException $e) {
-				return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-			} catch (AccessDeniedHttpException $e) {
-				return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',
-					array('message'=>'accessBillet')));
-			}
-
-			/* ACCÈS AU BILLET VÉRIFIÉ
-
-			ON FAIT MAINTENANT L'ACTION VOULUE */
-
-			$pdf = pdfGeneration($billet->getUtilisateur()->getPrenom(),
-				$billet->getUtilisateur()->getNom(),
-				$billet->getTarif()->getNomTarif(),
-				$billet->getId(),
-				$billet->getTarif()->getPrix(),
-				$billet->getNom(),
-				$billet->getPrenom(),
-				$billet->getBarcode());
-
-			$reponse = new Response();
-			$reponse->headers->set('Content-Type', 'application/pdf');
-
-			$reponse->setContent($pdf);
-
-			return $reponse;
 	}
 
 	public function buyBilletAction($typeBillet){
@@ -1159,5 +1006,11 @@ class TicketingController extends FrontController
 					$utilisateur = $repoUser->find($userID);
 					if (!$utilisateur->getAdmin()) throw AccessDeniedHttpException();
 			}
+	}
+
+	private function checkUserIsAdmin(){
+		// RETOURNE TRUE SI L'USER EST ADMIN
+		// RETOURNE FALSE S'IL N'Y A PAS D'USER CONNECTÉ OU S'IL N'EST PAS ADMIN
+		return in_array($this->getUser()->getRoles(), 'ROLE_ADMIN');
 	}
 }
