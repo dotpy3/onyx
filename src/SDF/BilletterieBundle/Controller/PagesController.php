@@ -19,10 +19,10 @@ class PagesController extends Controller
         $casClient = new CasClient($config['utc_cas']['url']);
 
         return $this->render('SDFBilletterieBundle:Default:index.html.twig', array(
-            'last_username'  => $authenticationUtils->getLastUsername(),
-            'connexionError' => $authenticationUtils->getLastAuthenticationError(),
-            'accesExterieur' => $config['settings']['enable_exterior_access'],
-            'utc_cas_url'    => $casClient->getLoginUrl($this->generateUrl('sdf_billetterie_cas_callback', array(), true))
+            'last_username'           => $authenticationUtils->getLastUsername(),
+            'login_error'             => $authenticationUtils->getLastAuthenticationError(),
+            'exterior_access_enabled' => $config['settings']['enable_exterior_access'],
+            'utc_cas_url'             => $casClient->getLoginUrl($this->generateUrl('sdf_billetterie_cas_callback', array(), true))
         ));
     }
 

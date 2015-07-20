@@ -17,9 +17,14 @@
 
 {% block app_content %}
     <div class="container">
-        {% if not app.user and accesExterieur %}
+        {% if not app.user and exterior_access_enabled %}
             <div class="form_mdp">
                 <h2>Accès extérieurs</h2>
+                {% if login_error %}
+                    <div class='alert alert-danger'>
+                        <p>{{ login_error.message }}</p>
+                    </div>
+                {% endif %}
                 <form action="{{ path('sdf_billetterie_login_check') }}" method='post'>
                     <div class='form-group'>
                         <div class="input-group">
