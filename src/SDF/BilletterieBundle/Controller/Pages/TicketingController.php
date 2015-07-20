@@ -57,16 +57,7 @@ class TicketingController extends FrontController
 
 	public function editTicketAction($id)
 	{
-		$user = $this->getUser();
-		$em = $this->getDoctrine()->getManager();
-
-		$ticket = $em->getRepository('SDFBilletterieBundle:Billet')->findOneForUser($id, $user);
-
-		if (!$ticket) {
-			// Force a 404 instead of 403 error.
-			// User does not have to know if the given ID exists as long as it's not his or her ticket.
-			throw $this->createNotFoundException('Impossible de trouver ce ticket...');
-		}
+		$ticket = $this->findTicket($id);
 
 		$form = $this->createForm(new BilletOptionsType(), $ticket);
 
@@ -78,21 +69,14 @@ class TicketingController extends FrontController
 
 	public function updateTicketAction($id, Request $request)
 	{
-		$user = $this->getUser();
-		$em = $this->getDoctrine()->getManager();
-
-		$ticket = $em->getRepository('SDFBilletterieBundle:Billet')->findOneForUser($id, $user);
-
-		if (!$ticket) {
-			// Force a 404 instead of 403 error.
-			// User does not have to know if the given ID exists as long as it's not his or her ticket.
-			throw $this->createNotFoundException('Impossible de trouver ce ticket...');
-		}
+		$ticket = $this->findTicket($id);
 
 		$form = $this->createForm(new BilletOptionsType(), $ticket);
 		$form->handleRequest($request);
 
 		if ($form->isValid()) {
+			$em = $this->getDoctrine()->getManager();
+
 			$em->persist($ticket);
 			$em->flush();
 
@@ -109,12 +93,13 @@ class TicketingController extends FrontController
 
 	public function printTicketAction($id)
 	{
-		$user = $this->getUser();
-		$em = $this->getDoctrine()->getManager();
-
+		$ticket = $this->findTicket($id);
 		$pdfGenerator = $this->get('sdf_billetterie.utils.pdf.generator');
-		$ticket = $em->getRepository('SDFBilletterieBundle:Billet')->findOneForUser($id, $user);
 
+		// The PdfGenerator::generateTicket method might throw two exceptions
+		// A NullTicketException, if the ticket is null (should not arrive)
+		// A ImageNotFoundException, if the background-image used for the PDF cannot be opened
+		// (check the app/config/parameters.yml file in this case)
 		try {
 			$pdf = $pdfGenerator->generateTicket($ticket);
 		}

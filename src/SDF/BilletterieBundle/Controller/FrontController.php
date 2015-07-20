@@ -82,6 +82,30 @@ class FrontController extends Controller
 	}
 
 	/**
+	 * Retrieve a user's ticket
+	 *
+	 * @param integer The Billet id
+	 * @throws NotFoundException A 404 Not Found exception if the ticket does not exists
+	 * @return Billet $ticket The Billet instance
+	 */
+	protected function findTicket(int $id)
+	{
+		$ticket = null;
+		$user = $this->getUser();
+		$em = $this->getDoctrine()->getManager();
+
+		$ticket = $em->getRepository('SDFBilletterieBundle:Billet')->findOneForUser($id, $user);
+
+		if (!$ticket) {
+			// Force a 404 instead of 403 error.
+			// User does not have to know if the given ID exists as long as it's not his or her ticket.
+			throw $this->createNotFoundException('Impossible de trouver ce ticket...');
+		}
+
+		return $ticket;
+	}
+
+	/**
 	 * Send an HTTP Response with Json encoded content
 	 *
 	 * @param mixed $data The data to render
@@ -90,7 +114,7 @@ class FrontController extends Controller
 	 * @param integer $statusCode The HTTP Status-Code
 	 * @param array $headers The HTTP headers to join to the response
 	 */
-	private function renderDataAsFile($data, $filename = 'File', $dispositionType = ResponseHeaderBag::DISPOSITION_INLINE, $statusCode = 200, array $headers = array())
+	protected function renderDataAsFile($data, $filename = 'File', $dispositionType = ResponseHeaderBag::DISPOSITION_INLINE, $statusCode = 200, array $headers = array())
 	{
 		$response = new Response($data, $statusCode, $headers);
 
@@ -107,7 +131,7 @@ class FrontController extends Controller
 	 * @param integer $statusCode The HTTP Status-Code
 	 * @param array $headers The HTTP headers to join to the response
 	 */
-	private function renderJsonResponse(array $data, $statusCode = 200, array $headers = array())
+	protected function renderJsonResponse(array $data, $statusCode = 200, array $headers = array())
 	{
 		return new JsonResponse($data, $statusCode, $headers);
 	}
