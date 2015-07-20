@@ -18,7 +18,7 @@ class AuthenticationController extends FrontController
 		return $this->redirectToRoute('sdf_billetterie_homepage');
 	}
 
-	public function subscribeAction()
+	public function subscriptionAction()
 	{
 		$user = new User();
 		$form = $this->createForm(new UserType(), $user);
@@ -28,7 +28,7 @@ class AuthenticationController extends FrontController
 		));
 	}
 
-	public function subscribeCheckAction(Request $request)
+	public function subscriptionCheckAction(Request $request)
 	{
 		$user = new User();
 		$form = $this->createForm(new UserType(), $user);

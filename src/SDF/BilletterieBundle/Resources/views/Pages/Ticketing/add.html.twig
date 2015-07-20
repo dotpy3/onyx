@@ -48,7 +48,7 @@
     </div>
 
     <div class="container">
-      
+
       {% if addError == true %}
     <div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign"></span> <strong>Oups !</strong> L'ajout a échoué, veuillez réessayer.</div>
 {% endif %}
@@ -56,17 +56,17 @@
       {% if addOK == true %}
     <div class="alert alert-primary" role="alert"><span class="glyphicon glyphicon-exclamation-sign"></span> <strong>OK !</strong> Ajout réussi.</div>
 {% endif %}
-    
+
       <div class="form_mdp">
       <h2>Créer {{ name }}</h2>
       {{ form(form) }}</div>
 
-        <p><a href="{{ path('sdf_billetterie_creationCompte') }}">Inscription</a></p>
+        <p><a href="{{ path('sdf_billetterie_subscription') }}">Inscription</a></p>
 
     <hr>
 
       <footer>
-      <p><a href="{{ path('sdf_billetterie_deconnexion') }}">Déconnexion</a></p>
+      <p><a href="{{ path('sdf_billetterie_logout') }}">Déconnexion</a></p>
         <p><a href="{{ path('sdf_billetterie_administration') }}">Retour à l'administration</a></p>
         <p><a href="{{ path('index_page') }}">Retourner sur le site de la Soirée des Finaux</a></p>
       </footer>

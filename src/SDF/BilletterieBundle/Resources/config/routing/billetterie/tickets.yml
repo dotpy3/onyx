@@ -15,3 +15,15 @@ sdf_billetterie_ticket_update:
     defaults:
         _controller: SDFBilletterieBundle:Pages/Ticketing:updateTicket
     methods: POST
+
+sdf_billetterie_ticket_transaction_retry:
+    path:     /{id}/transaction/retry
+    defaults:
+        _controller: SDFBilletterieBundle:Pages/Ticketing:retryTransaction
+    methods: GET
+
+sdf_billetterie_ticket_transaction_cancel:
+    path:     /{id}/transaction/cancel
+    defaults:
+        _controller: SDFBilletterieBundle:Pages/Ticketing:cancelTransaction
+    methods: GET

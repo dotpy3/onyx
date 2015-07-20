@@ -110,83 +110,46 @@ class TicketingController extends FrontController
 		return $this->renderDataAsFile($pdf, 'ticket.pdf');
 	}
 
-	private function checkBilletAvailable($tarifID){
-		/* RETURNS TRUE IF AVAILABLE
+	public function retryTransactionAction($id)
+	{
+		$ticket = $this->findTicket($id);
 
-		RETURNS FALSE OTHERWISE */
-		$user = $this->getUser();
+		if ($ticket->getValide()) {
+			$this->addFlash('info', 'Votre ticket est bien validé.');
 
-		$em = $this->getDoctrine()->getManager();
-		$repoTarifs = $em->getRepository('SDFBilletterieBundle:Tarif');
-		$billetDispo = $repoTarifs->find($tarifID);
+			return $this->redirectToRoute('sdf_billetterie_homepage');
+		}
 
-		// pour chaque tarif, on veut obtenir le nombre de billets dispos restant pour cette personne
+		$config = $this->container->getParameter('sdf_billetterie');
 
-		$nbBilletDeCeTarif = count($em
-				->createQuery('SELECT b FROM SDFBilletterieBundle:Billet b JOIN b.tarif t WHERE b.user = :user AND t.id = :idTarif')
-				->setParameter('user', $user)
-				->setParameter('idTarif',$billetDispo->getId())
-				->getResult());
-
-		$qteRestante = $billetDispo->getQuantiteParPersonne() - $nbBilletDeCeTarif;
-
-		// on veut ensuite obtenir le nombre de billets déjà achetés par tout le monde
-
-		$query = $em
-				->createQuery('SELECT COUNT(b) AS c FROM SDFBilletterieBundle:Billet b JOIN b.tarif t WHERE t.id = :idTarif')
-				->setParameter('idTarif',$billetDispo->getId())
-				->getResult();
-
-		$qteRestanteGlobale = $billetDispo->getQuantite() - $query[0]['c'];
-
-		// on veut enfin obtenir le nombre de billets achetés correspondant à l'évènement
-
-		$query = $em
-						->createQuery('SELECT COUNT(b) AS c FROM SDFBilletterieBundle:Billet b JOIN b.tarif t JOIN t.evenement e WHERE e.id = :idEvent')
-						->setParameter('idEvent',$billetDispo->getEvenement()->getId())
-						->getResult();
-
-		$qteRestanteEvent = $billetDispo->getEvenement()->getQuantiteMax() - $query[0]['c'];
-
-		// on veut également vérifier que le pot commun n'a pas été consommé
-		if (gettype($billetDispo->getPotCommun()) != 'NULL') {
-		$query = $em->createQuery('SELECT COUNT(b) AS c FROM SDFBilletterieBundle:Billet b JOIN b.user u JOIN b.tarif t JOIN t.potCommun p WHERE u.id = :id AND p.id = :idPot')
-						->setParameter('id',$userRefActif->getId())
-						->setParameter('idPot',$billetDispo->getPotCommun()->getId())
-						->getResult();
-
-		$potCommunNonConsomme = ($query[0]['c'] < 1); } else $potCommunNonConsomme = true;
-
-		if ($qteRestante > 0
-			&& $qteRestanteGlobale > 0
-			&& $qteRestanteEvent > 0
-			&& $potCommunNonConsomme)
-			return true;
-		else return false;
+		return $this->redirect($config['nemopay']['payment_url'] . '/validation?tra_id='.$ticket->getIdPayutc());
 	}
 
-	private function checkIfInvalidBillet($userID){
+	public function cancelTransactionAction($id)
+	{
+		$ticket = $this->findTicket($id);
+
+		if ($ticket->getValide()) {
+			$this->addFlash('info', 'Le billet à déjà été validé.');
+
+			return $this->redirectToRoute('sdf_billetterie_homepage');
+		}
 
 		$em = $this->getDoctrine()->getManager();
-		/* RETURNS FALSE IF NO INVALID BILLET
 
-		ELSE RETURNS THE ID */
+		$em->remove($ticket);
+		$em->flush();
 
-		$query = $em->createQuery('SELECT b FROM SDFBilletterieBundle:Billet b JOIN b.user u WHERE b.user = :user AND b.valide = FALSE');
-			$query->setParameter('user',$this->getUser());
-			$resultatRequeteBilletsInvalides = $query->getResult();
+		$this->addFlash('success', 'Le billet a bien été annulé.');
 
-		if (count($resultatRequeteBilletsInvalides) > 0){
-			foreach($resultatRequeteBilletsInvalides as $billet){
-				return $billet->getId();
-			}
-		} else return false;
+		return $this->redirectToRoute('sdf_billetterie_homepage');
 	}
+
 
 	public function checkContraintesAction(Request $request){
 
 			// ON VERIFIE QUE L'UTILISATEUR EXISTE & EST ADMIN
-			if (!checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
+			if (!$this->checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
 
 
 			$event = new Contraintes();
@@ -222,7 +185,7 @@ class TicketingController extends FrontController
 	public function checkEventAction(Request $request){
 
 			// ON VERIFIE QUE L'UTILISATEUR EXISTE & EST ADMIN
-			if (!checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
+			if (!$this->checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
 
 			$event = new Evenement();
 			$formBuilder = $this->get('form.factory')->createBuilder('form', $event);
@@ -253,7 +216,7 @@ class TicketingController extends FrontController
 	public function tarifsAction(Request $request){
 
 			// ON VERIFIE QUE L'UTILISATEUR EXISTE & EST ADMIN
-			if (!checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
+			if (!$this->checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
 
 			$tarif = new Tarif();
 
@@ -279,7 +242,7 @@ class TicketingController extends FrontController
 	public function checkTrajetsNavetteAction(Request $request){
 
 			// ON VERIFIE QUE L'UTILISATEUR EXISTE & EST ADMIN
-			if (!checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
+			if (!$this->checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
 
 			$tarif = new Trajet();
 
@@ -304,7 +267,7 @@ class TicketingController extends FrontController
 	public function checkNavettesAction(Request $request){
 
 			// ON VERIFIE QUE L'UTILISATEUR EXISTE & EST ADMIN
-			if (!checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
+			if (!$this->checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
 
 			$tarif = new Navette();
 
@@ -330,7 +293,7 @@ class TicketingController extends FrontController
 	public function checkPotCommunAction(Request $request){
 
 			// ON VERIFIE QUE L'UTILISATEUR EXISTE & EST ADMIN
-			if (!checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
+			if (!$this->checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
 
 			$pot = new PotCommunTarifs();
 
@@ -355,7 +318,7 @@ class TicketingController extends FrontController
 	public function billetAdminAction(Request $request){
 
 			// ON VERIFIE QUE L'UTILISATEUR EXISTE & EST ADMIN
-			if (!checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
+			if (!$this->checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
 
 			$tarif = new Billet();
 
@@ -669,57 +632,6 @@ class TicketingController extends FrontController
 			else return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',array('message'=>'achatBilletError')));
 	}
 
-	public function relancerTransactionAction($id){
-
-			$dsn = 'mysql:dbname='.$this->PDOdatabase.';host='.$this->PDOhost;
-			$tempUser = $this->user;
-			$password = $this->password;
-
-			try {
-					$bdd = new \PDO($dsn, $tempUser, $password);
-
-			} catch (\PDOException $e) {
-					echo 'Connexion échouée : ' . $e->getMessage();
-					exit();
-			}
-
-			$requete = $bdd->query('SELECT * FROM Billet WHERE id = '.$id);
-			$resultat = $requete->fetch();
-			if($resultat == false) return new Response('Billet introuvable');
-			if($resultat['valide']) return new Response('Billet déjà validé !');
-			return $this->redirect('http://payutc.nemopay.net/validation?tra_id='.$resultat['idPayutc']);
-	}
-
-	public function annulerBilletInvalideAction($id){
-
-			try {
-				$this->checkUserExists();
-				if ($_SESSION['usertype'] == 'cas') $userActif = $em->getRepository('SDFBilletterieBundle:CasUser')
-							->findOneBy(array('loginCAS' => $login));
-				else $userActif = $em->getRepository('SDFBilletterieBundle:User')
-							->findOneBy(array('login' => $login));
-				$userRefActif = $userActif->getUser();
-				/* LA CONNEXION EST VÉRIFIÉE        ON VÉRIFIE LES ACCÈS AU BILLET */
-				$this->checkConsultationRights($userRefActif->getId(),$id);
-			} catch (UserNotFoundException $e) {
-				return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-			} catch (AccessDeniedHttpException $e) {
-				return $this->redirect($this->generateUrl('sdf_billetterie_indexBilletterie',
-					array('message'=>'accessBillet')));
-			}
-
-			/* ACCÈS AU BILLET VÉRIFIÉ
-
-			ON FAIT MAINTENANT L'ACTION VOULUE */
-
-			if($billet->getValide() == true) return new Response('Le billet a été validé !');
-
-			$em->remove($billet);
-			$em->flush();
-
-			return new Response('Le billet a bien été annulé !');
-	}
-
 	public function testbugAction(){
 			// FONCTION CREEE POUR TESTER L'URL DE REDIRECTION VERS LA TRANSACTION
 			$config = $this->container->getParameter('sdf_billetterie');
@@ -973,7 +885,6 @@ class TicketingController extends FrontController
 		// VERIFIE QU'IL Y A BIEN UN UTILISATEUR DE CONNECTE
 		// SINON, JETTE UNE ERREUR NOTFOUNDUSEREXCEPTION
 		return !is_null($this->getUser());
-
 	}
 
 	private function checkConsultationRights($userID, $billetID)
@@ -996,6 +907,79 @@ class TicketingController extends FrontController
 	private function checkUserIsAdmin(){
 		// RETOURNE TRUE SI L'USER EST ADMIN
 		// RETOURNE FALSE S'IL N'Y A PAS D'USER CONNECTÉ OU S'IL N'EST PAS ADMIN
-		return in_array($this->getUser()->getRoles(), 'ROLE_ADMIN');
+		return in_array('ROLE_ADMIN', $this->getUser()->getRoles());
+	}
+
+	private function checkBilletAvailable($tarifID){
+		/* RETURNS TRUE IF AVAILABLE
+
+		RETURNS FALSE OTHERWISE */
+		$user = $this->getUser();
+
+		$em = $this->getDoctrine()->getManager();
+		$repoTarifs = $em->getRepository('SDFBilletterieBundle:Tarif');
+		$billetDispo = $repoTarifs->find($tarifID);
+
+		// pour chaque tarif, on veut obtenir le nombre de billets dispos restant pour cette personne
+
+		$nbBilletDeCeTarif = count($em
+				->createQuery('SELECT b FROM SDFBilletterieBundle:Billet b JOIN b.tarif t WHERE b.user = :user AND t.id = :idTarif')
+				->setParameter('user', $user)
+				->setParameter('idTarif',$billetDispo->getId())
+				->getResult());
+
+		$qteRestante = $billetDispo->getQuantiteParPersonne() - $nbBilletDeCeTarif;
+
+		// on veut ensuite obtenir le nombre de billets déjà achetés par tout le monde
+
+		$query = $em
+				->createQuery('SELECT COUNT(b) AS c FROM SDFBilletterieBundle:Billet b JOIN b.tarif t WHERE t.id = :idTarif')
+				->setParameter('idTarif',$billetDispo->getId())
+				->getResult();
+
+		$qteRestanteGlobale = $billetDispo->getQuantite() - $query[0]['c'];
+
+		// on veut enfin obtenir le nombre de billets achetés correspondant à l'évènement
+
+		$query = $em
+						->createQuery('SELECT COUNT(b) AS c FROM SDFBilletterieBundle:Billet b JOIN b.tarif t JOIN t.evenement e WHERE e.id = :idEvent')
+						->setParameter('idEvent',$billetDispo->getEvenement()->getId())
+						->getResult();
+
+		$qteRestanteEvent = $billetDispo->getEvenement()->getQuantiteMax() - $query[0]['c'];
+
+		// on veut également vérifier que le pot commun n'a pas été consommé
+		if (gettype($billetDispo->getPotCommun()) != 'NULL') {
+		$query = $em->createQuery('SELECT COUNT(b) AS c FROM SDFBilletterieBundle:Billet b JOIN b.user u JOIN b.tarif t JOIN t.potCommun p WHERE u.id = :id AND p.id = :idPot')
+						->setParameter('id',$userRefActif->getId())
+						->setParameter('idPot',$billetDispo->getPotCommun()->getId())
+						->getResult();
+
+		$potCommunNonConsomme = ($query[0]['c'] < 1); } else $potCommunNonConsomme = true;
+
+		if ($qteRestante > 0
+			&& $qteRestanteGlobale > 0
+			&& $qteRestanteEvent > 0
+			&& $potCommunNonConsomme)
+			return true;
+		else return false;
+	}
+
+	private function checkIfInvalidBillet($userID){
+
+		$em = $this->getDoctrine()->getManager();
+		/* RETURNS FALSE IF NO INVALID BILLET
+
+		ELSE RETURNS THE ID */
+
+		$query = $em->createQuery('SELECT b FROM SDFBilletterieBundle:Billet b JOIN b.user u WHERE b.user = :user AND b.valide = FALSE');
+			$query->setParameter('user',$this->getUser());
+			$resultatRequeteBilletsInvalides = $query->getResult();
+
+		if (count($resultatRequeteBilletsInvalides) > 0){
+			foreach($resultatRequeteBilletsInvalides as $billet){
+				return $billet->getId();
+			}
+		} else return false;
 	}
 }

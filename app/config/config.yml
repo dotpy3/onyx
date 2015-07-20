@@ -71,6 +71,8 @@ sdf_billetterie:
     payutc:
         key: %payutc_key%
         fundation_id: %payutc_fundation_id%
+    nemopay:
+        payment_url: %nemopay_payment_url%
     utc_cas:
         url: %utc_cas_url%
     settings:

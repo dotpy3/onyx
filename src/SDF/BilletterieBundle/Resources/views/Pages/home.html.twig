@@ -6,19 +6,19 @@
 		<p>Bienvenue {{ app.user.firstname ~ ' ' ~ app.user.name }} !</p>
 	{% else %}
 		<p>Ce site vous permet de commander une billet pour la Soirée des Finaux. Pour vous connecter, utilisez votre compte CAS.</p>
-		<p><a class="btn btn-primary btn-lg" href="{{ utc_cas_url }}" role="button">Connexion au CAS &raquo;</a></p>
+		<p><a class='btn btn-primary btn-lg' href='{{ utc_cas_url }}' role='button'>Connexion au CAS &raquo;</a></p>
 	{% endif %}
 {% endblock %}
 
 {% block app_content %}
-	<div class="container">
+	<div class='container'>
 		{% if app.user and is_granted('ROLE_USER') %}
 			<section id='billets'>
 				<h2>Liste des billets achetés et disponibles</h2>
 				{% if unvalidTicket %}
 					<div class='alert alert-danger' role='alert'>
 						<strong>Un de vos billets n'a pas encore été traité par PayUTC.</strong>
-						<p>Cliquez <a href='{{ path('sdf_billetterie_relancerTransaction', { 'id' : unvalidTicket.id }) }}'>ici pour reprendre la transaction</a>, ou <a href='{{ path('sdf_billetterie_annulerBilletInvalide', {'id' : unvalidTicket.id}) }}'>ici pour l'annuler</a>.</p>
+						<p>Cliquez <a href='{{ path('sdf_billetterie_ticket_transaction_retry', { 'id' : unvalidTicket.id }) }}'>ici pour reprendre la transaction</a>, ou <a href='{{ path('sdf_billetterie_ticket_transaction_cancel', {'id' : unvalidTicket.id}) }}'>ici pour l'annuler</a>.</p>
 					</div>
 				{% endif %}
 				{% if boughtTickets|length == 0 %}
@@ -92,30 +92,30 @@
 				{% endif %}
 			</section>
 		{% elseif exterior_access_enabled %}
-			<div class="form_mdp">
+			<div class='form_mdp'>
 				<h2>Accès extérieurs</h2>
 				{% if login_error %}
 					<div class='alert alert-danger'>
 						<p>{{ login_error.message }}</p>
 					</div>
 				{% endif %}
-				<form action="{{ path('sdf_billetterie_login_check') }}" method='post'>
+				<form action='{{ path('sdf_billetterie_login_check') }}' method='post'>
 					<div class='form-group'>
-						<div class="input-group">
-							<span class="input-group-addon">Login</span>
-							<input id="username" type="text" name="_username" class="form-control" value='{{ last_username }}' />
+						<div class='input-group'>
+							<span class='input-group-addon'>Login</span>
+							<input id='username' type='text' name='_username' class='form-control' value='{{ last_username }}' />
 						</div>
 					</div>
 					<div class='form-group'>
-						<div class="input-group">
-							<span class="input-group-addon">Mot de passe</span>
-							<input id="password" type="password" name="_password" class="form-control" />
+						<div class='input-group'>
+							<span class='input-group-addon'>Mot de passe</span>
+							<input id='password' type='password' name='_password' class='form-control' />
 						</div>
 					</div>
-					<input class='btn btn-primary' type="submit" value="Connexion" />
+					<input class='btn btn-primary' type='submit' value='Connexion' />
+					<a class='btn btn-info' href='{{ path('sdf_billetterie_subscription') }}'>Créer un compte</a>
 				</form>
 			</div>
-			<p><a href="{{ path('sdf_billetterie_subscribe') }}">Inscription</a></p>
 		{% endif %}
 	</div>
 {% endblock %}

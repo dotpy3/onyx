@@ -37,6 +37,9 @@ parameters:
     # PayUTC Fundation ID
     payutc_fundation_id:
 
+    # Nemopay payment page
+    nemopay_payment_url: https://payutc.nemopay.net/
+
     # UTC CAS URL
     utc_cas_url: https://cas.utc.fr/cas/
 

@@ -5,27 +5,34 @@ sdf_billetterie_homepage:
         _controller: SDFBilletterieBundle:Pages/Pages:home
     methods: GET
 
-
 ### Authentication
-sdf_billetterie_login_check:
-    path:     /login_check
-    defaults: { _controller: SDFBilletterieBundle:Authentication:loginCheck }
-
 sdf_billetterie_cas_callback:
     path:     /cas/callback
-    defaults: { _controller: SDFBilletterieBundle:Authentication:casCallback }
+    defaults:
+        _controller: SDFBilletterieBundle:Authentication:casCallback
+    methods: GET
+
+sdf_billetterie_login_check:
+    path:     /login_check
+    defaults:
+        _controller: SDFBilletterieBundle:Authentication:loginCheck
+    methods: POST
 
 sdf_billetterie_logout:
     path:     /logout
 
 ### Subscription
-sdf_billetterie_subscribe:
+sdf_billetterie_subscription:
     path:     /subscribe
-    defaults: { _controller: SDFBilletterieBundle:Authentication:subscribe }
+    defaults:
+        _controller: SDFBilletterieBundle:Authentication:subscription
+    methods: GET
 
-sdf_billetterie_subscribe_check:
+sdf_billetterie_subscription_check:
     path:     /subscribe/check
-    defaults: { _controller: SDFBilletterieBundle:Authentication:subscribeCheck }
+    defaults:
+        _controller: SDFBilletterieBundle:Authentication:subscriptionCheck
+    methods: POST
 
 ### Regular pages
 sdf_cgv:
@@ -86,14 +93,6 @@ sdf_billetterie_evenements:
 sdf_billetterie_billetsAdmin:
     path:     /billetsAdmin
     defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:billetAdmin }
-
-sdf_billetterie_relancerTransaction:
-    path:     /relanceTransaction/{id}
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:relancerTransaction }
-
-sdf_billetterie_annulerBilletInvalide:
-    path:     /annulerBilletNonValide/{id}
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:annulerBilletInvalide }
 
 sdf_validationTest:
     path:     /payutcbugtest
