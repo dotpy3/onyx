@@ -71,4 +71,19 @@ class CasUser extends User
     {
         return $this->isBdeContributor;
     }
+
+    /**
+     * Get isBdeContributor alias
+     *
+     * @return boolean
+     */
+    public function isBdeContributor()
+    {
+        return $this->getIsBdeContributor();
+    }
+
+    public function isCasUser()
+    {
+        return true;
+    }
 }
