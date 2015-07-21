@@ -51,10 +51,6 @@ sdf_billetterie_checkout:
     resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/checkout.yml
     prefix: /checkout
 
-sdf_billetterie_routingPostPaiement:
-    path:     /routing/{id}
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:routingPostPay }
-
 sdf_billetterie_checkTarifs:
     path:     /tarifs
     defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:tarifs }

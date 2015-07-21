@@ -1,35 +1,23 @@
-# sdf_billetterie_achatBillet:
-#     path:     /{typeBillet}
-#     defaults:
-#         _controller: SDFBilletterieBundle:Pages/Ticketing:buyBillet
-#     methods: GET
-
-sdf_billetterie_callbackPayUTC:
-    path:     /redirection/{token}
-    defaults:
-        _controller: SDFBilletterieBundle:Pages/Ticketing:payUTCcallback
-    methods: POST
-
-sdf_billetterie_callbackDePAYUTC:
-    path:     /callback/{id}
-    defaults:
-        _controller: SDFBilletterieBundle:Pages/Ticketing:callbackFromPayutc
-    methods: GET
-
-sdf_billetterie_callbackDePAYUTCByID:
-    path:     /callbackById/{id}
-    defaults:
-        _controller: SDFBilletterieBundle:Pages/Ticketing:callbackFromPayutcById
-    methods: GET
-
-sdf_billetterie_checkout_ticket:
+sdf_billetterie_checkout_price:
     path:     /{priceId}
     defaults:
         _controller: SDFBilletterieBundle:Pages/Checkout:checkoutTicket
     methods: GET
 
-sdf_billetterie_checkout_ticket_check:
+sdf_billetterie_checkout_price_check:
     path:     /{priceId}/check
     defaults:
         _controller: SDFBilletterieBundle:Pages/Checkout:checkoutTicketCheck
     methods: POST
+
+sdf_billetterie_checkout_ticket_validate:
+    path:     /{id}/validate
+    defaults:
+        _controller: SDFBilletterieBundle:Pages/Ticketing:validate
+    methods: GET
+
+sdf_billetterie_checkout_ticket_payutc_callback:
+    path:     /{id}/callback
+    defaults:
+        _controller: SDFBilletterieBundle:Pages/Checkout:handlePayutcCallback
+    methods: GET

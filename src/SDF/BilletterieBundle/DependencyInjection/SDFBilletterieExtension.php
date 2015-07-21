@@ -31,6 +31,7 @@ class SDFBilletterieExtension extends Extension
         $container->setParameter('sdf_billetterie.payutc', $config['payutc']);
         $container->setParameter('sdf_billetterie.payutc.key', $config['payutc']['key']);
         $container->setParameter('sdf_billetterie.payutc.api_url', $config['payutc']['api_url']);
+        $container->setParameter('sdf_billetterie.payutc.api_service', $config['payutc']['api_service']);
         $container->setParameter('sdf_billetterie.payutc.fundation_id', $config['payutc']['fundation_id']);
 
         $container->setParameter('sdf_billetterie.nemopay', $config['nemopay']);
@@ -43,6 +44,12 @@ class SDFBilletterieExtension extends Extension
         $container->setParameter('sdf_billetterie.settings.enable_exterior_access', $config['settings']['enable_exterior_access']);
         $container->setParameter('sdf_billetterie.settings.barcode', $config['settings']['barcode']);
         $container->setParameter('sdf_billetterie.settings.barcode.max_number', $config['settings']['barcode']['max_number']);
+
+        $container->setParameter('sdf_billetterie.mails', $config['mails']);
+        $container->setParameter('sdf_billetterie.mails.from', $config['mails']['from']);
+        $container->setParameter('sdf_billetterie.mails.reply_to', $config['mails']['reply_to']);
+        $container->setParameter('sdf_billetterie.mails.text_only', $config['mails']['text_only']);
+        $container->setParameter('sdf_billetterie.mails.checkout_subject', $config['mails']['checkout_subject']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');

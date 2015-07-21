@@ -1,0 +1,38 @@
+{% extends 'SDFBilletterieBundle:Mail/Ticket:layout.html.twig' %}
+
+{% block mail_content %}
+	<h2>Votre billet pour la Soirée des Finaux</h2>
+	<p>
+		<strong>Merci {{ ticket.user.firstname|title }} !</strong>
+		<br />
+		Vous pouvez dès à présent télécharger votre billet sur <a href='{{ url('sdf_billetterie_homepage') }}'>la billetterie</a>.
+		<br />
+		Si vous avez votre carte étudiant UTC ou ESCOM, ce billet n'est <strong>pas nécessaire pour entrer à la Soirée des Finaux</strong>.
+		<br />
+		Ceci est également valable pour les billets des extérieurs que vous invitez, qui seront liés à votre carte étudiant.
+	</p>
+	<h3>Infos pratiques</h3>
+	<p>
+		La <strong>Soirée des Finaux</strong> se passera au Ziquodrome de Compiègne, le vendredi 26 juin 2015, de 18h30 à 4h00.
+		<br />
+		Le lieu est accessible par lignes de bus ou par navettes - le choix des navettes sera possible courant juin.
+	</p>
+	<p>
+		La vente d'alcool est réservée aux participants majeurs.
+		<br />
+		Le paiement des consommations se fera par l'intermédiaire de PayUTC et de Nemopay.
+		<br />
+		L'équipe organisatrice ainsi que le Ziquodrome se réserve tout droit d'entrée.
+		<br />
+		<br />
+		Pour plus d'informations, vous pouvez consulter les <a href='{{ url('sdf_cgv') }}'>Conditions Générales de Vente</a>,
+		<br />
+		ou <a href='mailto:soireedesfinaux@assos.utc.fr'>contacter l'équipe organisatrice</a>.
+	</p>
+	<p>
+		<strong>Nous vous donnons rendez-vous le 26 juin !</strong>
+		<br />
+		<br />
+		<small>L'équipe de la Soirée des Finaux</small>
+	</p>
+{% endblock %}

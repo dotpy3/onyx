@@ -78,7 +78,7 @@ class Billet
     private $accepteDroitImage;
 
     /**
-     * @var boolean
+     * @var boolea
      *
      * @ORM\Column(name="consomme", type="boolean")
      */
@@ -105,6 +105,8 @@ class Billet
     public function __construct()
     {
         $this->valide = false;
+        $this->consomme = false;
+        $this->isMajeur = false;
 
         return $this;
     }

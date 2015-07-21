@@ -71,6 +71,7 @@ sdf_billetterie:
     payutc:
         key: %payutc_key%
         api_url: %payutc_api_url%
+        api_service: %payutc_api_service%
         fundation_id: %payutc_fundation_id%
     nemopay:
         payment_url: %nemopay_payment_url%
@@ -80,3 +81,8 @@ sdf_billetterie:
         enable_exterior_access: true
         barcode:
             max_number: 100000000
+    mails:
+        from: %mails_from%
+        reply_to: %mails_reply_to%
+        text_only: false
+        checkout_subject: '[SDF 2015] Confirmation de votre commande'

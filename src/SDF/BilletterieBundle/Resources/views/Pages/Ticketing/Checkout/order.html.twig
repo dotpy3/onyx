@@ -9,7 +9,7 @@
 
 {% block app_content %}
 	<div class='container'>
-		<form action='{{ path('sdf_billetterie_checkout_ticket_check', { priceId: price.id }) }}' method='{{ form.vars.method }}'>
+		<form action='{{ path('sdf_billetterie_checkout_price_check', { priceId: price.id }) }}' method='{{ form.vars.method }}'>
 			<div class='row'>
 				<div class='col-sm-6'>{{ form_row(form.prenom) }}</div>
 				<div class='col-sm-6'>{{ form_row(form.nom) }}</div>

@@ -1,13 +1,18 @@
 parameters:
-    payutc.client.class: SDF\BilletterieBundle\Authentication\Payutc\Client\PayutcClient
+    payutc_client.class: SDF\BilletterieBundle\Utils\Payutc\Client\PayutcClient
     cas.authentication.listener.class: SDF\BilletterieBundle\Authentication\Firewall\CasListener
     cas.authentication.provider.class: SDF\BilletterieBundle\Authentication\Cas\Provider\CasProvider
     sdf_billetterie.utils.pdf.generator.class: SDF\BilletterieBundle\Utils\Pdf\Generator\PdfGenerator
     sdf_billetterie.repositories.ticket.class: Doctrine\ORM\EntityRepository
     sdf_billetterie.repositories.ticket.factory_method: SDF\BilletterieBundle\Entity\Billet
     sdf_billetterie.utils.barcode.generator.class: SDF\BilletterieBundle\Utils\Barcode\Generator\BarcodeGenerator
+    sdf_billetterie.utils.mail_manager.class: SDF\BilletterieBundle\Utils\Mail\MailManager
 
 services:
+    payutc_client:
+        class: %payutc_client.class%
+        arguments: [@session, %sdf_billetterie.payutc.key%, %sdf_billetterie.payutc.api_url%, %sdf_billetterie.payutc.api_service%]
+
     cas.authentication.listener:
         class:  %cas.authentication.listener.class%
         arguments: [@security.context, @security.authentication.manager]
@@ -29,3 +34,7 @@ services:
     sdf_billetterie.utils.barcode.generator:
         class: %sdf_billetterie.utils.barcode.generator.class%
         arguments: [@sdf_billetterie.repositories.ticket, %sdf_billetterie.settings.barcode.max_number%]
+
+    sdf_billetterie.utils.mail_manager:
+        class: %sdf_billetterie.utils.mail_manager.class%
+        arguments: [@mailer, %sdf_billetterie.mails.from%, %sdf_billetterie.mails.reply_to%, %sdf_billetterie.mails.text_only%, %sdf_billetterie.mails.checkout_subject%]

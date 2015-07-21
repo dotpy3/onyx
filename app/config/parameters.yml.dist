@@ -33,6 +33,7 @@ parameters:
 
     # PayUTC Client key
     payutc_api_url: http://payutc.localhost/server
+    payutc_api_service: WEBSALE
 
     # PayUTC Fundation ID
     payutc_fundation_id:
@@ -45,3 +46,7 @@ parameters:
 
     # PDF Generator image path
     pdf_image_path: relative/path/to/the/pdf/background/image/from/the/web/folder.jpg
+
+    # Mail Manager config
+    mails_from: noreply@assos.utc.fr
+    mails_reply_to: noreply@assos.utc.fr
