@@ -70,6 +70,7 @@ sdf_billetterie:
         key: %ginger_key%
     payutc:
         key: %payutc_key%
+        api_url: %payutc_api_url%
         fundation_id: %payutc_fundation_id%
     nemopay:
         payment_url: %nemopay_payment_url%
@@ -77,3 +78,5 @@ sdf_billetterie:
         url: %utc_cas_url%
     settings:
         enable_exterior_access: true
+        barcode:
+            max_number: 100000000

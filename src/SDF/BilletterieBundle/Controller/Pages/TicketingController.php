@@ -26,7 +26,7 @@ use SDF\BilletterieBundle\Form\TarifType;
 use SDF\BilletterieBundle\Form\TrajetType;
 use SDF\BilletterieBundle\Form\NavetteType;
 use SDF\BilletterieBundle\Form\BilletType;
-use SDF\BilletterieBundle\Form\BilletOptionsType;
+use SDF\BilletterieBundle\Form\BilletOrderType;
 use SDF\BilletterieBundle\Form\PotCommunTarifsType;
 use SDF\BilletterieBundle\Exception\UserNotFoundException;
 use SDF\BilletterieBundle\Utils\Pdf\Pdf;
@@ -58,8 +58,19 @@ class TicketingController extends FrontController
 	public function editTicketAction($id)
 	{
 		$ticket = $this->findTicket($id);
+		$em = $this->getDoctrine()->getManager();
 
-		$form = $this->createForm(new BilletOptionsType(), $ticket);
+		// Get all shuttles which still have places on board
+		$shuttles = $em->getRepository('SDFBilletterieBundle:Navette')->findAllWithRemainingPlaces();
+
+		// Count the remaining places in order to display it (@see Navette::__toString())
+		$shuttles = array_map(function ($shuttle) use ($em) {
+			$shuttle->setRemainingPlaces($em->getRepository('SDFBilletterieBundle:Navette')->countRemainingPlaces($shuttle->getId()));
+
+			return $shuttle;
+		}, $shuttles);
+
+		$form = $this->createForm(new BilletOrderType($shuttles), $ticket);
 
 		return $this->render('SDFBilletterieBundle:Pages/Ticketing/Ticket:edit.html.twig', array(
 			'ticket' => $ticket,
@@ -70,8 +81,19 @@ class TicketingController extends FrontController
 	public function updateTicketAction($id, Request $request)
 	{
 		$ticket = $this->findTicket($id);
+		$em = $this->getDoctrine()->getManager();
 
-		$form = $this->createForm(new BilletOptionsType(), $ticket);
+		// Get all shuttles which still have places on board
+		$shuttles = $em->getRepository('SDFBilletterieBundle:Navette')->findAllWithRemainingPlaces();
+
+		// Count the remaining places in order to display it (@see Navette::__toString())
+		$shuttles = array_map(function ($shuttle) use ($em) {
+			$shuttle->setRemainingPlaces($em->getRepository('SDFBilletterieBundle:Navette')->countRemainingPlaces($shuttle->getId()));
+
+			return $shuttle;
+		}, $shuttles);
+
+		$form = $this->createForm(new BilletOrderType($shuttles), $ticket);
 		$form->handleRequest($request);
 
 		if ($form->isValid()) {
@@ -122,7 +144,7 @@ class TicketingController extends FrontController
 
 		$config = $this->container->getParameter('sdf_billetterie');
 
-		return $this->redirect($config['nemopay']['payment_url'] . '/validation?tra_id='.$ticket->getIdPayutc());
+		return $this->redirect($this->container->getParameter('sdf_billetterie.nemopay.payment_url') . '/validation?tra_id=' . $ticket->getIdPayutc());
 	}
 
 	public function cancelTransactionAction($id)
@@ -144,7 +166,6 @@ class TicketingController extends FrontController
 
 		return $this->redirectToRoute('sdf_billetterie_homepage');
 	}
-
 
 	public function checkContraintesAction(Request $request){
 

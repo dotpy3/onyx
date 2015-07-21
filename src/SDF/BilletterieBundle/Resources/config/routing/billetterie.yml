@@ -46,21 +46,10 @@ sdf_billetterie_tickets:
     resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/tickets.yml
     prefix: /tickets
 
-sdf_billetterie_achatBillet:
-    path:     /buy/{typeBillet}
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:buyBillet }
-
-sdf_billetterie_callbackPayUTC:
-    path:     /buy/redirection/{token}
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:payUTCcallback }
-
-sdf_billetterie_callbackDePAYUTC:
-    path:     /buy/callback/{id}
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:callbackFromPayutc }
-
-sdf_billetterie_callbackDePAYUTCByID:
-    path:     /buy/callbackById/{id}
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:callbackFromPayutcById }
+### Payment pages
+sdf_billetterie_checkout:
+    resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/checkout.yml
+    prefix: /checkout
 
 sdf_billetterie_routingPostPaiement:
     path:     /routing/{id}

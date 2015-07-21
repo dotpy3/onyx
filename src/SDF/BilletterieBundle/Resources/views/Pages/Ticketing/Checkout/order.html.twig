@@ -3,14 +3,13 @@
 {% form_theme form 'bootstrap_3_layout.html.twig' %}
 
 {% block app_hero_content %}
-	<h1>Options du billet</h1>
-	<p>Tarif: {{ ticket.tarif.nomTarif }}.</p>
-	<p><a class='btn btn-primary btn-lg' href="{{ path('sdf_billetterie_ticket_print', {'id' : ticket.id }) }}" role="button">Imprimer le billet &raquo;</a></p>
+	<h1>Commander un ticket</h1>
+	<p>Commande d'un ticket "{{ price.nomTarif }}" pour {{ price.prix }}€.</p>
 {% endblock %}
 
 {% block app_content %}
 	<div class='container'>
-		<form action='{{ path('sdf_billetterie_ticket_update', { id: ticket.id }) }}' method='{{ form.vars.method }}'>
+		<form action='{{ path('sdf_billetterie_checkout_ticket_check', { priceId: price.id }) }}' method='{{ form.vars.method }}'>
 			<div class='row'>
 				<div class='col-sm-6'>{{ form_row(form.prenom) }}</div>
 				<div class='col-sm-6'>{{ form_row(form.nom) }}</div>
@@ -21,7 +20,7 @@
 			</div>
 			{{ form_rest(form) }}
 			<div class='form-group'>
-				<input class='btn btn-success' type='submit' value='Editer' />
+				<input class='btn btn-success' type='submit' value='Commander' />
 			</div>
 		</form>
 	</div>

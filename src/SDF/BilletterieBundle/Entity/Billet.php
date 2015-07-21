@@ -31,7 +31,7 @@ class Billet
     /**
      * @var string
      *
-     * @ORM\Column(name="idPayutc", type="string", length=255)
+     * @ORM\Column(name="idPayutc", type="string", length=255, nullable=true)
      */
     private $idPayutc;
 
@@ -102,6 +102,12 @@ class Billet
      */
     private $tarif;
 
+    public function __construct()
+    {
+        $this->valide = false;
+
+        return $this;
+    }
 
     /**
      * Get id
@@ -231,10 +237,10 @@ class Billet
     /**
      * Set navette
      *
-     * @param \SDF\BilletterieBundle\Entity\Navette $navette
+     * @param Navette $navette
      * @return Billet
      */
-    public function setNavette(\SDF\BilletterieBundle\Entity\Navette $navette)
+    public function setNavette(Navette $navette = null)
     {
         $this->navette = $navette;
 
@@ -244,7 +250,7 @@ class Billet
     /**
      * Get navette
      *
-     * @return \SDF\BilletterieBundle\Entity\Navette
+     * @return Navette
      */
     public function getNavette()
     {
@@ -277,10 +283,10 @@ class Billet
     /**
      * Set tarif
      *
-     * @param \SDF\BilletterieBundle\Entity\Tarif $tarif
+     * @param Tarif $tarif
      * @return Billet
      */
-    public function setTarif(\SDF\BilletterieBundle\Entity\Tarif $tarif)
+    public function setTarif(Tarif $tarif)
     {
         $this->tarif = $tarif;
 
@@ -290,7 +296,7 @@ class Billet
     /**
      * Get tarif
      *
-     * @return \SDF\BilletterieBundle\Entity\Tarif
+     * @return Tarif
      */
     public function getTarif()
     {

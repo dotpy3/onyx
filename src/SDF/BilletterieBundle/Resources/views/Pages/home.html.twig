@@ -79,7 +79,7 @@
 											<td>{{ price.prix }} €</td>
 											<td>{{ remainingPlacesByPrice[price.id] }}</td>
 											<td class='text-right'>
-												<a class='btn btn-primary btn-xs' href='{{ path('sdf_billetterie_achatBillet', { 'typeBillet' : price.id }) }}' role='button'>Acheter &raquo;</a>
+												<a class='btn btn-primary btn-xs' href='{{ path('sdf_billetterie_checkout_ticket', { 'priceId' : price.id }) }}' role='button'>Commander &raquo;</a>
 											</td>
 										</tr>
 									{% endfor %}

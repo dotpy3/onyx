@@ -3,12 +3,11 @@ parameters:
     cas.authentication.listener.class: SDF\BilletterieBundle\Authentication\Firewall\CasListener
     cas.authentication.provider.class: SDF\BilletterieBundle\Authentication\Cas\Provider\CasProvider
     sdf_billetterie.utils.pdf.generator.class: SDF\BilletterieBundle\Utils\Pdf\Generator\PdfGenerator
+    sdf_billetterie.repositories.ticket.class: Doctrine\ORM\EntityRepository
+    sdf_billetterie.repositories.ticket.factory_method: SDF\BilletterieBundle\Entity\Billet
+    sdf_billetterie.utils.barcode.generator.class: SDF\BilletterieBundle\Utils\Barcode\Generator\BarcodeGenerator
 
 services:
-    sdf_billetterie.utils.pdf.generator:
-        class: %sdf_billetterie.utils.pdf.generator.class%
-        arguments: [%pdf_image_path%]
-
     cas.authentication.listener:
         class:  %cas.authentication.listener.class%
         arguments: [@security.context, @security.authentication.manager]
@@ -16,3 +15,17 @@ services:
     cas.authentication.provider:
         class:  %cas.authentication.provider.class%
         arguments: ['', %kernel.cache_dir%/var/cas, @doctrine.orm.entity_manager, @security.password_encoder, %utc_cas_url%, %ginger_api_url%, %ginger_key%]
+
+    sdf_billetterie.utils.pdf.generator:
+        class: %sdf_billetterie.utils.pdf.generator.class%
+        arguments: [%pdf_image_path%]
+
+    sdf_billetterie.repositories.ticket:
+        class: %sdf_billetterie.repositories.ticket.class%
+        factory_service: doctrine.orm.entity_manager
+        factory_method: getRepository
+        arguments: [%sdf_billetterie.repositories.ticket.factory_method%]
+
+    sdf_billetterie.utils.barcode.generator:
+        class: %sdf_billetterie.utils.barcode.generator.class%
+        arguments: [@sdf_billetterie.repositories.ticket, %sdf_billetterie.settings.barcode.max_number%]

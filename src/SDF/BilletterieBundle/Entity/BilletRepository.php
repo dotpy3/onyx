@@ -113,4 +113,23 @@ class BilletRepository extends EntityRepository
 
 		return $queryBuilder->getQuery()->getSingleScalarResult();
 	}
+
+	public function findOneByBarcode($barcode)
+	{
+		$ticket = null;
+
+		$queryBuilder = $this->createQueryBuilder('b');
+
+		$queryBuilder
+			->where($queryBuilder->expr()->eq('b.barcode', ':barcode'))
+			->setParameter('barcode', $barcode)
+		;
+
+		try {
+			$ticket = $queryBuilder->getQuery()->getSingleResult();
+		}
+		catch (NoResultException $e) {}
+
+		return $ticket;
+	}
 }
