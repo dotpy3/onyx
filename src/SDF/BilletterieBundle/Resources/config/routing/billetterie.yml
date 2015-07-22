@@ -51,34 +51,6 @@ sdf_billetterie_checkout:
     resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/checkout.yml
     prefix: /checkout
 
-sdf_billetterie_checkTarifs:
-    path:     /tarifs
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:tarifs }
-
-sdf_billetterie_checkNavettes:
-    path:     /navettes
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:checkNavettes }
-
-sdf_billetterie_contrainteTarif:
-    path:     /tarifs/contraintes
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:checkContraintes }
-
-sdf_billetterie_checkPotCommun:
-    path:     /potscommuns
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:checkPotCommun }
-
-sdf_billetterie_trajetNavette:
-    path:     /navettes/trajets
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:checkTrajetsNavette }
-
-sdf_billetterie_evenements:
-    path:     /tarifs/event
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:checkEvent }
-
-sdf_billetterie_billetsAdmin:
-    path:     /billetsAdmin
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:billetAdmin }
-
 sdf_validationTest:
     path:     /payutcbugtest
     defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:testbug }

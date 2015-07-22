@@ -1,0 +1,11 @@
+sdf_billetterie_administration_price_new:
+    path:     /new
+    defaults:
+        _controller: SDFBilletterieBundle:Pages/Admin/Entities/Prices:new
+    methods: GET
+
+sdf_billetterie_administration_price_create:
+    path:     /create
+    defaults:
+        _controller: SDFBilletterieBundle:Pages/Admin/Entities/Prices:create
+    methods: POST

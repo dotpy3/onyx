@@ -1,0 +1,13 @@
+{% extends 'SDFBilletterieBundle:Pages/Admin/Entities:new.html.twig' %}
+
+{% block entity_title %}Trajet{% endblock %}
+
+{% block entity_create_path %}{{ path('sdf_billetterie_administration_journey_create') }}{% endblock %}
+
+{% block form_content %}
+	<div class='row'>
+		<div class='col-sm-6'>{{ form_row(form.lieuDepart) }}</div>
+		<div class='col-sm-6'>{{ form_row(form.lieuArrivee) }}</div>
+	</div>
+	{{ form_rest(form) }}
+{% endblock %}

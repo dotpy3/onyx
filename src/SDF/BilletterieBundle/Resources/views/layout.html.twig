@@ -38,6 +38,11 @@
 						</div>
 						{% if app.user %}
 							<ul class='nav navbar-nav navbar-right'>
+								{% if is_granted('ROLE_ADMIN') %}
+									<li>
+										<a href='{{ path('sdf_billetterie_administration') }}'>Administration</a>
+									</li>
+								{% endif %}
 								<li>
 									<a href='{{ path('sdf_billetterie_logout') }}'>Déconnexion</a>
 								</li>
@@ -56,8 +61,8 @@
 			{% block app_container %}
 				<div class='container'>
 					{% include 'SDFBilletterieBundle:Partials:flash.html.twig' %}
+					{% block app_content %}{% endblock %}
 				</div>
-				{% block app_content %}{% endblock %}
 			{% endblock %}
 			{% block app_post_container %}{% endblock %}
 			{% block footer %}

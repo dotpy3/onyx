@@ -1,0 +1,23 @@
+{% extends 'SDFBilletterieBundle:Pages/Admin/Entities:new.html.twig' %}
+
+{% block entity_title %}Tarif{% endblock %}
+
+{% block entity_create_path %}{{ path('sdf_billetterie_administration_price_create') }}{% endblock %}
+
+{% block form_content %}
+	{{ form_row(form.nomTarif) }}
+	{{ form_row(form.evenement) }}
+	<div class='row'>
+		<div class='col-sm-6'>{{ form_row(form.quantite) }}</div>
+		<div class='col-sm-6'>{{ form_row(form.quantiteParPersonne) }}</div>
+	</div>
+	<div class='row'>
+		<div class='col-sm-6'>{{ form_row(form.prix) }}</div>
+		<div class='col-sm-6'>{{ form_row(form.idPayutc) }}</div>
+	</div>
+	<div class='row'>
+		<div class='col-sm-6'>{{ form_row(form.contraintes) }}</div>
+		<div class='col-sm-6'>{{ form_row(form.potCommun) }}</div>
+	</div>
+	{{ form_rest(form) }}
+{% endblock %}

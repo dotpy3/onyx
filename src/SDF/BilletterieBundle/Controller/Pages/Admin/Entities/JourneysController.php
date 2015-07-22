@@ -1,0 +1,22 @@
+<?php
+
+namespace SDF\BilletterieBundle\Controller\Pages\Admin\Entities;
+
+use Symfony\Component\HttpFoundation\Request;
+
+use SDF\BilletterieBundle\Controller\Pages\Admin\CrudController;
+use SDF\BilletterieBundle\Entity\Trajet;
+use SDF\BilletterieBundle\Form\Admin\TrajetType;
+
+class JourneysController extends CrudController
+{
+	public function newAction()
+	{
+		return $this->renderCreationForm(new Trajet(), new TrajetType(), 'Trajet', 'SDFBilletterieBundle');
+	}
+
+	public function createAction(Request $request)
+	{
+		return $this->renderCreationForm($request, new Trajet(), new TrajetType(), 'Trajet', 'SDFBilletterieBundle', 'sdf_billetterie_administration');
+	}
+}

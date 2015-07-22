@@ -1,0 +1,11 @@
+sdf_billetterie_administration_shuttle_new:
+    path:     /new
+    defaults:
+        _controller: SDFBilletterieBundle:Pages/Admin/Entities/Shuttles:new
+    methods: GET
+
+sdf_billetterie_administration_shuttle_create:
+    path:     /create
+    defaults:
+        _controller: SDFBilletterieBundle:Pages/Admin/Entities/Shuttles:create
+    methods: POST

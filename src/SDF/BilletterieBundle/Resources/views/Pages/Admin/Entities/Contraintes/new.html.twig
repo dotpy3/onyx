@@ -1,0 +1,14 @@
+{% extends 'SDFBilletterieBundle:Pages/Admin/Entities:new.html.twig' %}
+
+{% block entity_title %}Contraintes{% endblock %}
+
+{% block entity_create_path %}{{ path('sdf_billetterie_administration_constraint_create') }}{% endblock %}
+
+{% block form_content %}
+	{{ form_row(form.nom) }}
+	<div class='row'>
+		<div class='col-sm-6'>{{ form_row(form.debutMiseEnVente) }}</div>
+		<div class='col-sm-6'>{{ form_row(form.finMiseEnVente) }}</div>
+	</div>
+	{{ form_rest(form) }}
+{% endblock %}

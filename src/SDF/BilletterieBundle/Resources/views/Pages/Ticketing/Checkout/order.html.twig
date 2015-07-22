@@ -8,20 +8,20 @@
 {% endblock %}
 
 {% block app_content %}
-	<div class='container'>
-		<form action='{{ path('sdf_billetterie_checkout_price_check', { priceId: price.id }) }}' method='{{ form.vars.method }}'>
-			<div class='row'>
-				<div class='col-sm-6'>{{ form_row(form.prenom) }}</div>
-				<div class='col-sm-6'>{{ form_row(form.nom) }}</div>
-			</div>
-			<div class='row'>
-				<div class='col-sm-6'>{{ form_row(form.accepteDroitImage) }}</div>
-				<div class='col-sm-6'>{{ form_row(form.navette) }}</div>
-			</div>
-			{{ form_rest(form) }}
-			<div class='form-group'>
-				<input class='btn btn-success' type='submit' value='Commander' />
-			</div>
-		</form>
-	</div>
+	<p>Les options sont modifiables après l'achat du billet.</p>
+	<form action='{{ path('sdf_billetterie_checkout_price_check', { priceId: price.id }) }}' method='{{ form.vars.method }}'>
+		<div class='row'>
+			<div class='col-sm-6'>{{ form_row(form.prenom) }}</div>
+			<div class='col-sm-6'>{{ form_row(form.nom) }}</div>
+		</div>
+		<div class='row'>
+			<div class='col-sm-6'>{{ form_row(form.accepteDroitImage) }}</div>
+			<div class='col-sm-6'>{{ form_row(form.navette) }}</div>
+		</div>
+		<p>En achetant un billet, vous déclarez avoir lu et accepté les <a href='{{ path('sdf_cgv') }}' target='_blank'>Conditions Générales de Vente</a>.</p>
+		{{ form_rest(form) }}
+		<div class='form-group'>
+			<input class='btn btn-success' type='submit' value='Commander' />
+		</div>
+	</form>
 {% endblock %}

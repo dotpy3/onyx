@@ -102,7 +102,7 @@ class TicketingController extends FrontController
 			$em->persist($ticket);
 			$em->flush();
 
-			$this->addFlash('success', 'Le billet à bien été modifié!');
+			$this->addFlash('success', 'Le billet à bien été modifié :)');
 
 			return $this->redirectToRoute('sdf_billetterie_ticket_edit', array('id' => $ticket->getId()));
 		}
@@ -119,14 +119,14 @@ class TicketingController extends FrontController
 		$pdfGenerator = $this->get('sdf_billetterie.utils.pdf.generator');
 
 		// The PdfGenerator::generateTicket method might throw two exceptions
-		// A NullTicketException, if the ticket is null (should not arrive)
+		// A NullTicketException, if the ticket is null (should not happen here, as an exception would already have been triggered by findTicket())
 		// A ImageNotFoundException, if the background-image used for the PDF cannot be opened
 		// (check the app/config/parameters.yml file in this case)
 		try {
 			$pdf = $pdfGenerator->generateTicket($ticket);
 		}
 		catch (NullTicketException $e) {
-			throw $this->createNotFoundException('Impossible de trouver ce ticket...');
+			throw $this->createNotFoundException('Impossible de trouver ce ticket.');
 		}
 
 		return $this->renderDataAsFile($pdf, 'ticket.pdf');
@@ -178,200 +178,6 @@ class TicketingController extends FrontController
 		}
 
 		return $this->redirectToRoute('sdf_billetterie_homepage');
-	}
-
-	public function checkContraintesAction(Request $request){
-
-			// ON VERIFIE QUE L'UTILISATEUR EXISTE & EST ADMIN
-			if (!$this->checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-
-
-			$event = new Contraintes();
-			$formBuilder = $this->get('form.factory')->createBuilder('form', $event);
-			$formBuilder
-				->add('nom',      'text')
-				->add('doitEtreCotisant',     'checkbox')
-				->add('doitNePasEtreCotisant',     'checkbox')
-				->add('accessibleExterieur', 'checkbox')
-				->add('debutMiseEnVente', 'datetime')
-				->add('finMiseEnVente', 'datetime')
-			->add('save',      'submit')
-			;
-			$form = $formBuilder->getForm();
-
-			$form->handleRequest($request);
-			if ($form->isValid()) {
-					$em = $this->getDoctrine()->getManager();
-					$em->persist($event);
-					$em->flush();
-
-					return $this->render('SDFBilletterieBundle:Pages/Ticketing:add.html.twig', array(
-				'form' => $form->createView(),'name' => "set de contraintes", 'addError' => false, 'addOK' => true
-			));
-			}
-
-
-			return $this->render('SDFBilletterieBundle:Pages/Ticketing:add.html.twig', array(
-				'form' => $form->createView(),'name' => "set de contraintes", 'addError' => false, 'addOK' => false
-			));
-	}
-
-	public function checkEventAction(Request $request){
-
-			// ON VERIFIE QUE L'UTILISATEUR EXISTE & EST ADMIN
-			if (!$this->checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-
-			$event = new Evenement();
-			$formBuilder = $this->get('form.factory')->createBuilder('form', $event);
-			$formBuilder
-				->add('nom',      'text')
-				->add('quantiteMax',     'text')
-			->add('save',      'submit')
-			;
-			$form = $formBuilder->getForm();
-
-			$form->handleRequest($request);
-			if ($form->isValid()) {
-					$em = $this->getDoctrine()->getManager();
-					$em->persist($event);
-					$em->flush();
-
-					return $this->render('SDFBilletterieBundle:Pages/Ticketing:add.html.twig', array(
-				'form' => $form->createView(),'name' => "évènement", 'addError' => false, 'addOK' => true
-			));
-			}
-
-
-			return $this->render('SDFBilletterieBundle:Pages/Ticketing:add.html.twig', array(
-				'form' => $form->createView(),'name' => "évènement", 'addError' => false, 'addOK' => false
-			));
-	}
-
-	public function tarifsAction(Request $request){
-
-			// ON VERIFIE QUE L'UTILISATEUR EXISTE & EST ADMIN
-			if (!$this->checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-
-			$tarif = new Tarif();
-
-			$form = $this->get('form.factory')->create(new TarifType, $tarif);
-
-			if($form->handleRequest($request)->isValid()){
-					$em = $this->getDoctrine()->getManager();
-					$em->persist($tarif);
-					$em->flush();
-
-					return $this->render('SDFBilletterieBundle:Pages/Ticketing:add.html.twig', array(
-					'form' => $form->createView(),'name' => "tarif", 'addError' => false, 'addOK' => true
-				));
-
-			}
-
-			return $this->render('SDFBilletterieBundle:Pages/Ticketing:add.html.twig', array(
-				'form' => $form->createView(),'name' => "tarif", 'addError' => false, 'addOK' => false
-			));
-
-	}
-
-	public function checkTrajetsNavetteAction(Request $request){
-
-			// ON VERIFIE QUE L'UTILISATEUR EXISTE & EST ADMIN
-			if (!$this->checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-
-			$tarif = new Trajet();
-
-			$form = $this->get('form.factory')->create(new TrajetType, $tarif);
-
-			if($form->handleRequest($request)->isValid()){
-					$em = $this->getDoctrine()->getManager();
-					$em->persist($tarif);
-					$em->flush();
-
-					return $this->render('SDFBilletterieBundle:Pages/Ticketing:add.html.twig', array(
-				'form' => $form->createView(),'name' => "trajet", 'addError' => false, 'addOK' => true
-			));
-
-			}
-
-			return $this->render('SDFBilletterieBundle:Pages/Ticketing:add.html.twig', array(
-				'form' => $form->createView(),'name' => "trajet", 'addError' => false, 'addOK' => false
-			));
-	}
-
-	public function checkNavettesAction(Request $request){
-
-			// ON VERIFIE QUE L'UTILISATEUR EXISTE & EST ADMIN
-			if (!$this->checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-
-			$tarif = new Navette();
-
-			$form = $this->get('form.factory')->create(new NavetteType, $tarif);
-
-			if($form->handleRequest($request)->isValid()){
-					$em = $this->getDoctrine()->getManager();
-					$em->persist($tarif);
-					$em->flush();
-
-					return $this->render('SDFBilletterieBundle:Pages/Ticketing:add.html.twig', array(
-				'form' => $form->createView(),'name' => "navette", 'addError' => false, 'addOK' => true
-			));
-
-			}
-
-			return $this->render('SDFBilletterieBundle:Pages/Ticketing:add.html.twig', array(
-				'form' => $form->createView(),'name' => "navette", 'addError' => false, 'addOK' => false
-			));
-	}
-
-
-	public function checkPotCommunAction(Request $request){
-
-			// ON VERIFIE QUE L'UTILISATEUR EXISTE & EST ADMIN
-			if (!$this->checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-
-			$pot = new PotCommunTarifs();
-
-			$form = $this->get('form.factory')->create(new PotCommunTarifs, $tarif);
-
-			if($form->handleRequest($request)->isValid()){
-					$em = $this->getDoctrine()->getManager();
-					$em->persist($tarif);
-					$em->flush();
-
-					return $this->render('SDFBilletterieBundle:Pages/Ticketing:add.html.twig', array(
-				'form' => $form->createView(),'name' => "pot commun", 'addError' => false, 'addOK' => true
-			));
-
-			}
-
-			return $this->render('SDFBilletterieBundle:Pages/Ticketing:add.html.twig', array(
-				'form' => $form->createView(),'name' => "pot commun", 'addError' => false, 'addOK' => false
-			));
-	}
-
-	public function billetAdminAction(Request $request){
-
-			// ON VERIFIE QUE L'UTILISATEUR EXISTE & EST ADMIN
-			if (!$this->checkUserIsAdmin()) return $this->redirect($this->generateUrl('sdf_billetterie_homepage'));
-
-			$tarif = new Billet();
-
-			$form = $this->get('form.factory')->create(new BilletType, $tarif);
-
-			if($form->handleRequest($request)->isValid()){
-					$em = $this->getDoctrine()->getManager();
-					$em->persist($tarif);
-					$em->flush();
-
-					return $this->render('SDFBilletterieBundle:Pages/Ticketing:add.html.twig', array(
-				'form' => $form->createView(),'name' => "billet", 'addError' => false, 'addOK' => true
-			));
-
-			}
-
-			return $this->render('SDFBilletterieBundle:Pages/Ticketing:add.html.twig', array(
-				'form' => $form->createView(),'name' => "billet", 'addError' => false, 'addOK' => false
-			));
 	}
 
 	public function testbugAction(){

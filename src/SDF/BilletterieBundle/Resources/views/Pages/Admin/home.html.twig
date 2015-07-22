@@ -1,17 +1,40 @@
-<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <title>Administration Billetterie</title>
-    </head>
+{% extends 'SDFBilletterieBundle:Pages/Admin:layout.html.twig' %}
 
-    <body>
-        <p><a href="{{ path('sdf_billetterie_contrainteTarif') }}">Ajouter des contraintes de tarif</a></p>
-        <p><a href="{{ path('sdf_billetterie_evenements') }}">Ajouter un évènement</a></p>
-        <p><a href="{{ path('sdf_billetterie_checkTarifs') }}">Ajouter un tarif</a></p>
-        <p><a href="{{ path('sdf_billetterie_billetsAdmin') }}">Ajouter un billet</a></p>
-        <p><a href="{{ path('sdf_billetterie_checkNavettes') }}">Ajouter une navette</a></p>
-        <p><a href="{{ path('sdf_billetterie_trajetNavette') }}">Ajouter un trajet de navette</a></p>
-        <p><a href="{{ path('sdf_billetterie_checkPotCommun') }}">Ajouter un pot commun</a></p>
-    </body>
-</html>
+{% block app_content %}
+	<div class='row'>
+		<div class='col-md-4'>
+			<div class='panel panel-default'>
+				<div class='panel-heading'>
+					<h4 class='panel-title'>Evénement</h4>
+				</div>
+				<div class='list-group'>
+					<a class='list-group-item' href='{{ path('sdf_billetterie_administration_event_new') }}'>Ajouter un évènement</a>
+					<a class='list-group-item' href='{{ path('sdf_billetterie_administration_ticket_new') }}'>Ajouter un billet</a>
+				</div>
+			</div>
+		</div>
+		<div class='col-md-4'>
+			<div class='panel panel-default'>
+				<div class='panel-heading'>
+					<h4 class='panel-title'>Logistique</h4>
+				</div>
+				<div class='list-group'>
+					<a class='list-group-item' href='{{ path('sdf_billetterie_administration_shuttle_new') }}'>Ajouter une navette</a>
+					<a class='list-group-item' href='{{ path('sdf_billetterie_administration_journey_new') }}'>Ajouter un trajet de navette</a>
+				</div>
+			</div>
+		</div>
+		<div class='col-md-4'>
+			<div class='panel panel-default'>
+				<div class='panel-heading'>
+					<h4 class='panel-title'>Billetterie</h4>
+				</div>
+				<div class='list-group'>
+					<a class='list-group-item' href='{{ path('sdf_billetterie_administration_price_new') }}'>Ajouter un tarif</a>
+					<a class='list-group-item' href='{{ path('sdf_billetterie_administration_constraint_new') }}'>Ajouter des contraintes de tarif</a>
+					<a class='list-group-item' href='{{ path('sdf_billetterie_administration_price_group_new') }}'>Ajouter un pot commun</a>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

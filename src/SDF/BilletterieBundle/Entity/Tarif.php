@@ -74,6 +74,11 @@ class Tarif
      */
     private $potCommun;
 
+    public function __toString()
+    {
+        return $this->nomTarif;
+    }
+
 
     /**
      * Get id
