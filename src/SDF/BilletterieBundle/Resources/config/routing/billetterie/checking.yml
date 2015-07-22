@@ -13,7 +13,7 @@ sdf_billetterie_checking_ticket_informations:
 sdf_billetterie_checking_ticket_associated_tickets:
     path:     /{id}/associated_tickets
     defaults:
-        _controller: SDFBilletterieBundle:Pages/Checking:getOwnerAssociatedTicketsAction
+        _controller: SDFBilletterieBundle:Pages/Checking:getOwnerAssociatedTickets
     methods: GET
 
 sdf_billetterie_checking_ticket_check_in:

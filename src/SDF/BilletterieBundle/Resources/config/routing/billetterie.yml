@@ -55,20 +55,6 @@ sdf_billetterie_checking:
     resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/checking.yml
     prefix: /checking
 
-sdf_billetterie_checkByNamePortion:
-    path:     /{name}/namesearch
-    defaults:
-        _controller: SDFBilletterieBundle:Pages/Checking:checkByNamePortion
-    methods: GET
-
-sdf_getEmailsNonValides:
-    path:     /getEmailsNonValides
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:getEmailsNonValide }
-
-sdf_billetterie_sendEmailInfos:
-    path:     /sendAllInfos
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:sendMailInfos }
-
 ### Administration
 sdf_billetterie:
     resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/admin.yml

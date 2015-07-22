@@ -13,6 +13,33 @@ use Doctrine\ORM\NoResultException;
  */
 class BilletRepository extends EntityRepository
 {
+	public function findAllUnvalid()
+	{
+		$queryBuilder = $this->createQueryBuilder('b');
+
+		$queryBuilder
+			->where($queryBuilder->expr()->eq('b.valide', ':valid'))
+			->setParameter('valid', true)
+		;
+
+		return $queryBuilder->getQuery()->getResult();
+	}
+
+	public function findAllMatching($query)
+	{
+		$queryBuilder = $this->createQueryBuilder('b');
+
+		$queryBuilder
+			->where($queryBuilder->expr()->orX(
+				$queryBuilder->expr()->like('b.prenom', ':query'),
+				$queryBuilder->expr()->like('b.nom', ':query')
+			))
+			->setParameter('query', '%' . $query . '%')
+		;
+
+		return $queryBuilder->getQuery()->getResult();
+	}
+
 	public function findAllValidTicketsForUser($user)
 	{
 		$queryBuilder = $this->createQueryBuilder('b');

@@ -77,13 +77,13 @@ class CheckingController extends FrontController
 		}
 
 		if ($user->isCasUser()) {
-			$userTickets = $em->getRepository('SDFBilletterieBundle:Billet')->findBy('user' => $user);
+			$userTickets = $em->getRepository('SDFBilletterieBundle:Billet')->findBy(array('user' => $user));
 
 			foreach ($userTickets as $userTicket) {
-				if ($userTicket->getValide() && !$userTicket->getConsomme()) {
+				if ($userTicket->getValide() && !$userTicket->getConsomme() && $userTicket != $ticket) {
 					$ownerOtherTickets[] = $userTicket;
 
-					$this->instantLog($userTicket->getUser(), sprintf('Badge associé au billet %d lu.', $billet->getId()));
+					$this->instantLog($userTicket->getUser(), sprintf('Badge associé au billet %d lu.', $ticket->getId()));
 				}
 			}
 		}
@@ -92,7 +92,7 @@ class CheckingController extends FrontController
 			'ticket' => $ticket,
 			'user' => $user,
 			'isValide' => $ticket->getValide(),
-			'isAdulte' => $ticket->getIsAdulte(),
+			'isAdulte' => $ticket->getIsMajeur(),
 			'ownerOtherTickets' => $ownerOtherTickets
 		));
 	}
@@ -134,15 +134,6 @@ class CheckingController extends FrontController
 		));
 	}
 
-	protected function checkAppkey($appKey)
-	{
-		$em = $this->getDoctrine()->getManager();
-
-		if (!($appKey) || !($em->getRepository('SDFBilletterieBundle:Appkey')->findOneBy(array('relationKey' => $appKey)))) {
-			throw $this->createAccessDeniedException();
-		}
-	}
-
 	protected function checkIfUserIsAdult(Billet $ticket)
 	{
 		// Recheck if ticket's user is_adulte, because he's birthdate could have occured since he bought the ticket
@@ -168,5 +159,14 @@ class CheckingController extends FrontController
 		}
 
 		return $ticket;
+	}
+
+	protected function checkAppkey($appKey)
+	{
+		$em = $this->getDoctrine()->getManager();
+
+		if (!($appKey) || !($em->getRepository('SDFBilletterieBundle:Appkey')->findOneBy(array('relationKey' => $appKey)))) {
+			throw $this->createAccessDeniedException();
+		}
 	}
 }

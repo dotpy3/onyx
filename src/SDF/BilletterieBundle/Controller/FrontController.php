@@ -4,9 +4,10 @@ namespace SDF\BilletterieBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+use JMS\Serializer\SerializationContext;
 
 use SDF\BilletterieBundle\Entity\User;
 use SDF\BilletterieBundle\Entity\Tarif;
@@ -108,7 +109,7 @@ class FrontController extends Controller
 	/**
 	 * Send an HTTP Response with Json encoded content
 	 *
-	 * @param mixed $data The data to render
+	 * @param string $data The data to render
 	 * @param string $filename The filename to provide
 	 * @param integer $dispositionType The HTTP disposition {inline, or attachment}
 	 * @param integer $statusCode The HTTP Status-Code
@@ -128,11 +129,51 @@ class FrontController extends Controller
 	 * Send an HTTP Response with Json encoded content
 	 *
 	 * @param varied $data The data to encode
+	 * @param array $groups The serialisation groups
 	 * @param integer $statusCode The HTTP Status-Code
 	 * @param array $headers The HTTP headers to join to the response
 	 */
-	protected function renderJsonResponse($data, $statusCode = JsonResponse::HTTP_OK, array $headers = array())
+	protected function renderJsonResponse($data, $groups = array(), $statusCode = Response::HTTP_OK, array $headers = array())
 	{
-		return new JsonResponse($data, $statusCode, $headers);
+		return $this->renderDataResponse($data, 'json', $groups, $statusCode, $headers);
+	}
+
+	/**
+	 * Send an HTTP Response with XML encoded content
+	 *
+	 * @param varied $data The data to encode
+	 * @param array $groups The serialisation groups
+	 * @param integer $statusCode The HTTP Status-Code
+	 * @param array $headers The HTTP headers to join to the response
+	 */
+	protected function renderXmlResponse($data, $groups = array(), $statusCode = Response::HTTP_OK, array $headers = array())
+	{
+		return $this->renderDataResponse($data, 'xml', $groups, $statusCode, $headers);
+	}
+
+	/**
+	 * Send an HTTP Response with encoded content according to the given format
+	 *
+	 * @param varied $data The data to encode
+	 * @param string $format The format to encode the data in
+	 * @param array $groups The serialisation groups
+	 * @param integer $statusCode The HTTP Status-Code
+	 * @param array $headers The HTTP headers to join to the response
+	 */
+	protected function renderDataResponse($data, $format = 'json', $groups = array(), $statusCode = Response::HTTP_OK, array $headers = array())
+	{
+		$serializer = $this->container->get('jms_serializer');
+
+		$context = SerializationContext::create()
+			->setVersion(1)
+			->enableMaxDepthChecks()
+			->setSerializeNull(true)
+		;
+
+		if ($groups) {
+			$context->setGroups($groups);
+		}
+
+		return new Response($serializer->serialize($data, $format, $context), $statusCode, $headers);
 	}
 }

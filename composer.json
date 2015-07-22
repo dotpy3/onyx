@@ -24,7 +24,8 @@
         "nategood/httpful": "*",
         "payutc/php-client": "*@dev",
         "itbz/fpdf": "*",
-        "ginger/client": "^2.3"
+        "ginger/client": "^2.3",
+        "jms/serializer-bundle": "^1.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"
