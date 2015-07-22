@@ -88,3 +88,4 @@ sdf_billetterie:
         reply_to: %mails_reply_to%
         text_only: false
         checkout_subject: '[SDF 2015] Confirmation de votre commande'
+        informations_subject: '[SDF 2015] Informations pratiques'

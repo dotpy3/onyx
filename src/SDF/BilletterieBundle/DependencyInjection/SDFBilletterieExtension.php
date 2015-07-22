@@ -50,6 +50,7 @@ class SDFBilletterieExtension extends Extension
         $container->setParameter('sdf_billetterie.mails.reply_to', $config['mails']['reply_to']);
         $container->setParameter('sdf_billetterie.mails.text_only', $config['mails']['text_only']);
         $container->setParameter('sdf_billetterie.mails.checkout_subject', $config['mails']['checkout_subject']);
+        $container->setParameter('sdf_billetterie.mails.informations_subject', $config['mails']['informations_subject']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');

@@ -6,7 +6,7 @@ parameters:
     sdf_billetterie.repositories.ticket.class: Doctrine\ORM\EntityRepository
     sdf_billetterie.repositories.ticket.factory_method: SDF\BilletterieBundle\Entity\Billet
     sdf_billetterie.utils.barcode.generator.class: SDF\BilletterieBundle\Utils\Barcode\Generator\BarcodeGenerator
-    sdf_billetterie.utils.mail_manager.class: SDF\BilletterieBundle\Utils\Mail\MailManager
+    sdf_billetterie.utils.mail_manager.class: SDF\BilletterieBundle\Utils\Mailer\MailManager
 
 services:
     payutc_client:
@@ -37,4 +37,4 @@ services:
 
     sdf_billetterie.utils.mail_manager:
         class: %sdf_billetterie.utils.mail_manager.class%
-        arguments: [@mailer, %sdf_billetterie.mails.from%, %sdf_billetterie.mails.reply_to%, %sdf_billetterie.mails.text_only%, %sdf_billetterie.mails.checkout_subject%]
+        arguments: [@mailer, @twig, %sdf_billetterie.mails.from%, %sdf_billetterie.mails.reply_to%, %sdf_billetterie.mails.text_only%, %sdf_billetterie.mails.checkout_subject%]

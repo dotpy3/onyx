@@ -4,6 +4,7 @@ namespace SDF\BilletterieBundle\Controller\Pages\Admin\Entities;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -12,6 +13,16 @@ use SDF\BilletterieBundle\Controller\Pages\Admin\CrudController;
 
 class UsersController extends CrudController
 {
+	/**
+	 * Look up a ticket's owner with a query string
+	 *
+	 * This route will use the GET parameter "query" if provided,
+	 * To filter all ticket's users matching this query (by firstname or name)
+	 *
+	 * If the GET parameter query is not provided, this route renders all ticket's owners.
+	 *
+	 * @return {JSON, XML} The Response at the given format
+	 */
 	public function lookUpAction(Request $request)
 	{
 		$em = $this->getDoctrine()->getManager();
@@ -33,7 +44,7 @@ class UsersController extends CrudController
 	 * List all unvalid tickets mails
 	 * Render an array of mail addresses, at the given format
 	 *
-	 * @return {CSV, JSON} The Response at the given format
+	 * @return {JSON, XML, CSV, TXT} The Response at the given format
 	 */
 	public function listUnvalidTicketMailsAction(Request $request)
 	{
@@ -73,30 +84,32 @@ class UsersController extends CrudController
 		return $response;
 	}
 
+	/**
+	 * Send mails informations to all ticket's owners.
+	 *
+	 * BAD PRACTICE
+	 * - In my opinion - it is not the role of an HTTP server to send a large set of mails.
+	 * A symfony Command Line could be used for it,
+	 * Or even better, a 3rd party service such as Mailchimp.
+	 *
+	 */
 	public function sendMailsAction()
 	{
-
-		send_time_limit(180);
-
 		$em = $this->getDoctrine()->getManager();
-		$repoUser = $em->getRepository('SDFBilletterieBundle:Utilisateur');
-		$repoBillets = $em->getRepository('SDFBilletterieBundle:Billet');
 
-		$listeUsers = $repoUser->findAll();
+		$tickets = $em->getRepository('SDFBilletterieBundle:Billet')->findAll();
 
-		foreach($listeUsers as $user){
-			if ($user->getId() <= 606) break; else {
-				$billet = $repoBillets->findOneBy(array('utilisateur' => $user));
-				if (gettype($billet) != 'NULL'){
-					$message = \Swift_Message::newInstance()->setSubject('Soirée des Finaux 2015 - Infos Pratiques')
-								->setFrom('soireedesfinaux@assos.utc.fr')
-								->setTo($user->getEmail())
-								->setBody($this->renderView('SDFBilletterieBundle:Pages/Ticketing:mailinfos.html.twig'),'text/html');
+		return new StreamedResponse(function () use ($tickets) {
+			foreach ($tickets as $ticket) {
+				$user = $ticket->getUser();
 
-					$this->get('mailer')->send($message);
-					echo "fait pour : ".$user->getId()."<br />"; }
+				$mailManager = $this->get('sdf_billetterie.utils.mail_manager');
+
+				if ($mailManager->sendInformationsMail($user)) {
+					echo sprintf('Mail envoyé à %s.<br />', $user->getEmail());
+					flush();
+				}
 			}
-		}
-		return new Response("OK");
+		}, StreamedResponse::HTTP_OK, array('Content-Type' => 'text/html'));
 	}
 }
