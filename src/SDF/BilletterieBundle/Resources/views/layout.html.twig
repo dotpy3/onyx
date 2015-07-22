@@ -7,7 +7,7 @@
 		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 		<meta name='description' content=''>
 		<meta name='author' content=''>
-		<link rel='icon' href='favicon.ico'>
+		<link rel='icon' href='{{ asset('favicon.ico') }}'>
 		<title>{% block title %}Billetterie{% endblock %}</title>
 		{% block stylesheets %}
 			{% stylesheets '@SDFBilletterieBundle/Resources/css/*' filter='cssrewrite' %}
@@ -33,21 +33,26 @@
 			{% block navbar %}
 				<nav class='navbar navbar-inverse navbar-fixed-top'>
 					<div class='container'>
-						<div class='navbar-header'>
-							<a class='navbar-brand' href='{{ path('sdf_billetterie_homepage') }}'>Billetterie</a>
-						</div>
-						{% if app.user %}
-							<ul class='nav navbar-nav navbar-right'>
-								{% if is_granted('ROLE_ADMIN') %}
+						{% block navbar_header %}
+							<div class='navbar-header'>
+								<a class='navbar-brand' href='{{ path('sdf_billetterie_homepage') }}'>Billetterie</a>
+							</div>
+						{% endblock %}
+						{% block navbar_content %}{% endblock %}
+						{% block navbar_right %}
+							{% if app.user %}
+								<ul class='nav navbar-nav navbar-right'>
+									{% if is_granted('ROLE_ADMIN') %}
+										<li>
+											<a href='{{ path('sdf_billetterie_administration') }}'>Administration</a>
+										</li>
+									{% endif %}
 									<li>
-										<a href='{{ path('sdf_billetterie_administration') }}'>Administration</a>
+										<a href='{{ path('sdf_billetterie_logout') }}'>Déconnexion</a>
 									</li>
-								{% endif %}
-								<li>
-									<a href='{{ path('sdf_billetterie_logout') }}'>Déconnexion</a>
-								</li>
-							</ul>
-						{% endif %}
+								</ul>
+							{% endif %}
+						{% endblock %}
 					</div>
 				</nav>
 			{% endblock %}
@@ -80,7 +85,9 @@
 			<!-- Placed at the end of the document so the pages load faster -->
 			<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js'></script>
 
-			{% javascripts '@SDFBilletterieBundle/Resources/js/*' %}
+			{% javascripts
+				'@SDFBilletterieBundle/Resources/js/bootstrap.min.js'
+				%}
 				<script type='text/javascript' src='{{ asset_url }}'></script>
 			{% endjavascripts %}
 		{% endblock %}

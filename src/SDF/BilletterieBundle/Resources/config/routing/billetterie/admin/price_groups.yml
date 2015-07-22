@@ -1,3 +1,9 @@
+sdf_billetterie_administration_price_groups_list:
+    path:     /
+    defaults:
+        _controller: SDFBilletterieBundle:Pages/Admin/Entities/PriceGroups:list
+    methods: GET
+
 sdf_billetterie_administration_price_group_new:
     path:     /new
     defaults:

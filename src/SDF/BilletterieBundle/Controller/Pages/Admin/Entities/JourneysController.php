@@ -10,6 +10,11 @@ use SDF\BilletterieBundle\Form\Admin\TrajetType;
 
 class JourneysController extends CrudController
 {
+	public function listAction()
+	{
+		return $this->listEntities('Trajet', 'SDFBilletterieBundle', 'SDFBilletterieBundle');
+	}
+
 	public function newAction()
 	{
 		return $this->renderCreationForm(new Trajet(), new TrajetType(), 'Trajet', 'SDFBilletterieBundle');
@@ -17,6 +22,6 @@ class JourneysController extends CrudController
 
 	public function createAction(Request $request)
 	{
-		return $this->renderCreationForm($request, new Trajet(), new TrajetType(), 'Trajet', 'SDFBilletterieBundle', 'sdf_billetterie_administration');
+		return $this->createEntity($request, new Trajet(), new TrajetType(), 'Trajet', 'SDFBilletterieBundle', 'sdf_billetterie_administration_journeys_list');
 	}
 }

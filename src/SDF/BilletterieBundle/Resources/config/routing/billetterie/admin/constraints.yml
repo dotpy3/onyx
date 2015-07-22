@@ -1,3 +1,9 @@
+sdf_billetterie_administration_constraints_list:
+    path:     /
+    defaults:
+        _controller: SDFBilletterieBundle:Pages/Admin/Entities/Constraints:list
+    methods: GET
+
 sdf_billetterie_administration_constraint_new:
     path:     /new
     defaults:

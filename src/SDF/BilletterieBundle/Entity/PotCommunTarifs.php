@@ -29,6 +29,11 @@ class PotCommunTarifs
     private $titre;
 
 
+    public function __toString()
+    {
+        return $this->titre;
+    }
+
     /**
      * Get id
      *

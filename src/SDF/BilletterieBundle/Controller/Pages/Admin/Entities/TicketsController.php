@@ -10,6 +10,11 @@ use SDF\BilletterieBundle\Form\Admin\BilletType;
 
 class TicketsController extends CrudController
 {
+	public function listAction()
+	{
+		return $this->listEntities('Billet', 'SDFBilletterieBundle', 'SDFBilletterieBundle');
+	}
+
 	public function newAction()
 	{
 		return $this->renderCreationForm(new Billet(), new BilletType(), 'Billet', 'SDFBilletterieBundle');
@@ -17,6 +22,6 @@ class TicketsController extends CrudController
 
 	public function createAction(Request $request)
 	{
-		return $this->renderCreationForm($request, new Billet(), new BilletType(), 'Billet', 'SDFBilletterieBundle', 'sdf_billetterie_administration');
+		return $this->createEntity($request, new Billet(), new BilletType(), 'Billet', 'SDFBilletterieBundle', 'sdf_billetterie_administration_tickets_list');
 	}
 }

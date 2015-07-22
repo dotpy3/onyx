@@ -137,7 +137,7 @@ class CrudController extends FrontController
 				$routeParams = array_merge($routeParams, $additionnalParameters['routeParams']);
 			}
 
-			return $this->redirectToRoute($redirection, $$routeParams);
+			return $this->redirectToRoute($redirection, $routeParams);
 		} else {
 			$this->addFlash('danger', sprintf('L\'entité %s n\'a pas pu être enregistrée.', $entityName));
 		}
@@ -282,7 +282,7 @@ class CrudController extends FrontController
 				$routeParams = array_merge($routeParams, $additionnalParameters['routeParams']);
 			}
 
-			return $this->redirectToRoute($redirection, $$routeParams);
+			return $this->redirectToRoute($redirection, $routeParams);
 		} else {
 			$this->addFlash('danger', sprintf('L\'entité %s n\'a pas pu être mise à jour.', $entity));
 		}
@@ -344,7 +344,7 @@ class CrudController extends FrontController
 			$routeParams = $additionnalParameters['routeParams'];
 		}
 
-		return $this->redirectToRoute($redirection, $$routeParams);
+		return $this->redirectToRoute($redirection, $routeParams);
 	}
 
 	/**

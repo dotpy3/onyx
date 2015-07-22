@@ -1,0 +1,19 @@
+{% extends 'SDFBilletterieBundle:Pages/Admin/Entities:list.html.twig' %}
+
+{% block entity_title %}Liste des navettes{% endblock %}
+
+{% block entity_add_path %}{{ path('sdf_billetterie_administration_shuttle_new') }}{% endblock %}
+
+{% block entity_add_label %}Ajouter une navette{% endblock %}
+
+{% block entity_table_headers %}
+	<th>Trajet</th>
+	<th>Départ</th>
+	<th>Capacité</th>
+{% endblock %}
+
+{% block entity_table_content %}
+	<td>{{ entity.trajet }}</td>
+	<td>{{ entity.horaireDepart|date('d/m/Y H:i:s') }}</td>
+	<td>{{ entity.capaciteMax }} personnes</td>
+{% endblock %}

@@ -1,3 +1,9 @@
+sdf_billetterie_administration_journeys_list:
+    path:     /
+    defaults:
+        _controller: SDFBilletterieBundle:Pages/Admin/Entities/Journeys:list
+    methods: GET
+
 sdf_billetterie_administration_journey_new:
     path:     /new
     defaults:

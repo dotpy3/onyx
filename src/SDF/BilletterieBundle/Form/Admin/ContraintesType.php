@@ -18,9 +18,9 @@ class ContraintesType extends AbstractType
 			->add('nom')
 			->add('debutMiseEnVente')
 			->add('finMiseEnVente')
-			->add('doitEtreCotisant')
-			->add('doitNePasEtreCotisant')
-			->add('accessibleExterieur')
+			->add('doitEtreCotisant', 'checkbox', array('required' => false))
+			->add('doitNePasEtreCotisant', 'checkbox', array('required' => false))
+			->add('accessibleExterieur', 'checkbox', array('required' => false))
 		;
 	}
 

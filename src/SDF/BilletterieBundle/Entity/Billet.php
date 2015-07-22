@@ -102,6 +102,11 @@ class Billet
      */
     private $tarif;
 
+    public function __toString()
+    {
+        return sprintf('Billet de %s %s [%d]', $this->prenom, $this->nom, $this->barcode);
+    }
+
     public function __construct()
     {
         $this->valide = false;

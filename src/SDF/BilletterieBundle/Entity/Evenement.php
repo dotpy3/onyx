@@ -35,6 +35,10 @@ class Evenement
      */
     private $quantiteMax;
 
+    public function __toString()
+    {
+        return $this->nom;
+    }
 
     /**
      * Get id

@@ -1,0 +1,27 @@
+{% extends 'SDFBilletterieBundle:Pages/Admin/Entities:list.html.twig' %}
+
+{% block entity_title %}Liste des contraintes{% endblock %}
+
+{% block entity_add_path %}{{ path('sdf_billetterie_administration_constraint_new') }}{% endblock %}
+
+{% block entity_add_label %}Ajouter une contrainte{% endblock %}
+
+{% block entity_table_headers %}
+	<th>Nom</th>
+	<th>Début</th>
+	<th>Fin</th>
+	<th>Options</th>
+{% endblock %}
+
+{% block entity_table_content %}
+	<td>{{ entity.nom }}</td>
+	<td>{{ entity.debutMiseEnVente|date('d/m/Y H:i:s') }}</td>
+	<td>{{ entity.finMiseEnVente|date('d/m/Y H:i:s') }}</td>
+	<td>
+		<ul>
+			{% if entity.doitEtreCotisant%}<li>Doit être cotisant</li>{% endif %}
+			{% if entity.doitNePasEtreCotisant%}<li>Doit ne pas être cotisant</li>{% endif %}
+			{% if entity.accessibleExterieur%}<li>Accessible aux externes</li>{% endif %}
+		</ul>
+	</td>
+{% endblock %}

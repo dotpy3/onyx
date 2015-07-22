@@ -1,0 +1,17 @@
+{% extends 'SDFBilletterieBundle:Pages/Admin/Entities:list.html.twig' %}
+
+{% block entity_title %}Liste des trajets{% endblock %}
+
+{% block entity_add_path %}{{ path('sdf_billetterie_administration_journey_new') }}{% endblock %}
+
+{% block entity_add_label %}Ajouter un trajet{% endblock %}
+
+{% block entity_table_headers %}
+	<th>Départ</th>
+	<th>Arrivée</th>
+{% endblock %}
+
+{% block entity_table_content %}
+	<td>{{ entity.lieuDepart }}</td>
+	<td>{{ entity.lieuArrivee }}</td>
+{% endblock %}

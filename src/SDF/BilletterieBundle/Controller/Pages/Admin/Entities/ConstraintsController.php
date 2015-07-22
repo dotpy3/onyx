@@ -10,6 +10,11 @@ use SDF\BilletterieBundle\Form\Admin\ContraintesType;
 
 class ConstraintsController extends CrudController
 {
+	public function listAction()
+	{
+		return $this->listEntities('Contraintes', 'SDFBilletterieBundle', 'SDFBilletterieBundle');
+	}
+
 	public function newAction()
 	{
 		return $this->renderCreationForm(new Contraintes(), new ContraintesType(), 'Contraintes', 'SDFBilletterieBundle');
@@ -17,6 +22,6 @@ class ConstraintsController extends CrudController
 
 	public function createAction(Request $request)
 	{
-		return $this->renderCreationForm($request, new Contraintes(), new ContraintesType(), 'Contraintes', 'SDFBilletterieBundle', 'sdf_billetterie_administration');
+		return $this->createEntity($request, new Contraintes(), new ContraintesType(), 'Contraintes', 'SDFBilletterieBundle', 'sdf_billetterie_administration_constraints_list');
 	}
 }

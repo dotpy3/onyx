@@ -63,6 +63,10 @@ class Contraintes
      */
     private $accessibleExterieur;
 
+    public function __toString()
+    {
+        return $this->nom;
+    }
 
     /**
      * Get id

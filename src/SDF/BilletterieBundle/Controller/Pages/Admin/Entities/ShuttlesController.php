@@ -10,6 +10,11 @@ use SDF\BilletterieBundle\Form\Admin\NavetteType;
 
 class ShuttlesController extends CrudController
 {
+	public function listAction()
+	{
+		return $this->listEntities('Navette', 'SDFBilletterieBundle', 'SDFBilletterieBundle');
+	}
+
 	public function newAction()
 	{
 		return $this->renderCreationForm(new Navette(), new NavetteType(), 'Navette', 'SDFBilletterieBundle');
@@ -17,6 +22,6 @@ class ShuttlesController extends CrudController
 
 	public function createAction(Request $request)
 	{
-		return $this->renderCreationForm($request, new Navette(), new NavetteType(), 'Navette', 'SDFBilletterieBundle', 'sdf_billetterie_administration');
+		return $this->createEntity($request, new Navette(), new NavetteType(), 'Navette', 'SDFBilletterieBundle', 'sdf_billetterie_administration_shuttles_list');
 	}
 }

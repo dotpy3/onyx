@@ -15,19 +15,20 @@ class BilletType extends AbstractType
 	public function buildForm(FormBuilderInterface $builder, array $options)
 	{
 		$builder
-			->add('prenom','text')
-			->add('nom','text')
-			->add('accepteDroitImage','checkbox')
-			->add('idPayutc','text')
-			->add('isMajeur','checkbox')
-			->add('valide','checkbox')
-			->add('barcode','text')
-			->add('dateAchat','datetime')
+			->add('prenom', 'text')
+			->add('nom', 'text')
+			->add('accepteDroitImage', 'checkbox', array('required' => false))
+			->add('idPayutc', 'text')
+			->add('isMajeur', 'checkbox', array('required' => false))
+			->add('valide', 'checkbox', array('required' => false))
+			->add('barcode', 'text')
+			->add('dateAchat', 'datetime')
 		;
 
 
 		$builder
 			->add('navette', 'entity', array(
+				'required' => false,
 				'class' => 'SDFBilletterieBundle:Navette',
 				'expanded' => true,
 				'empty_value' => 'Sans navette',
@@ -38,6 +39,7 @@ class BilletType extends AbstractType
 
 		$builder
 			->add('user', 'entity', array(
+				'required' => true,
 				'class' => 'SDFBilletterieBundle:User'
 			))
 		;
@@ -45,6 +47,7 @@ class BilletType extends AbstractType
 
 		$builder
 			->add('tarif', 'entity', array(
+				'required' => true,
 				'class' => 'SDFBilletterieBundle:Tarif'
 			))
 		;

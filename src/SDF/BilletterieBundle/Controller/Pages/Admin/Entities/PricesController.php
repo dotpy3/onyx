@@ -10,6 +10,11 @@ use SDF\BilletterieBundle\Form\Admin\TarifType;
 
 class PricesController extends CrudController
 {
+	public function listAction()
+	{
+		return $this->listEntities('Tarif', 'SDFBilletterieBundle', 'SDFBilletterieBundle');
+	}
+
 	public function newAction()
 	{
 		return $this->renderCreationForm(new Tarif(), new TarifType(), 'Tarif', 'SDFBilletterieBundle');
@@ -17,6 +22,6 @@ class PricesController extends CrudController
 
 	public function createAction(Request $request)
 	{
-		return $this->renderCreationForm($request, new Tarif(), new TarifType(), 'Tarif', 'SDFBilletterieBundle', 'sdf_billetterie_administration');
+		return $this->createEntity($request, new Tarif(), new TarifType(), 'Tarif', 'SDFBilletterieBundle', 'sdf_billetterie_administration_prices_list');
 	}
 }

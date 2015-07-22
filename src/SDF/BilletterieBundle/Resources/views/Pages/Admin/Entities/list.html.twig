@@ -1,0 +1,32 @@
+{% extends 'SDFBilletterieBundle:Pages/Admin:layout.html.twig' %}
+
+{% block app_hero_content %}
+	<h1>{% block entity_title %}{% endblock %}</h1>
+{% endblock %}
+
+{% block app_content %}
+	{% block extra_before_list %}{% endblock %}
+	{% block entity_add_link %}
+		<div class='link-wrapper'>
+			<a class='btn btn-primary' href='{% block entity_add_path %}{% endblock %}'>{% block entity_add_label %}{% endblock %}</a>
+		</div>
+	{% endblock %}
+	<div class='table-responsive'>
+		<table class='table table-bordered table-condensed table-stripped table-sorted'>
+			<thead>
+				<tr>
+					{% block entity_table_headers %}{% endblock %}
+				</tr>
+			</thead>
+			<tbody id='data-list'>
+				{% for entity in entities %}
+					<tr data-id='{{ entity.id }}'>
+						{% block entity_table_content %}{% endblock %}
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	{{ block('entity_add_link') }}
+	{% block extra_after_list %}{% endblock %}
+{% endblock %}

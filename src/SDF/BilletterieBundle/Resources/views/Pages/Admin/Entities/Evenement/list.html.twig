@@ -1,0 +1,17 @@
+{% extends 'SDFBilletterieBundle:Pages/Admin/Entities:list.html.twig' %}
+
+{% block entity_title %}Liste des évènements{% endblock %}
+
+{% block entity_add_path %}{{ path('sdf_billetterie_administration_event_new') }}{% endblock %}
+
+{% block entity_add_label %}Ajouter un évènement{% endblock %}
+
+{% block entity_table_headers %}
+	<th>Nom</th>
+	<th>Capacité maximale</th>
+{% endblock %}
+
+{% block entity_table_content %}
+	<td>{{ entity.nom }}</td>
+	<td>{{ entity.quantiteMax }}</td>
+{% endblock %}
