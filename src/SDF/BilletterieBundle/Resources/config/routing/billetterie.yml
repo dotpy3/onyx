@@ -51,37 +51,23 @@ sdf_billetterie_checkout:
     resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/checkout.yml
     prefix: /checkout
 
-sdf_validationTest:
-    path:     /payutcbugtest
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:testbug }
+sdf_billetterie_checking:
+    resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/checking.yml
+    prefix: /checking
+
+sdf_billetterie_checkByNamePortion:
+    path:     /{name}/namesearch
+    defaults:
+        _controller: SDFBilletterieBundle:Pages/Checking:checkByNamePortion
+    methods: GET
 
 sdf_getEmailsNonValides:
     path:     /getEmailsNonValides
     defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:getEmailsNonValide }
 
-sdf_checkIfBilletValide:
-    path:     /billetcheck/barcode/{id}
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:checkValidBarcode }
-
-sdf_billetterie_checkBilletNumValide:
-    path:     /billetcheck/numbillet/{id}
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:checkValidNumBillet }
-
-sdf_billetterie_checkByNamePortion:
-    path:     /billetcheck/namesearch/{name}
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:checkByNamePortion }
-
-sdf_billetterie_checkNFC:
-    path:     /billetcheck/nfc/{id}
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:getNFCAssociatedBillets }
-
 sdf_billetterie_sendEmailInfos:
     path:     /sendAllInfos
     defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:sendMailInfos }
-
-sdf_billetterie_validateBillet:
-    path:     /billetcheck/validate/{id}
-    defaults: { _controller:SDFBilletterieBundle:Pages/Ticketing:validateBillet }
 
 ### Administration
 sdf_billetterie:

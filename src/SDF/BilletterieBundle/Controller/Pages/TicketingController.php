@@ -7,32 +7,10 @@ use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\Validator\Constraints\Date;
 
 use SDF\BilletterieBundle\Controller\FrontController;
-use SDF\BilletterieBundle\Entity\User;
-use SDF\BilletterieBundle\Entity\CasUser;
-use SDF\BilletterieBundle\Entity\Evenement;
-use SDF\BilletterieBundle\Entity\Tarif;
-use SDF\BilletterieBundle\Entity\Navette;
-use SDF\BilletterieBundle\Entity\Billet;
-use SDF\BilletterieBundle\Entity\Trajet;
-use SDF\BilletterieBundle\Entity\Contraintes;
-use SDF\BilletterieBundle\Entity\Log;
-use SDF\BilletterieBundle\Entity\Appkey;
-use SDF\BilletterieBundle\Entity\PotCommunTarifs;
-use SDF\BilletterieBundle\Form\TarifType;
-use SDF\BilletterieBundle\Form\TrajetType;
-use SDF\BilletterieBundle\Form\NavetteType;
-use SDF\BilletterieBundle\Form\BilletType;
 use SDF\BilletterieBundle\Form\BilletOrderType;
-use SDF\BilletterieBundle\Form\PotCommunTarifsType;
 use SDF\BilletterieBundle\Exception\UserNotFoundException;
-use SDF\BilletterieBundle\Utils\Pdf\Pdf;
-
-use \Payutc\Client\AutoJsonClient;
-use \Payutc\Client\JsonException;
 
 class TicketingController extends FrontController
 {
@@ -180,29 +158,6 @@ class TicketingController extends FrontController
 		return $this->redirectToRoute('sdf_billetterie_homepage');
 	}
 
-	public function testbugAction(){
-			// FONCTION CREEE POUR TESTER L'URL DE REDIRECTION VERS LA TRANSACTION
-			$config = $this->container->getParameter('sdf_billetterie');
-
-			$payutcClient = new AutoJsonClient("https://api.nemopay.net/services/", "WEBSALE", array(CURLOPT_PROXY => 'proxyweb.utc.fr:3128', CURLOPT_TIMEOUT => 5), "Payutc Json PHP Client", array(), "payutcdev", $config['payutc']['key']);
-
-							$arrayItems = array(array(3201));
-							$item = json_encode($arrayItems);
-							//return new Response($item);
-							$returnURL = 'http://google.fr/test';
-							$callback_url = 'http://google.fr/test';
-							//return new Response($item);
-							$c = $payutcClient->apiCall('createTransaction', array(
-								"fun_id" => $config['payutc']['fundation_id'],
-								"items" => $item,
-								"return_url" => $returnURL,
-								"callback_url" => $callback_url,
-								"mail" => 'ericgourlaouen@airpost.net'
-							));
-
-							return new Response($c->url);
-	}
-
 	public function getEmailsNonValideAction(){
 
 			$em=$this->getDoctrine()->getManager();
@@ -216,108 +171,6 @@ class TicketingController extends FrontController
 					$reponse .= ", ".$user->getEmail();
 			}
 			return new Response($reponse);
-	}
-
-	public function checkValidBarcodeAction($id){
-		$trueBarcode = ($id-($id%10))/10;
-		$em=$this->getDoctrine()->getManager();
-		$repoBillets = $em->getRepository('SDFBilletterieBundle:Billet');
-		$billet = "";
-		$billet = $repoBillets->findOneBy(array('barcode' => $trueBarcode));
-
-		return new Response(var_dump($billet->getValide()));
-	}
-
-	public function checkValidNumBilletAction($id)
-	{
-		$config = $this->container->getParameter('sdf_billetterie');
-		$em = $this->getDoctrine()->getManager();
-
-		// ON VERIFIE QU'IL Y A BIEN UN NUM DE BILLET ASSOCIE
-
-		$repoBillets = $em->getRepository('SDFBilletterieBundle:Billet');
-		$repoKeys = $em->getRepository('SDFBilletterieBundle:Appkey');
-		$repoCAS = $em->getRepository('SDFBilletterieBundle:CasUser');
-
-		if (gettype($id) == 'NULL') return automatedJsonResponse(array("isValid" => 'noId'));
-
-		// ON VERIFIE QU'IL Y A UN BILLET ASSOCIE
-
-		$billet = $repoBillets->find($id);
-		if (gettype($billet) == 'NULL') return automatedJsonResponse(array("isValid" => 'noBillet'));
-		if($billet->getConsomme()) return automatedJsonResponse(array("isValid" => 'alreadyUsed'));
-		if(!$billet->getValide()) return automatedJsonResponse(array("isValid" => 'notValid'));
-		if (!isset($_GET['key']) || gettype($repoKeys->findOneBy(array('relationKey' => $_GET['key']))) == 'NULL')
-			return automatedJsonResponse(array('isValid' => 'invalidKey'));
-
-		$utilisateurConcerne = $billet->getUtilisateur();
-		$userCAS = $repoCAS->findOneBy(array('user' => $utilisateurConcerne));
-
-		if(gettype($userCAS) != 'NULL'){
-			$ginger = json_decode(file_get_contents($config['ginger']['url'].$userCAS->getLoginCAS().'?key='.$config['ginger']['key']));
-			try {
-				$adulte = $ginger->is_adulte;
-			} catch (Exception $e) {
-				$adulte = true;
-			}
-		} else {
-			$adulte = true;
-		}
-
-		$tabReponse = array(
-			"isValid" => "ok",
-			"nom" => $billet->getNom(),
-			"prenom" => $billet->getPrenom(),
-			"majeur" => $adulte
-			);
-
-		$this->instantLog($billet->getUtilisateur(),"Numéro associé au billet ".$billet->getId()." lu");
-
-		return automatedJsonResponse($tabReponse);
-	}
-
-	public function getNFCAssociatedBilletsAction($id)
-	{
-		$config = $this->container->getParameter('sdf_billetterie');
-		$em = $this->getDoctrine()->getManager();
-
-		try {
-			$gingerResult = json_decode(@file_get_contents($config['ginger']['url'] . 'badge/'. $id . '?key=' . $config['ginger']['key']));
-			if(gettype($gingerResult) != 'NULL'){
-				$loginAssocie = $gingerResult->login;
-				$adulte = $gingerResult->is_adulte;
-			} else {
-				return automatedJsonResponse(array('isValide' => 'noLoginFound'));
-			}
-		} catch (ContextErrorException $e) {
-			return automatedJsonResponse(array('isValide' => 'noLoginFound'));
-		}
-
-
-		$repoKeys = $em->getRepository('SDFBilletterieBundle:Appkey');
-		if (!isset($_GET['key']) || gettype($repoKeys->findOneBy(array('relationKey' => $_GET['key']))) == 'NULL')
-			return automatedJsonResponse(array('isValide' => 'invalidKey'));
-
-		$repoUserCas = $em->getRepository('SDFBilletterieBundle:CasUser');
-		$userCASConcerne = $repoUserCas->findOneBy(array('loginCAS' => $loginAssocie));
-
-		if(gettype($userCASConcerne) == 'NULL') return automatedJsonResponse(array('isValide' => 'loginNotInDatabase'));
-
-		$billetsAffiches = array('isValide' => 'yes','isAdulte' => $adulte);
-
-		$billets = $em->getRepository('SDFBilletterieBundle:Billet')->findBy(array('utilisateur' => $userCASConcerne->getUser()));
-		$i=0;
-		foreach($billets as $billet){
-				if ($billet->getValide() && !$billet->getConsomme()){
-					$billetsAffiches[$i++] = array('id' => $billet->getId(),
-					'nom' => $billet->getNom(),
-					'prenom' => $billet->getPrenom());
-
-					$this->instantLog($billet->getUtilisateur(),"Badge associé au billet ".$billet->getId()." lu");
-				}
-		}
-
-		return automatedJsonResponse($billetsAffiches);
 	}
 
 	public function checkByNamePortionAction($name){
@@ -375,33 +228,6 @@ class TicketingController extends FrontController
 			}
 		}
 		return new Response("OK");
-	}
-
-	public function validateBilletAction($id){
-
-		$em = $this->getDoctrine()->getManager();
-		$repoBillets = $em->getRepository('SDFBilletterieBundle:Billet');
-
-		$repoKeys = $em->getRepository('SDFBilletterieBundle:Appkey');
-		if (!isset($_GET['key']) || gettype($repoKeys->findOneBy(array('relationKey' => $_GET['key']))) == 'NULL')
-			return automatedJsonResponse(array('validation' => 'invalidKey'));
-
-		$billet = $repoBillets->find($id);
-
-		if (gettype($billet) == 'NULL' || !$billet->getValide())
-			return automatedJsonResponse(array('validation' => 'noBillet'));
-
-		if ($billet->getConsomme())
-			return automatedJsonResponse(array('validation' => 'alreadyConsumed'));
-
-		$billet->setConsomme(true);
-
-		$this->instantLog($billet->getUtilisateur(),"Billet ".$billet->getId()." consommé");
-		$em->persist($billet);
-		$em->flush();
-
-		return automatedJsonResponse(array('validation' => 'ok'));
-
 	}
 
 	private function checkUserExists()

@@ -15,12 +15,12 @@ class PayutcClient extends AutoJsonClient
 	{
 		$this->apiKey = $apiKey;
 		$this->session = $session;
-		$cookie = $session->get('payutc_cookie');
+		$cookies = $session->get('payutc_cookies');
 		$this->status = $session->get('payutc_status');
 
-		parent::__construct($url, $service, array(), 'Payutc Json PHP Client', $cookie);
+		parent::__construct($url, $service, array(), 'Payutc Json PHP Client', $cookies);
 
-		if (!$cookie) {
+		if (!$cookies) {
 			$this->connectApp();
 			$this->session->set('payutc_cookie', $this->cookies);
 		}

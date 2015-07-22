@@ -127,11 +127,11 @@ class FrontController extends Controller
 	/**
 	 * Send an HTTP Response with Json encoded content
 	 *
-	 * @param array $data The data to encode
+	 * @param varied $data The data to encode
 	 * @param integer $statusCode The HTTP Status-Code
 	 * @param array $headers The HTTP headers to join to the response
 	 */
-	protected function renderJsonResponse(array $data, $statusCode = JsonResponse::HTTP_OK, array $headers = array())
+	protected function renderJsonResponse($data, $statusCode = JsonResponse::HTTP_OK, array $headers = array())
 	{
 		return new JsonResponse($data, $statusCode, $headers);
 	}
