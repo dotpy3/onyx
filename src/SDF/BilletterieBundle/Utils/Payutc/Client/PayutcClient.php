@@ -5,6 +5,13 @@ namespace SDF\BilletterieBundle\Utils\Payutc\Client;
 use Payutc\Client\AutoJsonClient;
 use Payutc\Client\JsonException;
 
+/**
+ * PayUtc Client
+ * Send requests to the payutc API
+ *
+ * @author Matthieu Guffroy <mattgu74@gmail.com>
+ * @author Florent Schildknecht <florent.schildknecht@gmail.com>
+ */
 class PayutcClient extends AutoJsonClient
 {
 	private $apiKey;

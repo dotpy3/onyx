@@ -9,6 +9,12 @@ use SDF\BilletterieBundle\Entity\Billet;
 use SDF\BilletterieBundle\Exception\NullTicketException;
 use SDF\BilletterieBundle\Exception\ImageNotFoundException;
 
+/**
+ * PDF Generator
+ * Generates PDF content
+ *
+ * @author Florent Schildknecht <florent.schildknecht@gmail.com>
+ */
 class PdfGenerator
 {
 	protected $imagePath;
@@ -28,6 +34,11 @@ class PdfGenerator
 
 	/**
 	 * Generate a PDF with Billet informations
+	 *
+	 * TODO
+	 * NOTE
+	 * This function generates PDF content based on hardcoded coordinates of the background-image
+	 * In order to allow bundle extensions to generate their own PDF, this service would have to be reviewed.
 	 *
 	 * @param Billet $ticket The Billet entity with informations to print
 	 * @throws NullTicketException Occurs if the provided Billet is null

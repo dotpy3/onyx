@@ -2,8 +2,14 @@
 
 namespace SDF\BilletterieBundle\Utils\Mailer;
 
-use \Swift_Message;
+use Swift_Message;
 
+/**
+ * MailManager
+ * Send mails to users using SwiftMailer
+ *
+ * @author Florent Schildknecht <florent.schildknecht@gmail.com>
+ */
 class MailManager
 {
 	protected $mailer;

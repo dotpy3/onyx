@@ -21,11 +21,11 @@
         "sensio/distribution-bundle": "~3.0,>=3.0.12",
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
-        "nategood/httpful": "*",
-        "payutc/php-client": "*@dev",
+        "jms/serializer-bundle": "^1.0",
+        "guzzlehttp/guzzle": "~6.0",
         "itbz/fpdf": "*",
-        "ginger/client": "^2.3",
-        "jms/serializer-bundle": "^1.0"
+        "payutc/php-client": "*@dev",
+        "ginger/client": "^2.3"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"

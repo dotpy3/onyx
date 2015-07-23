@@ -1,5 +1,7 @@
 parameters:
     payutc_client.class: SDF\BilletterieBundle\Utils\Payutc\Client\PayutcClient
+    ginger_client.class: SDF\BilletterieBundle\Utils\Ginger\Client\GingerClient
+    cas_client.class: SDF\BilletterieBundle\Utils\Cas\Client\CasClient
     cas.authentication.listener.class: SDF\BilletterieBundle\Authentication\Firewall\CasListener
     cas.authentication.provider.class: SDF\BilletterieBundle\Authentication\Cas\Provider\CasProvider
     sdf_billetterie.utils.pdf.generator.class: SDF\BilletterieBundle\Utils\Pdf\Generator\PdfGenerator
@@ -13,13 +15,21 @@ services:
         class: %payutc_client.class%
         arguments: [@session, %sdf_billetterie.payutc.key%, %sdf_billetterie.payutc.api_url%, %sdf_billetterie.payutc.api_service%]
 
+    ginger_client:
+        class: %ginger_client.class%
+        arguments: [%sdf_billetterie.ginger.key%, %sdf_billetterie.ginger.url%]
+
+    cas_client:
+        class: %cas_client.class%
+        arguments: [@logger, %sdf_billetterie.utc_cas.url%, 10]
+
     cas.authentication.listener:
         class:  %cas.authentication.listener.class%
-        arguments: [@security.context, @security.authentication.manager]
+        arguments: [@security.context, @security.authentication.manager, @session]
 
     cas.authentication.provider:
         class:  %cas.authentication.provider.class%
-        arguments: ['', %kernel.cache_dir%/var/cas, @doctrine.orm.entity_manager, @security.password_encoder, %utc_cas_url%, %ginger_api_url%, %ginger_key%]
+        arguments: ['', %kernel.cache_dir%/var/cas, @doctrine.orm.entity_manager, @security.password_encoder, @cas_client, @ginger_client]
 
     sdf_billetterie.utils.pdf.generator:
         class: %sdf_billetterie.utils.pdf.generator.class%

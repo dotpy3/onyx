@@ -17,31 +17,31 @@ use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\SecurityF
  */
 class CasFactory implements SecurityFactoryInterface
 {
-    public function create(ContainerBuilder $container, $id, $config, $userProvider, $defaultEntryPoint)
-    {
-        $providerId = 'authentication.provider.cas.'.$id;
-        $container
-            ->setDefinition($providerId, new DefinitionDecorator('cas.authentication.provider'))
-            ->replaceArgument(0, new Reference($userProvider))
-        ;
+	public function create(ContainerBuilder $container, $id, $config, $userProvider, $defaultEntryPoint)
+	{
+		$providerId = 'authentication.provider.cas.'.$id;
+		$container
+			->setDefinition($providerId, new DefinitionDecorator('cas.authentication.provider'))
+			->replaceArgument(0, new Reference($userProvider))
+		;
 
-        $listenerId = 'authentication.listener.cas.'.$id;
-        $listener = $container->setDefinition($listenerId, new DefinitionDecorator('cas.authentication.listener'));
+		$listenerId = 'authentication.listener.cas.'.$id;
+		$listener = $container->setDefinition($listenerId, new DefinitionDecorator('cas.authentication.listener'));
 
-        return array($providerId, $listenerId, $defaultEntryPoint);
-    }
+		return array($providerId, $listenerId, $defaultEntryPoint);
+	}
 
-    public function getPosition()
-    {
-        return 'pre_auth';
-    }
+	public function getPosition()
+	{
+		return 'pre_auth';
+	}
 
-    public function getKey()
-    {
-        return 'cas_authentication';
-    }
+	public function getKey()
+	{
+		return 'cas_authentication';
+	}
 
-    public function addConfiguration(NodeDefinition $node)
-    {
-    }
+	public function addConfiguration(NodeDefinition $node)
+	{
+	}
 }

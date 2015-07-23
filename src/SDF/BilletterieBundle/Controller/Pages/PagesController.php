@@ -9,11 +9,8 @@ class PagesController extends FrontController
 {
 	public function homeAction()
 	{
-		$config = $this->container->getParameter('sdf_billetterie');
 		$authenticationUtils = $this->get('security.authentication_utils');
-
-		$casClient = new CasClient($config['utc_cas']['url']);
-
+		$casClient = $this->get('cas_client');
 		$user = $this->getUser();
 
 		$boughtTickets = array();
@@ -24,13 +21,12 @@ class PagesController extends FrontController
 		if ($user) {
 			$em = $this->getDoctrine()->getManager();
 
-			// Find all the tickets bought by the user (and validated by PayUtc)
+			// Find all tickets bought by the user (and validated by PayUtc)
 			$boughtTickets = $em->getRepository('SDFBilletterieBundle:Billet')->findAllValidTicketsForUser($user);
 
-			// Find all the available prices for the user [Without stock availability management]
-			// Then handle stocks availability
+			// Find all available prices for the user [Without stock availability management]
 			$availablePrices = $em->getRepository('SDFBilletterieBundle:Tarif')->findAllAvailablePricesForUser($user);
-
+			// Then handle stocks availability
 			$availablePrices = array_filter($availablePrices, function ($price) use ($user, $em, &$remainingPlacesByPrice) {
 				// Assume that the price is available by default
 				$isPriceAvailable = false;
@@ -45,15 +41,15 @@ class PagesController extends FrontController
 				return $isPriceAvailable;
 			});
 
-			/* ON RECUPERE LES BILLETS NON VALIDÉS */
+			// Find an optional ticket ordered by the user but not yet validated by PayUtc
 			$unvalidTicket = $em->getRepository('SDFBilletterieBundle:Billet')->findOneUnvalidTicketsForUser($user);
 		}
 
 		return $this->render('SDFBilletterieBundle:Pages:home.html.twig', array(
 			'last_username'           => $authenticationUtils->getLastUsername(),
 			'login_error'             => $authenticationUtils->getLastAuthenticationError(),
-			'exterior_access_enabled' => $config['settings']['enable_exterior_access'],
-			'utc_cas_url'             => $casClient->getLoginUrl($this->generateUrl('sdf_billetterie_cas_callback', array(), true)),
+			'exterior_access_enabled' => $this->container->getParameter('sdf_billetterie.settings.enable_exterior_access'),
+			'utc_cas_url'             => $casClient->getAbsoluteLoginUrl($this->generateUrl('sdf_billetterie_cas_callback', array(), true)),
 			'boughtTickets'           => $boughtTickets,
 			'unvalidTicket'           => $unvalidTicket,
 			'availablePrices'         => $availablePrices,

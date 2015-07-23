@@ -5,6 +5,12 @@ namespace SDF\BilletterieBundle\Utils\Barcode\Generator;
 use Doctrine\ORM\EntityRepository;
 use SDF\BilletterieBundle\Exception\UndefinedMethodException;
 
+/**
+ * Barcode Generator
+ * Generates barcode
+ *
+ * @author Florent Schildknecht <florent.schildknecht@gmail.com>
+ */
 class BarcodeGenerator
 {
 	protected $entityRepository;
@@ -25,12 +31,22 @@ class BarcodeGenerator
 		return $this;
 	}
 
+	/**
+	 * Generate a unique barcode
+	 *
+	 * TODO
+	 * If the configurated maxNumber is too low
+	 * And all available barcodes have already been generated
+	 * This loop will never ends...
+	 *
+	 * @return integer
+	 */
 	public function generateUniqueBarcode()
 	{
 		$barcode = null;
 
 		do {
-			$barcode = $this->generateBarcode();
+			$barcode = $this->generateRandomNumber();
 
 			$isBarcodeUnique = $this->checkBarcodeUnicity($barcode);
 		} while (!$isBarcodeUnique);
@@ -38,11 +54,22 @@ class BarcodeGenerator
 		return $barcode;
 	}
 
-	private function generateBarcode()
+	/**
+	 * Generate a random integer between 0 and the configurated max value.
+	 *
+	 * @return integer
+	 */
+	private function generateRandomNumber()
 	{
 		return (integer) mt_rand(0, $this->maxNumber);
 	}
 
+	/**
+	 * Check barcode unicity
+	 * Check if a given barcode is already registred in the database
+	 *
+	 * @return boolean
+	 */
 	private function checkBarcodeUnicity($barcode)
 	{
 		if (!method_exists($this->entityRepository, 'findOneByBarcode')) {
