@@ -115,7 +115,7 @@ class CheckoutController extends FrontController
 					// Need some informations about PayUtc API...
 					$call = $payutcClient->createTransaction(array(
 						'fun_id' => $this->container->getParameter('sdf_billetterie.payutc.fundation_id'),
-						'items' => json_encode(array($price->getIdPayutc() => 1)),
+						'items' => json_encode(array(array($price->getIdPayutc()))),
 						'return_url' => $this->generateUrl('sdf_billetterie_checkout_ticket_validate', array('id' => $ticket->getId()), true),
 						'callback_url' => $this->generateUrl('sdf_billetterie_checkout_ticket_payutc_callback', array('id' => $ticket->getId()), true),
 						'mail' => $user->getEmail()

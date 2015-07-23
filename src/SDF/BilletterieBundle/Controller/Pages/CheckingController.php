@@ -4,24 +4,24 @@ namespace SDF\BilletterieBundle\Controller\Pages;
 
 use Symfony\Component\HttpFoundation\Request;
 
-use Ginger\Client\GingerClient;
+use Ginger\Client\ApiException;
 
 use SDF\BilletterieBundle\Controller\FrontController;
 use SDF\BilletterieBundle\Entity\Billet;
 
 class CheckingController extends FrontController
 {
-	public function checkTicketBarcodeValidityAction($id)
+	public function checkTicketBarcodeValidityAction($barCode)
 	{
 		$em = $this->getDoctrine()->getManager();
 
-		// Well, that seems mysterious!
+		// Remove PDF generation additional number
 		$trueBarcode = ($id - ($id % 10)) / 10;
 
 		$ticket = $em->getRepository('SDFBilletterieBundle:Billet')->findOneBy(array('barcode' => $trueBarcode));
 
 		if (!$ticket) {
-			throw $this->createNotFoundException(sprintf('Impossible to find the ticket %d with barcode %d', $id, $trueBarcode));
+			throw $this->createNotFoundException(sprintf('Impossible to find the ticket associated to barcode: %d', $trueBarcode));
 		}
 
 		return $this->renderJsonResponse(array(
@@ -58,42 +58,59 @@ class CheckingController extends FrontController
 		));
 	}
 
-	public function getOwnerAssociatedTicketsAction($id, Request $request)
+	public function getOwnerAssociatedTicketsAction($badgeId, Request $request)
 	{
-		$this->checkAppkey($request->query->get('key'));
+		// $this->checkAppkey($request->query->get('key'));
+		$tickets = array();
+		$message = '';
 
-		$em = $this->getDoctrine()->getManager();
-		$ticket = $em->getRepository('SDFBilletterieBundle:Billet')->find($id);
+		$gingerClient = $this->get('ginger_client');
+		$user = null;
+		$userInfos = null;
+		$isValid = false;
+		$isAdult = false;
 
-		if (!$ticket) {
-			throw $this->createNotFoundException(sprintf('Impossible to find the ticket: %d', $id));
+		try {
+			$userInfos = $gingerClient->getCard($badgeId);
 		}
+		catch (ApiException $e) {}
 
-		$user = $ticket->getUser();
-		$ownerOtherTickets = array();
+		if ($userInfos) {
+			$em = $this->getDoctrine()->getManager();
 
-		if (!$ticket->getIsMajeur()) {
-			$ticket = $this->checkIfUserIsAdult($ticket);
-		}
+			$user = $em->getRepository('SDFBilletterieBundle:CasUser')->findOneByUsername($userInfos->login);
 
-		if ($user->isCasUser()) {
-			$userTickets = $em->getRepository('SDFBilletterieBundle:Billet')->findBy(array('user' => $user));
+			if ($user) {
+				$isValid = true;
+				$user->setIsMajeur($userInfos->is_adulte);
 
-			foreach ($userTickets as $userTicket) {
-				if ($userTicket->getValide() && !$userTicket->getConsomme() && $userTicket != $ticket) {
-					$ownerOtherTickets[] = $userTicket;
+				$em->persist($user);
+				$em->flush();
 
-					$this->instantLog($userTicket->getUser(), sprintf('Badge associé au billet %d lu.', $ticket->getId()));
+				$isAdult = $user->getIsMajeur();
+
+				$userTickets = $em->getRepository('SDFBilletterieBundle:Billet')->findBy(array('user' => $user));
+
+				foreach ($userTickets as $userTicket) {
+					if ($userTicket->getValide() && !$userTicket->getConsomme()) {
+						$tickets[] = $userTicket;
+
+						$this->instantLog($userTicket->getUser(), sprintf('Badge associé au billet %d scanné.', $ticket->getId()));
+					}
 				}
+			} else {
+				$message = 'L\'utilisateur n\'est pas dans la base de données.';
 			}
+		} else {
+			$message = 'Ce badge n\'est pas reconnu par le service Ginger.';
 		}
 
 		return $this->renderJsonResponse(array(
-			'ticket' => $ticket,
 			'user' => $user,
-			'isValide' => $ticket->getValide(),
-			'isAdulte' => $ticket->getIsMajeur(),
-			'ownerOtherTickets' => $ownerOtherTickets
+			'message' => $message,
+			'isValide' => $isValid,
+			'isAdulte' => $isAdult,
+			'tickets' => $tickets
 		));
 	}
 

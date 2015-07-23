@@ -1,5 +1,0 @@
-sdf_billetterie_test_payutc:
-    path:     /test/payutc/transaction
-    defaults:
-        _controller: SDFBilletterieBundle:Pages/Pages:testPayutcTransaction
-    methods: GET

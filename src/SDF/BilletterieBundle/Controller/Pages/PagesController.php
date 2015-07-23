@@ -61,20 +61,4 @@ class PagesController extends FrontController
 	{
 		return $this->render('SDFBilletterieBundle:Pages:legals.html.twig');
 	}
-
-	// FONCTION CREEE POUR TESTER L'URL DE REDIRECTION VERS LA TRANSACTION
-	public function testPayutcTransactionAction()
-	{
-		$payutcClient = $this->get('payutc_client');
-
-		$call = $payutcClient->createTransaction(array(
-			"fun_id" => $this->container->getParameter('sdf_billetterie.payutc.fundation_id'),
-			"items" => json_encode(array(array(3201))),
-			"return_url" => 'http://google.fr/test',
-			"callback_url" => 'http://google.fr/test',
-			"mail" => 'ericgourlaouen@airpost.net'
-		));
-
-		return $this->redirect($call->url);
-	}
 }

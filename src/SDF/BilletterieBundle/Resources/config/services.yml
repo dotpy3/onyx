@@ -13,7 +13,7 @@ parameters:
 services:
     payutc_client:
         class: %payutc_client.class%
-        arguments: [@session, %sdf_billetterie.payutc.key%, %sdf_billetterie.payutc.api_url%, %sdf_billetterie.payutc.api_service%]
+        arguments: [@session, %sdf_billetterie.payutc.key%, %sdf_billetterie.payutc.api_url%, %sdf_billetterie.payutc.api_service%, payutc]
 
     ginger_client:
         class: %ginger_client.class%

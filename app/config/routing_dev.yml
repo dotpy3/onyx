@@ -14,9 +14,5 @@ _errors:
     resource: "@TwigBundle/Resources/config/routing/errors.xml"
     prefix:   /_error
 
-sdf_billetterie_dev:
-    resource: "@SDFBilletterieBundle/Resources/config/routing_dev.yml"
-    prefix:   /
-
 _main:
     resource: routing.yml
