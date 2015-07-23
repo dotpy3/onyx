@@ -70,31 +70,4 @@ class PayutcClient extends AutoJsonClient
 
 		return $this->status;
 	}
-
-	/**
-	 * Logout user then trigger a status change
-	 */
-	public function logout()
-	{
-		$return = parent::logout();
-		$this->getStatus();
-		return $return;
-	}
-
-	/**
-	 * Authenticate user through UTC Cas then trigger a status change
-	 */
-	public function loginCas($ticket, $service)
-	{
-		$status = $this->getStatus();
-
-		$return = parent::loginCas(array(
-			'ticket' => $ticket,
-			'service' => $service
-		));
-
-		$this->getStatus(true);
-
-		return $return;
-	}
 }

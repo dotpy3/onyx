@@ -67,7 +67,7 @@ class PagesController extends FrontController
 	{
 		$payutcClient = $this->get('payutc_client');
 
-		$call = $payutcClient->apiCall('createTransaction', array(
+		$call = $payutcClient->createTransaction(array(
 			"fun_id" => $this->container->getParameter('sdf_billetterie.payutc.fundation_id'),
 			"items" => json_encode(array(array(3201))),
 			"return_url" => 'http://google.fr/test',
@@ -75,6 +75,6 @@ class PagesController extends FrontController
 			"mail" => 'ericgourlaouen@airpost.net'
 		));
 
-		return new Response($call->url);
+		return $this->redirect($call->url);
 	}
 }

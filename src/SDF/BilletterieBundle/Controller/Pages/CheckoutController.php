@@ -113,7 +113,7 @@ class CheckoutController extends FrontController
 				try {
 					// CONNEXION A PAYUTC
 					// Need some informations about PayUtc API...
-					$call = $payutcClient->apiCall('createTransaction', array(
+					$call = $payutcClient->createTransaction(array(
 						'fun_id' => $this->container->getParameter('sdf_billetterie.payutc.fundation_id'),
 						'items' => json_encode(array($price->getIdPayutc() => 1)),
 						'return_url' => $this->generateUrl('sdf_billetterie_checkout_ticket_validate', array('id' => $ticket->getId()), true),
@@ -168,7 +168,7 @@ class CheckoutController extends FrontController
 		// CONNEXION A PAYUTC
 		$payutcClient = $this->get('payutc_client');
 
-		$data = $payutcClient->apiCall('getTransactionInfo', array(
+		$data = $payutcClient->getTransactionInfo(array(
 			'fun_id' => $this->container->getParameter('sdf_billetterie.payutc.fundation_id'),
 			'tra_id' => $ticket->getIdPayutc()
 		));

@@ -10,6 +10,12 @@ sdf_billetterie_administration_stats:
         _controller: SDFBilletterieBundle:Pages/Admin/Pages:stats
     methods: GET
 
+sdf_billetterie_administration_payutc_status:
+    path:     /payutc
+    defaults:
+        _controller: SDFBilletterieBundle:Pages/Admin/Pages:checkPayutcStatus
+    methods: GET
+
 sdf_billetterie_administration_users:
     resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/admin/users.yml
     prefix: /users
@@ -37,7 +43,6 @@ sdf_billetterie_administration_prices:
 sdf_billetterie_administration_shuttles:
     resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/admin/shuttles.yml
     prefix: /shuttles
-
 
 sdf_billetterie_administration_journeys:
     resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/admin/journeys.yml
