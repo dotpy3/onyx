@@ -1,6 +1,6 @@
 <?php
 
-namespace SDF\BilletterieBundle\Controller\Pages;
+namespace SDF\BilletterieBundle\Controller\Billetterie;
 
 use SDF\BilletterieBundle\Controller\FrontController;
 use SDF\BilletterieBundle\Authentication\Cas\Client\CasClient;

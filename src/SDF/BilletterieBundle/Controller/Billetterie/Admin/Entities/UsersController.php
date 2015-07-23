@@ -1,6 +1,6 @@
 <?php
 
-namespace SDF\BilletterieBundle\Controller\Pages\Admin\Entities;
+namespace SDF\BilletterieBundle\Controller\Billetterie\Admin\Entities;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-use SDF\BilletterieBundle\Controller\Pages\Admin\CrudController;
+use SDF\BilletterieBundle\Controller\Billetterie\Admin\CrudController;
 
 class UsersController extends CrudController
 {

@@ -1,23 +1,17 @@
 sdf_billetterie_checkout_price:
     path:     /{priceId}
     defaults:
-        _controller: SDFBilletterieBundle:Pages/Checkout:checkoutTicket
+        _controller: SDFBilletterieBundle:Billetterie/Checkout:checkoutTicket
     methods: GET
 
 sdf_billetterie_checkout_price_check:
     path:     /{priceId}/check
     defaults:
-        _controller: SDFBilletterieBundle:Pages/Checkout:checkoutTicketCheck
+        _controller: SDFBilletterieBundle:Billetterie/Checkout:checkoutTicketCheck
     methods: POST
-
-sdf_billetterie_checkout_ticket_validate:
-    path:     /{id}/validate
-    defaults:
-        _controller: SDFBilletterieBundle:Pages/Ticketing:validate
-    methods: GET
 
 sdf_billetterie_checkout_ticket_payutc_callback:
     path:     /{id}/callback
     defaults:
-        _controller: SDFBilletterieBundle:Pages/Checkout:handlePayutcCallback
+        _controller: SDFBilletterieBundle:Billetterie/Checkout:handlePayutcCallback
     methods: GET

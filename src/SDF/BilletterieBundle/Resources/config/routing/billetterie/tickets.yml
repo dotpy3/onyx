@@ -1,29 +1,35 @@
 sdf_billetterie_ticket_print:
     path:     /{id}/print
     defaults:
-        _controller: SDFBilletterieBundle:Pages/Ticketing:printTicket
+        _controller: SDFBilletterieBundle:Billetterie/Ticketing:printTicket
     methods: GET
 
 sdf_billetterie_ticket_edit:
     path:     /{id}/edit
     defaults:
-        _controller: SDFBilletterieBundle:Pages/Ticketing:editTicket
+        _controller: SDFBilletterieBundle:Billetterie/Ticketing:editTicket
     methods: GET
 
 sdf_billetterie_ticket_update:
     path:     /{id}/edit
     defaults:
-        _controller: SDFBilletterieBundle:Pages/Ticketing:updateTicket
+        _controller: SDFBilletterieBundle:Billetterie/Ticketing:updateTicket
     methods: POST
 
 sdf_billetterie_ticket_transaction_retry:
     path:     /{id}/transaction/retry
     defaults:
-        _controller: SDFBilletterieBundle:Pages/Ticketing:retryTransaction
+        _controller: SDFBilletterieBundle:Billetterie/Ticketing:retryTransaction
     methods: GET
 
 sdf_billetterie_ticket_transaction_cancel:
     path:     /{id}/transaction/cancel
     defaults:
-        _controller: SDFBilletterieBundle:Pages/Ticketing:cancelTransaction
+        _controller: SDFBilletterieBundle:Billetterie/Ticketing:cancelTransaction
+    methods: GET
+
+sdf_billetterie_ticket_transaction_validate:
+    path:     /{id}/validate
+    defaults:
+        _controller: SDFBilletterieBundle:Billetterie/Ticketing:validate
     methods: GET

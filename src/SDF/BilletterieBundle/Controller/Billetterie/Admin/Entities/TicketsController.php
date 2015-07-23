@@ -1,10 +1,10 @@
 <?php
 
-namespace SDF\BilletterieBundle\Controller\Pages\Admin\Entities;
+namespace SDF\BilletterieBundle\Controller\Billetterie\Admin\Entities;
 
 use Symfony\Component\HttpFoundation\Request;
 
-use SDF\BilletterieBundle\Controller\Pages\Admin\CrudController;
+use SDF\BilletterieBundle\Controller\Billetterie\Admin\CrudController;
 use SDF\BilletterieBundle\Entity\Billet;
 use SDF\BilletterieBundle\Form\Admin\BilletType;
 

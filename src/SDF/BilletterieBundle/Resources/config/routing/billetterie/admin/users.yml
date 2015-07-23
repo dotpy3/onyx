@@ -1,13 +1,13 @@
 sdf_billetterie_administration_users_lookup:
     path:     /lookup
     defaults:
-        _controller: SDFBilletterieBundle:Pages/Admin/Entities/Users:lookUp
+        _controller: SDFBilletterieBundle:Billetterie/Admin/Entities/Users:lookUp
     methods: GET
 
 sdf_billetterie_administration_users_unvalid_mails:
     path:     /mails/unvalid.{_format}
     defaults:
-        _controller: SDFBilletterieBundle:Pages/Admin/Entities/Users:listUnvalidTicketMails
+        _controller: SDFBilletterieBundle:Billetterie/Admin/Entities/Users:listUnvalidTicketMails
         _format: json
     methods: GET
     requirements:
@@ -16,5 +16,5 @@ sdf_billetterie_administration_users_unvalid_mails:
 sdf_billetterie_administration_users_mails_send:
     path:     /mails/all/send
     defaults:
-        _controller: SDFBilletterieBundle:Pages/Admin/Entities/Users:sendMails
+        _controller: SDFBilletterieBundle:Billetterie/Admin/Entities/Users:sendMails
     methods: GET

@@ -1,6 +1,6 @@
 <?php
 
-namespace SDF\BilletterieBundle\Controller\Pages\Admin;
+namespace SDF\BilletterieBundle\Controller\Billetterie\Admin;
 
 use Exception;
 use \Payutc\Client\JsonException;

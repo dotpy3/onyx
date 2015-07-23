@@ -1,17 +1,17 @@
 sdf_billetterie_administration_constraints_list:
     path:     /
     defaults:
-        _controller: SDFBilletterieBundle:Pages/Admin/Entities/Constraints:list
+        _controller: SDFBilletterieBundle:Billetterie/Admin/Entities/Constraints:list
     methods: GET
 
 sdf_billetterie_administration_constraint_new:
     path:     /new
     defaults:
-        _controller: SDFBilletterieBundle:Pages/Admin/Entities/Constraints:new
+        _controller: SDFBilletterieBundle:Billetterie/Admin/Entities/Constraints:new
     methods: GET
 
 sdf_billetterie_administration_constraint_create:
     path:     /create
     defaults:
-        _controller: SDFBilletterieBundle:Pages/Admin/Entities/Constraints:create
+        _controller: SDFBilletterieBundle:Billetterie/Admin/Entities/Constraints:create
     methods: POST

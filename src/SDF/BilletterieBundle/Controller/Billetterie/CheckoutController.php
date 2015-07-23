@@ -1,6 +1,6 @@
 <?php
 
-namespace SDF\BilletterieBundle\Controller\Pages;
+namespace SDF\BilletterieBundle\Controller\Billetterie;
 
 use DateTime;
 
@@ -111,12 +111,11 @@ class CheckoutController extends FrontController
 				$payutcClient = $this->get('payutc_client');
 
 				try {
-					// CONNEXION A PAYUTC
-					// Need some informations about PayUtc API...
+					// Create PayUtc transaction
 					$call = $payutcClient->createTransaction(array(
 						'fun_id' => $this->container->getParameter('sdf_billetterie.payutc.fundation_id'),
 						'items' => json_encode(array(array($price->getIdPayutc()))),
-						'return_url' => $this->generateUrl('sdf_billetterie_checkout_ticket_validate', array('id' => $ticket->getId()), true),
+						'return_url' => $this->generateUrl('sdf_billetterie_ticket_transaction_validate', array('id' => $ticket->getId()), true),
 						'callback_url' => $this->generateUrl('sdf_billetterie_checkout_ticket_payutc_callback', array('id' => $ticket->getId()), true),
 						'mail' => $user->getEmail()
 					));
@@ -124,16 +123,10 @@ class CheckoutController extends FrontController
 				catch (JsonException $e) {
 					$this->instantLog($user, 'La connexion à Payutc a échoué pour valider l\'achat du billet '. $ticket->getId() . '. Error: ' . $e->getMessage());
 
-					// If the transaction fail, what should be the ticket idPayutc ???
-					// $ticket->setIdPayutc(...) ???
+					$em->remove($ticket);
+					$em->flush();
 
-					// Why remove the ticket ?
-					// Seems to be possible to retry the transaction ?
-
-					// $em->remove($ticket);
-					// $em->flush();
-
-					$this->addFlash('danger', 'La connexion à Payutc a échoué pour valider l\'achat du billet. Veuillez réessayer la transaction.');
+					$this->addFlash('danger', 'Nous sommes vraiment désolé, la connexion à Payutc a échoué pour valider l\'achat du billet... Veuillez réessayer la commande, ou contacter un administrateur du site.');
 
 					return $this->redirectToRoute('sdf_billetterie_homepage');
 				}

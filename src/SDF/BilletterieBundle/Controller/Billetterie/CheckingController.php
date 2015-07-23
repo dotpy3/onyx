@@ -1,6 +1,6 @@
 <?php
 
-namespace SDF\BilletterieBundle\Controller\Pages;
+namespace SDF\BilletterieBundle\Controller\Billetterie;
 
 use Symfony\Component\HttpFoundation\Request;
 

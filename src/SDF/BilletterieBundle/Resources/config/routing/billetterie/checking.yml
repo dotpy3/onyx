@@ -1,23 +1,23 @@
 sdf_billetterie_checking_ticket_barcode_validity:
     path:     /{id}/barcode
     defaults:
-        _controller: SDFBilletterieBundle:Pages/Checking:checkTicketBarcodeValidity
+        _controller: SDFBilletterieBundle:Billetterie/Checking:checkTicketBarcodeValidity
     methods: GET
 
 sdf_billetterie_checking_ticket_informations:
     path:     /{id}/informations
     defaults:
-        _controller: SDFBilletterieBundle:Pages/Checking:retrieveTicketInformations
+        _controller: SDFBilletterieBundle:Billetterie/Checking:retrieveTicketInformations
     methods: GET
 
 sdf_billetterie_checking_ticket_associated_tickets:
     path:     /{badgeId}/associated_tickets
     defaults:
-        _controller: SDFBilletterieBundle:Pages/Checking:getOwnerAssociatedTickets
+        _controller: SDFBilletterieBundle:Billetterie/Checking:getOwnerAssociatedTickets
     methods: GET
 
 sdf_billetterie_checking_ticket_check_in:
     path:     /{id}/check_in
     defaults:
-        _controller: SDFBilletterieBundle:Pages/Checking:checkInTicket
+        _controller: SDFBilletterieBundle:Billetterie/Checking:checkInTicket
     methods: GET
