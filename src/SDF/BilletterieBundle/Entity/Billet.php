@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Billet
  *
- * @ORM\Table()
+ * @ORM\Table(name="billets")
  * @ORM\Entity(repositoryClass="SDF\BilletterieBundle\Entity\BilletRepository")
  */
 class Billet
@@ -31,7 +31,7 @@ class Billet
     /**
      * @var string
      *
-     * @ORM\Column(name="idPayutc", type="string", length=255)
+     * @ORM\Column(name="idPayutc", type="string", length=255, nullable=true)
      */
     private $idPayutc;
 
@@ -78,7 +78,7 @@ class Billet
     private $accepteDroitImage;
 
     /**
-     * @var boolean
+     * @var boolea
      *
      * @ORM\Column(name="consomme", type="boolean")
      */
@@ -91,10 +91,10 @@ class Billet
     private $navette;
 
     /**
-     * @ORM\ManyToOne(targetEntity="SDF\BilletterieBundle\Entity\Utilisateur")
+     * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $utilisateur;
+    private $user;
 
     /**
      * @ORM\ManyToOne(targetEntity="SDF\BilletterieBundle\Entity\Tarif")
@@ -102,11 +102,24 @@ class Billet
      */
     private $tarif;
 
+    public function __toString()
+    {
+        return sprintf('Billet de %s %s [%d]', $this->prenom, $this->nom, $this->barcode);
+    }
+
+    public function __construct()
+    {
+        $this->valide = false;
+        $this->consomme = false;
+        $this->isMajeur = false;
+
+        return $this;
+    }
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -129,7 +142,7 @@ class Billet
     /**
      * Get valide
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getValide()
     {
@@ -152,7 +165,7 @@ class Billet
     /**
      * Get idPayutc
      *
-     * @return string 
+     * @return string
      */
     public function getIdPayutc()
     {
@@ -175,7 +188,7 @@ class Billet
     /**
      * Get nom
      *
-     * @return string 
+     * @return string
      */
     public function getNom()
     {
@@ -198,7 +211,7 @@ class Billet
     /**
      * Get prenom
      *
-     * @return string 
+     * @return string
      */
     public function getPrenom()
     {
@@ -221,7 +234,7 @@ class Billet
     /**
      * Get isMajeur
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getIsMajeur()
     {
@@ -231,10 +244,10 @@ class Billet
     /**
      * Set navette
      *
-     * @param \SDF\BilletterieBundle\Entity\Navette $navette
+     * @param Navette $navette
      * @return Billet
      */
-    public function setNavette(\SDF\BilletterieBundle\Entity\Navette $navette)
+    public function setNavette(Navette $navette = null)
     {
         $this->navette = $navette;
 
@@ -244,7 +257,7 @@ class Billet
     /**
      * Get navette
      *
-     * @return \SDF\BilletterieBundle\Entity\Navette 
+     * @return Navette
      */
     public function getNavette()
     {
@@ -252,35 +265,35 @@ class Billet
     }
 
     /**
-     * Set utilisateur
+     * Set user
      *
-     * @param \SDF\BilletterieBundle\Entity\Utilisateur $utilisateur
+     * @param User $user
      * @return Billet
      */
-    public function setUtilisateur(\SDF\BilletterieBundle\Entity\Utilisateur $utilisateur)
+    public function setUser(User $user)
     {
-        $this->utilisateur = $utilisateur;
+        $this->user = $user;
 
         return $this;
     }
 
     /**
-     * Get utilisateur
+     * Get user
      *
-     * @return \SDF\BilletterieBundle\Entity\Utilisateur 
+     * @return User
      */
-    public function getUtilisateur()
+    public function getUser()
     {
-        return $this->utilisateur;
+        return $this->user;
     }
 
     /**
      * Set tarif
      *
-     * @param \SDF\BilletterieBundle\Entity\Tarif $tarif
+     * @param Tarif $tarif
      * @return Billet
      */
-    public function setTarif(\SDF\BilletterieBundle\Entity\Tarif $tarif)
+    public function setTarif(Tarif $tarif)
     {
         $this->tarif = $tarif;
 
@@ -290,7 +303,7 @@ class Billet
     /**
      * Get tarif
      *
-     * @return \SDF\BilletterieBundle\Entity\Tarif 
+     * @return Tarif
      */
     public function getTarif()
     {
@@ -313,7 +326,7 @@ class Billet
     /**
      * Get accepteDroitImage
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getAccepteDroitImage()
     {
@@ -336,7 +349,7 @@ class Billet
     /**
      * Get barcode
      *
-     * @return integer 
+     * @return integer
      */
     public function getBarcode()
     {
@@ -359,7 +372,7 @@ class Billet
     /**
      * Get dateAchat
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDateAchat()
     {
@@ -382,7 +395,7 @@ class Billet
     /**
      * Get consomme
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getConsomme()
     {

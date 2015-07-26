@@ -1,0 +1,23 @@
+{% extends 'SDFBilletterieBundle:Pages/Admin:layout.html.twig' %}
+
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
+
+{% block app_hero_content %}
+	<h1>{% block entity_title %}{% endblock %}</h1>
+{% endblock %}
+
+{% block app_content %}
+	{% block form_new %}
+		<form action='{% block entity_create_path %}{% endblock %}' method='post' {{ form_enctype(form) }}>
+			{% block form_content %}
+				{{ form_widget(form) }}
+			{% endblock %}
+			<div class='form-group'>
+				<input class='btn btn-success' type='submit' name='submit' value='Créer' />
+			</div>
+		</form>
+		<div class='link-wrapper'>
+			<a class='btn btn-primary' href='{% block entity_list_path %}{% endblock %}'>Revenir à la liste</a>
+		</div>
+	{% endblock %}
+{% endblock %}

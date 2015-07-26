@@ -1,0 +1,49 @@
+sdf_billetterie_administration:
+    path:     /
+    defaults:
+        _controller: SDFBilletterieBundle:Billetterie/Admin/Pages:home
+    methods: GET
+
+sdf_billetterie_administration_stats:
+    path:     /stats
+    defaults:
+        _controller: SDFBilletterieBundle:Billetterie/Admin/Pages:stats
+    methods: GET
+
+sdf_billetterie_administration_payutc_status:
+    path:     /payutc
+    defaults:
+        _controller: SDFBilletterieBundle:Billetterie/Admin/Pages:checkPayutcStatus
+    methods: GET
+
+sdf_billetterie_administration_users:
+    resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/admin/users.yml
+    prefix: /users
+
+sdf_billetterie_administration_tickets:
+    resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/admin/tickets.yml
+    prefix: /tickets
+
+sdf_billetterie_administration_constraints:
+    resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/admin/constraints.yml
+    prefix: /constraints
+
+sdf_billetterie_administration_events:
+    resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/admin/events.yml
+    prefix: /events
+
+sdf_billetterie_administration_price_groups:
+    resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/admin/price_groups.yml
+    prefix: /price_groups
+
+sdf_billetterie_administration_prices:
+    resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/admin/prices.yml
+    prefix: /prices
+
+sdf_billetterie_administration_shuttles:
+    resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/admin/shuttles.yml
+    prefix: /shuttles
+
+sdf_billetterie_administration_journeys:
+    resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/admin/journeys.yml
+    prefix: /journeys

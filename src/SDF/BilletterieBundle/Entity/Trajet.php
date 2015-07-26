@@ -35,11 +35,16 @@ class Trajet
      */
     private $lieuArrivee;
 
+    public function __toString()
+    {
+        return $this->lieuDepart . ' - ' . $this->lieuArrivee;
+    }
+
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -62,7 +67,7 @@ class Trajet
     /**
      * Get lieuDepart
      *
-     * @return string 
+     * @return string
      */
     public function getLieuDepart()
     {
@@ -85,7 +90,7 @@ class Trajet
     /**
      * Get lieuArrivee
      *
-     * @return string 
+     * @return string
      */
     public function getLieuArrivee()
     {

@@ -1,0 +1,119 @@
+{% extends 'SDFBilletterieBundle::layout.html.twig' %}
+
+{% block app_hero_content %}
+	<h1>Billetterie de la Soirée des Finaux</h1>
+	{% if app.user %}
+		<p>Bienvenue {{ app.user.firstname ~ ' ' ~ app.user.name }} !</p>
+	{% else %}
+		<p>Ce site vous permet de commander une billet pour la Soirée des Finaux. Pour vous connecter, utilisez votre compte CAS.</p>
+		<p><a class='btn btn-primary btn-lg' href='{{ utc_cas_url }}' role='button'>Connexion au CAS &raquo;</a></p>
+	{% endif %}
+{% endblock %}
+
+{% block app_content %}
+	{% if app.user and is_granted('ROLE_USER') %}
+		<section id='billets'>
+			<h2>Liste des billets achetés et disponibles</h2>
+			{% if unvalidTicket %}
+				<div class='alert alert-danger' role='alert'>
+					<strong>Un de vos billets n'a pas encore été traité par PayUTC.</strong>
+					<p>Cliquez <a href='{{ path('sdf_billetterie_ticket_transaction_retry', { 'id' : unvalidTicket.id }) }}'>ici pour reprendre la transaction</a>, ou <a href='{{ path('sdf_billetterie_ticket_transaction_cancel', {'id' : unvalidTicket.id}) }}'>ici pour l'annuler</a>.</p>
+				</div>
+			{% endif %}
+			{% if boughtTickets|length == 0 %}
+				<h2>Aucun billet acheté.</h2>
+			{% else %}
+				<div class='panel panel-default'>
+					<div class='panel-heading'>
+						<h3>Billets achetés</h3>
+					</div>
+					<div class='panel-body'>
+						<table class='table'>
+							<thead>
+								<tr>
+									<th>Nom</th>
+									<th>Type de billet</th>
+									<th>Navette</th>
+									<th class='text-right'>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for ticket in boughtTickets %}
+									<tr>
+										<td>{{ ticket.prenom ~ ' ' ~ ticket.nom }}</td>
+										<td>{{ ticket.tarif.nomTarif }}</td>
+										<td>{% if ticket.navette %}Navette de {{ ticket.navette.trajet.lieuDepart }} - {{ ticket.navette.horaireDepart|date('d/m/Y H:i') }}{% endif %}</td>
+										<td class='text-right'>
+											<a class='btn btn-info btn-xs' href='{{ path('sdf_billetterie_ticket_edit', { 'id' : ticket.id }) }}' role='button'>Options</a>
+											<a class='btn btn-primary btn-xs' href='{{ path('sdf_billetterie_ticket_print', { 'id' : ticket.id }) }}' role='button'>Imprimer &raquo;</a>
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			{% endif %}
+			{% if availablePrices|length == 0 %}
+				<h2>Aucun billet disponible à l'achat.</h2>
+			{% else %}
+				<div class='panel panel-default'>
+					<div class='panel-heading'>
+						<h3>Billets disponibles</h3>
+					</div>
+					<div class='panel-body'>
+						<table class='table'>
+							<thead>
+								<tr>
+									<th>Type de billet</th>
+									<th>Prix</th>
+									<th>Places restantes*</th>
+									<th class='text-right'>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for price in availablePrices %}
+									<tr>
+										<td>{{ price.nomTarif }}</td>
+										<td>{{ price.prix }} €</td>
+										<td>{{ remainingPlacesByPrice[price.id] }}</td>
+										<td class='text-right'>
+											<a class='btn btn-primary btn-xs' href='{{ path('sdf_billetterie_checkout_price', { 'priceId' : price.id }) }}' role='button'>Commander &raquo;</a>
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+						<i>Le nombre de places restantes dépend de plusieurs paramètres, tels que la capacité de l'évènement, le nombre de places disponibles par tarif, le nombre de places disponibles par utilisateur.</i>
+						<strong>Il représente le nombre de places disponibles, pour vous, pour ce tarif. Pas nécessairement le nombre de places total disponible.</strong>
+					</div>
+				</div>
+			{% endif %}
+		</section>
+	{% elseif exterior_access_enabled %}
+		<div class='form_mdp'>
+			<h2>Accès extérieurs</h2>
+			{% if login_error %}
+				<div class='alert alert-danger'>
+					<p>{{ login_error.message }}</p>
+				</div>
+			{% endif %}
+			<form action='{{ path('sdf_billetterie_login_check') }}' method='post'>
+				<div class='form-group'>
+					<div class='input-group'>
+						<span class='input-group-addon'>Login</span>
+						<input id='username' type='text' name='_username' class='form-control' value='{{ last_username }}' />
+					</div>
+				</div>
+				<div class='form-group'>
+					<div class='input-group'>
+						<span class='input-group-addon'>Mot de passe</span>
+						<input id='password' type='password' name='_password' class='form-control' />
+					</div>
+				</div>
+				<input class='btn btn-primary' type='submit' value='Connexion' />
+				<a class='btn btn-info' href='{{ path('sdf_billetterie_subscription') }}'>Créer un compte</a>
+			</form>
+		</div>
+	{% endif %}
+{% endblock %}

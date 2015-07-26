@@ -1,0 +1,17 @@
+sdf_billetterie_administration_journeys_list:
+    path:     /
+    defaults:
+        _controller: SDFBilletterieBundle:Billetterie/Admin/Entities/Journeys:list
+    methods: GET
+
+sdf_billetterie_administration_journey_new:
+    path:     /new
+    defaults:
+        _controller: SDFBilletterieBundle:Billetterie/Admin/Entities/Journeys:new
+    methods: GET
+
+sdf_billetterie_administration_journey_create:
+    path:     /create
+    defaults:
+        _controller: SDFBilletterieBundle:Billetterie/Admin/Entities/Journeys:create
+    methods: POST

@@ -3,6 +3,7 @@
 namespace SDF\BilletterieBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NoResultException;
 
 /**
  * BilletRepository
@@ -12,5 +13,150 @@ use Doctrine\ORM\EntityRepository;
  */
 class BilletRepository extends EntityRepository
 {
-	
+	public function findAllUnvalid()
+	{
+		$queryBuilder = $this->createQueryBuilder('b');
+
+		$queryBuilder
+			->where($queryBuilder->expr()->eq('b.valide', ':valid'))
+			->setParameter('valid', true)
+		;
+
+		return $queryBuilder->getQuery()->getResult();
+	}
+
+	public function findAllMatching($query)
+	{
+		$queryBuilder = $this->createQueryBuilder('b');
+
+		$queryBuilder
+			->where($queryBuilder->expr()->orX(
+				$queryBuilder->expr()->like('b.prenom', ':query'),
+				$queryBuilder->expr()->like('b.nom', ':query')
+			))
+			->setParameter('query', '%' . $query . '%')
+		;
+
+		return $queryBuilder->getQuery()->getResult();
+	}
+
+	public function findAllValidTicketsForUser($user)
+	{
+		$queryBuilder = $this->createQueryBuilder('b');
+
+		$queryBuilder
+			->where($queryBuilder->expr()->eq('b.user', ':user'))
+			->andWhere($queryBuilder->expr()->eq('b.valide', ':valid'))
+			->setParameter('user', $user)
+			->setParameter('valid', true)
+		;
+
+		return $queryBuilder->getQuery()->getResult();
+	}
+
+	public function findOneUnvalidTicketsForUser($user)
+	{
+		$billet = null;
+
+		$queryBuilder = $this->createQueryBuilder('b');
+
+		$queryBuilder
+			->where($queryBuilder->expr()->eq('b.user', ':user'))
+			->andWhere($queryBuilder->expr()->eq('b.valide', ':valid'))
+			->setParameter('user', $user)
+			->setParameter('valid', false)
+		;
+
+		try {
+			$billet = $queryBuilder->getQuery()->getSingleResult();
+		}
+		catch (NoResultException $e) {}
+
+		return $billet;
+	}
+
+	public function findOneForUser($id, $user)
+	{
+		$billet = null;
+
+		$queryBuilder = $this->createQueryBuilder('b');
+
+		$queryBuilder
+			->where($queryBuilder->expr()->eq('b.id', ':id'))
+			->andWhere($queryBuilder->expr()->eq('b.user', ':user'))
+			->setParameter('id', $id)
+			->setParameter('user', $user)
+		;
+
+		try {
+			$billet = $queryBuilder->getQuery()->getSingleResult();
+		}
+		catch (NoResultException $e) {}
+
+		return $billet;
+	}
+
+	public function countAllSoldForEvent($event)
+	{
+		$queryBuilder = $this->createQueryBuilder('b');
+
+		// Do not check if the tickets are valid or not.
+		$queryBuilder
+			->select($queryBuilder->expr()->count('b.id'))
+			->leftJoin('b.tarif', 't')
+			->where($queryBuilder->expr()->eq('t.evenement', ':event'))
+			->setParameter('event', $event)
+		;
+
+		return $queryBuilder->getQuery()->getSingleScalarResult();
+	}
+
+	public function countAllSoldForPrice($price)
+	{
+		$queryBuilder = $this->createQueryBuilder('b');
+
+		// Do not check if the tickets are valid or not.
+		$queryBuilder
+			->select($queryBuilder->expr()->count('b.id'))
+			->leftJoin('b.tarif', 't')
+			->where($queryBuilder->expr()->eq('b.tarif', ':price'))
+			->setParameter('price', $price)
+		;
+
+		return $queryBuilder->getQuery()->getSingleScalarResult();
+	}
+
+	public function countAllSoldForPriceAndUser($price, $user)
+	{
+		$queryBuilder = $this->createQueryBuilder('b');
+
+		$queryBuilder
+			->select($queryBuilder->expr()->count('b.id'))
+			->where($queryBuilder->expr()->eq('b.tarif', ':price'))
+			->andWhere($queryBuilder->expr()->eq('b.user', ':user'))
+			->setParameter('price', $price)
+			->setParameter('user', $user)
+		;
+
+		return $queryBuilder->getQuery()->getSingleScalarResult();
+	}
+
+	public function findOneByBarcode($barcode)
+	{
+		$ticket = null;
+
+		$queryBuilder = $this->createQueryBuilder('b');
+
+		$queryBuilder
+			->where($queryBuilder->expr()->eq('b.barcode', ':barcode'))
+			->setParameter('barcode', $barcode)
+		;
+
+		try {
+			$ticket = $queryBuilder->getQuery()->getSingleResult();
+		}
+		catch (NoResultException $e) {}
+
+		return $ticket;
+	}
 }

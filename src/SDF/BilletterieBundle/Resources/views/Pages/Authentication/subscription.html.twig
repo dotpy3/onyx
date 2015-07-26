@@ -1,0 +1,19 @@
+{% extends 'SDFBilletterieBundle::layout.html.twig' %}
+
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
+
+{% block app_hero_content %}
+	<h1>Création d'un compte</h1>
+	<p>Veuillez compléter le formulaire ci-dessous.</p>
+{% endblock %}
+
+{% block app_content %}
+	<div class='form_mdp'>
+		<form action='{{ path('sdf_billetterie_subscription_check') }}' method='{{ form.vars.method }}' {{ form_enctype(form) }}>
+			{{ form_widget(form) }}
+			<div class='form-group'>
+				<input class='btn btn-success' name='submit' type='submit' value='Inscription' />
+			</div>
+		</form>
+	</div>
+{% endblock %}

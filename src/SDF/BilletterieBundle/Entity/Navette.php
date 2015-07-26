@@ -3,6 +3,7 @@
 namespace SDF\BilletterieBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use SDF\BilletterieBundle\Exception\UndefinedValueException;
 
 /**
  * Navette
@@ -41,11 +42,31 @@ class Navette
      */
     private $trajet;
 
+    /**
+     * @var integer
+     *
+     * The number of remaining places in this shuttle
+     * This is not an SQL column, it will be set / unset by the application itself.
+     */
+    private $remainingPlaces;
+
+
+    public function __toString()
+    {
+        $stringRepresentation = $this->trajet->getLieuDepart() . ' - ' . $this->trajet->getLieuArrivee() . ' : ' . $this->horaireDepart->format('H\hi');
+
+        if (!is_null($this->remainingPlaces)) {
+            $stringRepresentation .= ' [' . $this->remainingPlaces . ' places restantes]';
+        }
+
+        return $stringRepresentation;
+    }
+
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -68,7 +89,7 @@ class Navette
     /**
      * Get horaireDepart
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getHoraireDepart()
     {
@@ -95,7 +116,7 @@ class Navette
     /**
      * Get capaciteMax
      *
-     * @return integer 
+     * @return integer
      */
     public function getCapaciteMax()
     {
@@ -118,10 +139,48 @@ class Navette
     /**
      * Get trajet
      *
-     * @return \SDF\BilletterieBundle\Entity\Trajet 
+     * @return \SDF\BilletterieBundle\Entity\Trajet
      */
     public function getTrajet()
     {
         return $this->trajet;
+    }
+
+    /**
+     * Set remainingPlaces
+     *
+     * @param boolean $remainingPlaces
+     * @return Navette
+     */
+    public function setRemainingPlaces($remainingPlaces)
+    {
+        $this->remainingPlaces = (integer) $remainingPlaces;
+
+        return $this;
+    }
+
+    /**
+     * Get remainingPlaces
+     *
+     * @return boolean
+     */
+    public function getRemainingPlaces()
+    {
+        return $this->remainingPlaces;
+    }
+
+    /**
+     * Is the shuttle full or not
+     *
+     * @throws UndefinedValueException In case the number of remaining places has not yet been set by the application
+     * @return boolean
+     */
+    public function isFull()
+    {
+        if (is_null($this->remainingPlaces)) {
+            throw new UndefinedValueException('The number of remaining places has not been set yet.');
+        }
+
+        return ($this->remainingPlaces === 0);
     }
 }

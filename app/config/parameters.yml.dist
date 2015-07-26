@@ -21,3 +21,32 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
+
+    # Ginger API URL
+    ginger_api_url: https://assos.utc.fr/ginger/v1/
+
+    # Ginger Client key
+    ginger_key:
+
+    # PayUTC Client key
+    payutc_key:
+
+    # PayUTC Client key
+    payutc_api_url: http://payutc.localhost/server
+    payutc_api_service: WEBSALE
+
+    # PayUTC Fundation ID
+    payutc_fundation_id:
+
+    # Nemopay payment page
+    nemopay_payment_url: https://payutc.nemopay.net/
+
+    # UTC CAS URL
+    utc_cas_url: https://cas.utc.fr/cas/
+
+    # PDF Generator image path
+    pdf_image_path: relative/path/to/the/pdf/background/image/from/the/web/folder.jpg
+
+    # Mail Manager config
+    mails_from: noreply@assos.utc.fr
+    mails_reply_to: noreply@assos.utc.fr

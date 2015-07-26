@@ -1,0 +1,33 @@
+{% extends 'SDFBilletterieBundle:Pages/Admin/Entities:list.html.twig' %}
+
+{% block entity_title %}Liste des tarifs{% endblock %}
+
+{% block entity_add_path %}{{ path('sdf_billetterie_administration_price_new') }}{% endblock %}
+
+{% block entity_add_label %}Ajouter un tarif{% endblock %}
+
+{% block entity_table_headers %}
+	<th>Evenement</th>
+	<th>Nom</th>
+	<th>Prix</th>
+	<th>Places totales / Par personne</th>
+	<th>Pot Commun</th>
+	<th>Options</th>
+{% endblock %}
+
+{% block entity_table_content %}
+	<td>{{ entity.evenement }}</td>
+	<td>{{ entity.nomTarif }}</td>
+	<td>{{ entity.prix }}€</td>
+	<td>{{ entity.quantite }} / {{ entity.quantiteParPersonne }}</td>
+	<td>{{ entity.potCommun }}</td>
+	<td>
+		Du {{ entity.contraintes.debutMiseEnVente|date('d/m/Y H:i:s') }} au {{ entity.contraintes.finMiseEnVente|date('d/m/Y H:i:s') }}
+		<br />
+		<ul>
+			{% if entity.contraintes.doitEtreCotisant%}<li>Doit être cotisant</li>{% endif %}
+			{% if entity.contraintes.doitNePasEtreCotisant%}<li>Doit ne pas être cotisant</li>{% endif %}
+			{% if entity.contraintes.accessibleExterieur%}<li>Accessible aux externes</li>{% endif %}
+		</ul>
+	</td>
+{% endblock %}

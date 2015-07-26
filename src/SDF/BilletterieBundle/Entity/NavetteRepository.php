@@ -12,4 +12,52 @@ use Doctrine\ORM\EntityRepository;
  */
 class NavetteRepository extends EntityRepository
 {
+	public function findAllWithRemainingPlaces($queryBuilderOnly = false)
+	{
+		$countQueryBuilder = $this->_em->createQueryBuilder();
+
+		$countQueryBuilder
+			->select($countQueryBuilder->expr()->count('b2'))
+			->from('SDFBilletterieBundle:Billet', 'b2')
+			->join('b2.navette', 'n2')
+			->where($countQueryBuilder->expr()->eq('n2.id', 'n.id'))
+		;
+
+		$queryBuilder = $this->createQueryBuilder('n');
+
+		$queryBuilder
+			->having($queryBuilder->expr()->gt('n.capaciteMax', '('.$countQueryBuilder->getDQL().')'))
+		;
+
+		if ($queryBuilderOnly) {
+			return $queryBuilder;
+		}
+
+		return $queryBuilder->getQuery()->getResult();
+	}
+
+	public function countRemainingPlaces($id)
+	{
+		$countQueryBuilder = $this->_em->createQueryBuilder();
+
+		$countQueryBuilder
+			->select($countQueryBuilder->expr()->count('b2'))
+			->from('SDFBilletterieBundle:Billet', 'b2')
+			->join('b2.navette', 'n2')
+			->where($countQueryBuilder->expr()->eq('n2.id', ':id'))
+			->setParameter('id', $id)
+		;
+
+		$queryBuilder = $this->_em->createQueryBuilder();
+
+		$queryBuilder
+			->select('n.capaciteMax - (:boughtPlaces)')
+			->from('SDFBilletterieBundle:Navette', 'n')
+			->where($queryBuilder->expr()->eq('n.id', ':id'))
+			->setParameter('id', $id)
+			->setParameter('boughtPlaces', $countQueryBuilder->getQuery()->getSingleScalarResult())
+		;
+
+		return $queryBuilder->getQuery()->getSingleScalarResult();
+	}
 }

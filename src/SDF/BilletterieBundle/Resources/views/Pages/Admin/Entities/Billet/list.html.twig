@@ -1,0 +1,27 @@
+{% extends 'SDFBilletterieBundle:Pages/Admin/Entities:list.html.twig' %}
+
+{% block entity_title %}Liste des tickets{% endblock %}
+
+{% block entity_add_path %}{{ path('sdf_billetterie_administration_ticket_new') }}{% endblock %}
+
+{% block entity_add_label %}Ajouter un ticket{% endblock %}
+
+{% block entity_table_headers %}
+	<th>Code barre</th>
+	<th>Détenteur</th>
+	<th>Majeur ?</th>
+	<th>Acheté le</th>
+	<th>Tarif</th>
+	<th>Navette</th>
+	<th>Consommé ?</th>
+{% endblock %}
+
+{% block entity_table_content %}
+	<td>{{ entity.barcode }}</td>
+	<td>{{ entity.prenom ~ ' ' ~ entity.nom }}</td>
+	<td>{{ entity.isMajeur ? 'Oui' : 'Non' }}</td>
+	<td>{{ entity.dateAchat|date('d/m/Y H:i:s') }}</td>
+	<td>{{ entity.consomme ? 'Oui' : 'Non' }}</td>
+	<td>{{ entity.tarif }}</td>
+	<td>{{ entity.navette }}</td>
+{% endblock %}

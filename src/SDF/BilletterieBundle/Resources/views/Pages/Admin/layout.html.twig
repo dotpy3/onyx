@@ -1,0 +1,77 @@
+{% extends 'SDFBilletterieBundle::layout.html.twig' %}
+
+{% block navbar_header %}
+	<div class='navbar-header'>
+		<button type='button' class='navbar-toggle collapsed' data-toggle='collapse' data-target='#billetterie-administration-navbar-content' aria-expanded='false'>
+			<span class='sr-only'>Toggle navigation</span>
+			<span class='icon-bar'></span>
+			<span class='icon-bar'></span>
+			<span class='icon-bar'></span>
+		</button>
+		<a class='navbar-brand' href='{{ path('sdf_billetterie_homepage') }}'>Billetterie</a>
+	</div>
+{% endblock %}
+{% block navbar_content %}
+	<div id='billetterie-administration-navbar-content' class='collapse navbar-collapse'>
+		<ul class='nav navbar-nav'>
+			<li class='dropdown'>
+				<a href='#' class='dropdown-toggle' data-toggle='dropdown' role="button" aria-haspopup="true" aria-expanded="false">Evénementiel <span class='caret'></span></a>
+				<ul class='dropdown-menu'>
+					<li class='dropdown-header'>Evénements</li>
+					<li><a href='{{ path('sdf_billetterie_administration_events_list') }}'>Lister les évènements</a></li>
+					<li><a href='{{ path('sdf_billetterie_administration_event_new') }}'>Ajouter un évènement</a></li>
+					<li class='divider' role='separator'></li>
+					<li class='dropdown-header'>Billets</li>
+					<li><a href='{{ path('sdf_billetterie_administration_tickets_list') }}'>Lister les billets</a></li>
+					<li><a href='{{ path('sdf_billetterie_administration_ticket_new') }}'>Ajouter un billet</a></li>
+				</ul>
+			</li>
+			<li class='dropdown'>
+				<a href='#' class='dropdown-toggle' data-toggle='dropdown' role="button" aria-haspopup="true" aria-expanded="false">Billetterie <span class='caret'></span></a>
+				<ul class='dropdown-menu'>
+					<li class='dropdown-header'>Contraintes</li>
+					<li><a href='{{ path('sdf_billetterie_administration_constraints_list') }}'>Lister les contraintes</a></li>
+					<li><a href='{{ path('sdf_billetterie_administration_constraint_new') }}'>Ajouter une contrainte</a></li>
+					<li class='divider' role='separator'></li>
+					<li class='dropdown-header'>Contraintes</li>
+					<li><a href='{{ path('sdf_billetterie_administration_price_groups_list') }}'>Lister les pots communs</a></li>
+					<li><a href='{{ path('sdf_billetterie_administration_price_group_new') }}'>Ajouter un pot commun</a></li>
+					<li class='divider' role='separator'></li>
+					<li class='dropdown-header'>Tarifs</li>
+					<li><a href='{{ path('sdf_billetterie_administration_prices_list') }}'>Lister les tarifs</a></li>
+					<li><a href='{{ path('sdf_billetterie_administration_price_new') }}'>Ajouter un tarif</a></li>
+				</ul>
+			</li>
+			<li class='dropdown'>
+				<a href='#' class='dropdown-toggle' data-toggle='dropdown' role="button" aria-haspopup="true" aria-expanded="false">Logistique <span class='caret'></span></a>
+				<ul class='dropdown-menu'>
+					<li class='dropdown-header'>Trajets</li>
+					<li><a href='{{ path('sdf_billetterie_administration_journeys_list') }}'>Lister les trajets</a></li>
+					<li><a href='{{ path('sdf_billetterie_administration_journey_new') }}'>Ajouter un trajet</a></li>
+					<li class='divider' role='separator'></li>
+					<li class='dropdown-header'>Navettes</li>
+					<li><a href='{{ path('sdf_billetterie_administration_shuttles_list') }}'>Lister les navettes</a></li>
+					<li><a href='{{ path('sdf_billetterie_administration_shuttle_new') }}'>Ajouter une navette</a></li>
+				</ul>
+			</li>
+		</ul>
+		{% if app.user %}
+			<ul class='nav navbar-nav navbar-right'>
+				{% if is_granted('ROLE_ADMIN') %}
+					<li>
+						<a href='{{ path('sdf_billetterie_administration') }}'>Administration</a>
+					</li>
+				{% endif %}
+				<li>
+					<a href='{{ path('sdf_billetterie_logout') }}'>Déconnexion</a>
+				</li>
+			</ul>
+		{% endif %}
+	</div>
+{% endblock %}
+
+{% block navbar_right %}{% endblock %}
+
+{% block app_hero_content %}
+	<h1>Administration</h1>
+{% endblock %}

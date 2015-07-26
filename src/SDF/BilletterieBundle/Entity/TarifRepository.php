@@ -2,6 +2,8 @@
 
 namespace SDF\BilletterieBundle\Entity;
 
+use DateTime;
+
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -12,4 +14,72 @@ use Doctrine\ORM\EntityRepository;
  */
 class TarifRepository extends EntityRepository
 {
+    /**
+     * Find all available prices for a given user
+     * Note that it does not handle the stocks availability
+     *
+     * @param User $user
+     * @return array
+     */
+    public function findAllAvailablePricesForUser($user)
+    {
+        $queryBuilder = $this->createQueryBuilder('t');
+
+        // Exclude constraints by date
+        $queryBuilder
+            ->leftJoin('t.contraintes', 'c')
+            ->andWhere($queryBuilder->expr()->andX(
+                $queryBuilder->expr()->lt('c.debutMiseEnVente', ':now'),
+                $queryBuilder->expr()->gt('c.finMiseEnVente', ':now')
+            ))
+            ->setParameter('now', new DateTime())
+        ;
+
+        // Exclude constraints by user type:
+        // 1: User is from UTC (CasUser) AND contributes to the federation
+        // 2: User is from UTC (CasUser) BUT DOES NOT contribute to the federation
+        // 3: User is not from UTC
+        // At the moment, we do not handle users exterior of UTC but who contribute to the federation.
+        if ($user->isCasUser()) {
+            if ($user->isBdeContributor()) {
+                $queryBuilder->andWhere($queryBuilder->expr()->eq('c.doitNePasEtreCotisant', ':false'));
+            } else {
+                $queryBuilder->andWhere($queryBuilder->expr()->eq('c.doitEtreCotisant', ':false'));
+            }
+            $queryBuilder->setParameter('false', false);
+        } else {
+            $queryBuilder
+                ->andWhere($queryBuilder->expr()->eq('c.accessibleExterieur', ':true'))
+                ->setParameter('true', true)
+            ;
+        }
+
+        // Find all the potCommun ids of tickets bought by the user
+        $subQueryBuilder = $this->_em->createQueryBuilder();
+
+        $subQueryBuilder
+            ->select('p2.id')
+            ->from('SDFBilletterieBundle:Billet', 'b2')
+            ->join('b2.tarif', 't2')
+            ->join('t2.potCommun', 'p2')
+            ->where($subQueryBuilder->expr()->eq('b2.user', ':user'))
+            ->andWhere($subQueryBuilder->expr()->eq('b2.valide', ':valide'))
+            ->andWhere($subQueryBuilder->expr()->isNotNull('t2.potCommun'))
+        ;
+
+        $queryBuilder
+            ->leftJoin('t.potCommun', 'p')
+            ->andWhere($queryBuilder->expr()->orX(
+                $queryBuilder->expr()->notIn('p.id', $subQueryBuilder->getDQL()),
+                $queryBuilder->expr()->isNull('t.potCommun')
+            ))
+            ->setParameter(':user', $user)
+            ->setParameter(':valide', true)
+        ;
+
+        // IMPORTANT
+        // This query do not handle stocks availability !!
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }

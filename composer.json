@@ -10,10 +10,10 @@
     },
     "require": {
         "php": ">=5.3.3",
-        "symfony/symfony": "2.6.*",
-        "doctrine/orm": "~2.2,>=2.2.3,<2.5",
-        "doctrine/dbal": "<2.5",
-        "doctrine/doctrine-bundle": "~1.2",
+        "symfony/symfony": "~2.7",
+        "doctrine/orm": "~2.5",
+        "doctrine/dbal": "~2.5",
+        "doctrine/doctrine-bundle": "~1.4",
         "twig/extensions": "~1.0",
         "symfony/assetic-bundle": "~2.3",
         "symfony/swiftmailer-bundle": "~2.3",
@@ -21,8 +21,11 @@
         "sensio/distribution-bundle": "~3.0,>=3.0.12",
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
+        "jms/serializer-bundle": "^1.0",
+        "guzzlehttp/guzzle": "~6.0",
+        "itbz/fpdf": "*",
         "payutc/php-client": "*@dev",
-        "itbz/fpdf": "*"
+        "ginger/client": "^2.3"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"

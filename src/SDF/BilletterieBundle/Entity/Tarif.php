@@ -74,11 +74,16 @@ class Tarif
      */
     private $potCommun;
 
+    public function __toString()
+    {
+        return $this->nomTarif;
+    }
+
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -101,7 +106,7 @@ class Tarif
     /**
      * Get prix
      *
-     * @return string 
+     * @return string
      */
     public function getPrix()
     {
@@ -124,7 +129,7 @@ class Tarif
     /**
      * Get quantite
      *
-     * @return integer 
+     * @return integer
      */
     public function getQuantite()
     {
@@ -147,7 +152,7 @@ class Tarif
     /**
      * Get quantiteParPersonne
      *
-     * @return integer 
+     * @return integer
      */
     public function getQuantiteParPersonne()
     {
@@ -170,7 +175,7 @@ class Tarif
     /**
      * Get nomTarif
      *
-     * @return string 
+     * @return string
      */
     public function getNomTarif()
     {
@@ -193,7 +198,7 @@ class Tarif
     /**
      * Get idPayutc
      *
-     * @return integer 
+     * @return integer
      */
     public function getIdPayutc()
     {
@@ -216,7 +221,7 @@ class Tarif
     /**
      * Get contraintes
      *
-     * @return \SDF\BilletterieBundle\Entity\Contraintes 
+     * @return \SDF\BilletterieBundle\Entity\Contraintes
      */
     public function getContraintes()
     {
@@ -239,7 +244,7 @@ class Tarif
     /**
      * Get evenement
      *
-     * @return \SDF\BilletterieBundle\Entity\Evenement 
+     * @return \SDF\BilletterieBundle\Entity\Evenement
      */
     public function getEvenement()
     {
@@ -262,7 +267,7 @@ class Tarif
     /**
      * Get potCommun
      *
-     * @return \SDF\BilletterieBundle\Entity\PotCommunTarifs 
+     * @return \SDF\BilletterieBundle\Entity\PotCommunTarifs
      */
     public function getPotCommun()
     {

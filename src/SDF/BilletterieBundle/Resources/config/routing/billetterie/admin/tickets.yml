@@ -1,0 +1,17 @@
+sdf_billetterie_administration_tickets_list:
+    path:     /
+    defaults:
+        _controller: SDFBilletterieBundle:Billetterie/Admin/Entities/Tickets:list
+    methods: GET
+
+sdf_billetterie_administration_ticket_new:
+    path:     /new
+    defaults:
+        _controller: SDFBilletterieBundle:Billetterie/Admin/Entities/Tickets:new
+    methods: GET
+
+sdf_billetterie_administration_ticket_create:
+    path:     /create
+    defaults:
+        _controller: SDFBilletterieBundle:Billetterie/Admin/Entities/Tickets:create
+    methods: POST

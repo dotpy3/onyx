@@ -1,0 +1,61 @@
+# Home Page
+sdf_billetterie_homepage:
+    path:     /
+    defaults:
+        _controller: SDFBilletterieBundle:Billetterie/Pages:home
+    methods: GET
+
+### Authentication
+sdf_billetterie_cas_callback:
+    path:     /cas/callback
+    defaults:
+        _controller: SDFBilletterieBundle:Authentication:casCallback
+    methods: GET
+
+sdf_billetterie_login_check:
+    path:     /login_check
+    defaults:
+        _controller: SDFBilletterieBundle:Authentication:loginCheck
+    methods: POST
+
+sdf_billetterie_logout:
+    path:     /logout
+
+### Subscription
+sdf_billetterie_subscription:
+    path:     /subscribe
+    defaults:
+        _controller: SDFBilletterieBundle:Authentication:subscription
+    methods: GET
+
+sdf_billetterie_subscription_check:
+    path:     /subscribe/check
+    defaults:
+        _controller: SDFBilletterieBundle:Authentication:subscriptionCheck
+    methods: POST
+
+### Regular pages
+sdf_cgv:
+    path:     /cgv
+    defaults:
+        _controller: SDFBilletterieBundle:Billetterie/Pages:legals
+    methods: GET
+
+### Tickets specific pages
+sdf_billetterie_tickets:
+    resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/tickets.yml
+    prefix: /tickets
+
+### Payment pages
+sdf_billetterie_checkout:
+    resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/checkout.yml
+    prefix: /checkout
+
+sdf_billetterie_checking:
+    resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/checking.yml
+    prefix: /checking
+
+### Administration
+sdf_billetterie:
+    resource: @SDFBilletterieBundle/Resources/config/routing/billetterie/admin.yml
+    prefix: /admin
